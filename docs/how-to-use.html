@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Physio App — Claude Code Guide for Keto</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --accent: #6c8aff;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --text: #e2e8f0;
+      --muted: #7c8db5;
+      --phase0: #6366f1;
+      --phase1: #3b82f6;
+      --phase2: #8b5cf6;
+      --phase3: #ec4899;
+      --done: #10b981;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(15,17,23,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      height: 56px;
+      gap: 2rem;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--muted); font-weight: 400; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.15s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 80px 2rem 80px; }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 60px 0 48px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(108,138,255,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(108,138,255,0.3);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .hero h1 em { color: var(--accent); font-style: normal; }
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── SECTIONS ── */
+    section { margin-bottom: 64px; }
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .section-num {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .card-row {
+      display: flex;
+      gap: 12px;
+    }
+    .card-row .card { flex: 1; margin-bottom: 0; }
+
+    /* ── TERMINAL ── */
+    .terminal {
+      background: #0a0c14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0;
+      font-family: var(--mono);
+    }
+    .terminal-bar {
+      background: #13151f;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .terminal-label {
+      margin-left: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--sans);
+    }
+    .terminal-body {
+      padding: 16px 18px;
+      font-size: 0.82rem;
+      line-height: 1.8;
+    }
+    .t-prompt { color: #6c8aff; }
+    .t-cmd { color: #e2e8f0; }
+    .t-comment { color: #4a5680; }
+    .t-out { color: #6ee7b7; }
+    .t-warn { color: #fbbf24; }
+    .t-err { color: #f87171; }
+    .t-slash { color: #a78bfa; font-weight: 600; }
+
+    /* ── FLOW ── */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 20px 0;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      padding: 14px 12px;
+      text-align: center;
+      position: relative;
+    }
+    .flow-step:first-child { border-radius: 10px 0 0 10px; }
+    .flow-step:last-child { border-radius: 0 10px 10px 0; }
+    .flow-step:not(:last-child)::after {
+      content: '›';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1.2rem;
+      z-index: 1;
+      background: var(--surface);
+      padding: 0 2px;
+    }
+    .flow-step:not(:last-child) { border-right: none; }
+    .flow-icon { font-size: 1.3rem; margin-bottom: 4px; }
+    .flow-name { font-size: 0.72rem; font-weight: 600; color: var(--text); }
+    .flow-sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .flow-step.active { background: rgba(108,138,255,0.1); border-color: var(--accent); }
+    .flow-step.green { background: rgba(52,211,153,0.08); border-color: var(--green); }
+
+    /* ── PHASES ── */
+    .phases { display: flex; flex-direction: column; gap: 12px; }
+    .phase-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .phase-row::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+    }
+    .phase-row.p0::before { background: var(--phase0); }
+    .phase-row.p1::before { background: var(--phase1); }
+    .phase-row.p2::before { background: var(--phase2); }
+    .phase-row.p3::before { background: var(--phase3); }
+    .phase-row.pdone::before { background: var(--done); }
+    .phase-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+    }
+    .p0 .phase-badge { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .p1 .phase-badge { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .p2 .phase-badge { background: rgba(139,92,246,0.15); color: #c084fc; }
+    .p3 .phase-badge { background: rgba(236,72,153,0.15); color: #f472b6; }
+    .pdone .phase-badge { background: rgba(16,185,129,0.15); color: var(--green); }
+    .phase-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
+    .phase-desc { font-size: 0.82rem; color: var(--muted); }
+    .phase-gate {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .p0 .phase-gate { background: rgba(99,102,241,0.1); color: #818cf8; }
+    .p1 .phase-gate { background: rgba(59,130,246,0.1); color: #60a5fa; }
+    .p2 .phase-gate { background: rgba(139,92,246,0.1); color: #c084fc; }
+    .p3 .phase-gate { background: rgba(236,72,153,0.1); color: #f472b6; }
+    .pdone .phase-gate { background: rgba(16,185,129,0.1); color: var(--green); }
+
+    /* ── COMMANDS TABLE ── */
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .cmd-row {
+      display: contents;
+    }
+    .cmd-row:not(:last-child) .cmd-key,
+    .cmd-row:not(:last-child) .cmd-val {
+      border-bottom: 1px solid var(--border);
+    }
+    .cmd-key {
+      background: #0d0f19;
+      padding: 11px 18px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent2);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .cmd-val {
+      background: var(--surface);
+      padding: 11px 18px;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-left: 1px solid var(--border);
+    }
+    .cmd-val small { color: var(--muted); display: block; font-size: 0.78rem; margin-top: 2px; }
+
+    /* ── RULE CARDS ── */
+    .rules { display: flex; flex-direction: column; gap: 10px; }
+    .rule {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .rule-icon { font-size: 1.1rem; margin-top: 1px; flex-shrink: 0; }
+    .rule-text { font-size: 0.88rem; color: var(--text); }
+    .rule-text strong { color: var(--accent); }
+    .rule.ok { border-left: 3px solid var(--green); }
+    .rule.bad { border-left: 3px solid var(--red); }
+    .rule.warn { border-left: 3px solid var(--yellow); }
+
+    /* ── SKILL SYSTEM ── */
+    .skill-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 16px 0;
+    }
+    .skill-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      position: relative;
+    }
+    .skill-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 44px;
+      bottom: -4px;
+      width: 2px;
+      background: var(--border);
+    }
+    .skill-dot {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+    .skill-content { flex: 1; }
+    .skill-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+    .skill-desc { font-size: 0.82rem; color: var(--muted); }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin: 16px 0;
+      font-size: 0.88rem;
+    }
+    .callout.info {
+      background: rgba(108,138,255,0.08);
+      border: 1px solid rgba(108,138,255,0.25);
+    }
+    .callout.success {
+      background: rgba(52,211,153,0.08);
+      border: 1px solid rgba(52,211,153,0.25);
+    }
+    .callout.warn {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.25);
+    }
+    .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .callout p { color: var(--text); line-height: 1.6; }
+    .callout strong { color: var(--text); }
+
+    /* ── CHECKLIST ── */
+    .checklist { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+    .check-box {
+      width: 18px; height: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge-fe { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge-be { background: rgba(52,211,153,0.12); color: #34d399; }
+    .badge-e2e { background: rgba(236,72,153,0.12); color: #f472b6; }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px 0 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Physio App <span>/ Claude Code Guide</span></div>
+  <a href="#start">დაწყება</a>
+  <a href="#flow">Workflow</a>
+  <a href="#commands">Commands</a>
+  <a href="#phases">Phases</a>
+  <a href="#skills">Skills</a>
+  <a href="#rules">წესები</a>
+  <a href="#memory">Memory</a>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Developer Guide — Keto</div>
+    <h1>Claude Code-ით<br/><em>Physio App</em>-ის შექმნა</h1>
+    <p>ყველაფერი რაც გჭირდება ტერმინალიდან — pre-phase-დან production-მდე.</p>
+  </div>
+
+  <!-- SECTION 0: What is Claude Code -->
+  <section id="start">
+    <div class="section-label">
+      <div class="section-num">0</div>
+      <h2>Claude Code — რა არის და როგორ მუშაობს</h2>
+    </div>
+
+    <div class="card">
+      <p style="color:var(--muted); margin-bottom:14px; font-size:0.88rem;">
+        Claude Code არის AI assistant რომელიც ტერმინალიდან მუშაობს. შენ ლაპარაკობ მასთან, ის კითხულობს შენს კოდს, წერს ახალ კოდს, ასწორებს შეცდომებს და მართავს workflow-ს. ის <strong>იცის</strong> React Native, Expo, Supabase, TypeScript — შენ არ გჭირდება ზეპირად ეს ყველაფერი.
+      </p>
+    </div>
+
+    <div class="card-row">
+      <div class="card">
+        <h3>✅ ასე მუშაობს კარგად</h3>
+        <div style="font-family:var(--mono); font-size:0.8rem; color:var(--green); line-height:2;">
+          "დავიწყოთ FE-001 task"<br/>
+          "BE-004 hook-ი დავწეროთ"<br/>
+          "ეს error რას ნიშნავს?"<br/>
+          "booking flow გავტესტოთ"
+        </div>
+      </div>
+      <div class="card">
+        <h3>❌ ასე არ მუშაობს კარგად</h3>
+        <div style="font-family:var(--mono); font-size:0.8rem; color:var(--red); line-height:2;">
+          "გააკეთე app"<br/>
+          "კოდი არ მუშაობს"<br/>
+          "login screen-ი სჭირდება"<br/>
+          "react native-ში ასე ხდება?"
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:16px;">
+      <div class="callout-icon">💡</div>
+      <p><strong>მთავარი პრინციპი:</strong> Claude Code-ს ეუბნები <strong>task ID-ს</strong> ან <strong>კონკრეტულ მოქმედებას</strong>. ის გადაწყვეტს "როგორ". შენი საქმეა task-ები დაადასტურო, შეამოწმო და workflow გაიაროს.</p>
+    </div>
+
+    <div style="margin-top:20px;">
+      <h3 style="margin-bottom:10px;">დაყენება (ერთხელ)</h3>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+          <span class="terminal-label">terminal</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="t-comment"># Claude Code-ის ინსტალაცია</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">npm install -g @anthropic-ai/claude-code</span></div>
+          <div style="margin-top:10px;"><span class="t-comment"># პროექტი გახსენი</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">cd physio-app</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">claude</span></div>
+          <div style="margin-top:10px;"><span class="t-comment"># პირველი გაშვება — onboarding</span></div>
+          <div><span class="t-prompt">></span> <span class="t-slash">/start</span></div>
+          <div><span class="t-out">Starting pre-phase onboarding...</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- SECTION 1: FULL WORKFLOW -->
+  <section id="flow">
+    <div class="section-label">
+      <div class="section-num">1</div>
+      <h2>Development Workflow — ყოველი Task-ისთვის</h2>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:20px;">
+      ყოველი feature ამ ნაბიჯებს მიჰყვება. გამოტოვება არ შეიძლება.
+    </p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon">🗺️</div>
+        <div class="flow-name">PLAN</div>
+        <div class="flow-sub">task ID + scope</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon">⌨️</div>
+        <div class="flow-name">BUILD</div>
+        <div class="flow-sub">Claude წერს</div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-icon">🔍</div>
+        <div class="flow-name">CHECK</div>
+        <div class="flow-sub">tsc + lint</div>
+      </div>
+      <div class="flow-step active">
+        <div class="flow-icon">🧪</div>
+        <div class="flow-name">TEST</div>
+        <div class="flow-sub">jest + coverage</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon">📱</div>
+        <div class="flow-name">E2E</div>
+        <div class="flow-sub">Maestro flow</div>
+      </div>
+      <div class="flow-step green">
+        <div class="flow-icon">✅</div>
+        <div class="flow-name">DONE</div>
+        <div class="flow-sub">task update</div>
+      </div>
+    </div>
+
+    <!-- Step by step -->
+    <div style="margin-top:8px;">
+
+      <div class="card" style="border-left: 3px solid #6366f1; margin-bottom:10px;">
+        <h3>ნაბიჯი 1 — Plan: შეარჩიე Task</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">></span> <span class="t-slash">/phase</span></div>
+            <div><span class="t-out">Phase 1 MVP — 3/21 tasks done</span></div>
+            <div><span class="t-out">Next: FE-003 Patient Home Screen</span></div>
+            <div style="margin-top:10px;"><span class="t-prompt">></span> <span class="t-cmd">დავიწყოთ FE-003</span></div>
+          </div>
+        </div>
+        <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">Claude კითხულობს task-ს, ახსნის რას გააკეთებს, ელოდება შენს კი-ს.</p>
+      </div>
+
+      <div class="card" style="border-left: 3px solid #3b82f6; margin-bottom:10px;">
+        <h3>ნაბიჯი 2 — Build: Claude წერს კოდს</h3>
+        <p style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">Claude თვითონ წერს. შენი როლია: წაიკითხო, დაუსვა კითხვები, დაადასტური.</p>
+        <div class="rules">
+          <div class="rule ok">
+            <div class="rule-icon">✓</div>
+            <div class="rule-text">ყველა data logic — <strong>src/hooks/</strong>-ში. Screen-ები მხოლოდ UI.</div>
+          </div>
+          <div class="rule ok">
+            <div class="rule-icon">✓</div>
+            <div class="rule-text">ყველა UI text — <strong>strings.ka.ts</strong>-ში. Hardcode არასდროს.</div>
+          </div>
+          <div class="rule bad">
+            <div class="rule-icon">✗</div>
+            <div class="rule-text"><strong>any</strong> type — არასდროს. Claude-ი შეცდომაზე ჩაისწორებს.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left: 3px solid #f59e0b; margin-bottom:10px;">
+        <h3>ნაბიჯი 3 — Check: TypeScript + ESLint</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">></span> <span class="t-slash">/check</span></div>
+            <div style="margin-top:6px;"><span class="t-out">✓ check passed — 0 type errors, 0 lint warnings</span></div>
+            <div style="margin-top:8px; color:var(--muted); font-size:0.78rem;">ან თუ errors არის:</div>
+            <div><span class="t-err">✗ src/hooks/useAuth.ts:42 — Type 'any' is not assignable...</span></div>
+            <div><span class="t-out">→ Claude ასწორებს და ხელახლა ამოწმებს</span></div>
+          </div>
+        </div>
+        <div class="callout warn" style="margin-top:8px; padding:10px 14px;">
+          <div class="callout-icon">⚠️</div>
+          <p style="font-size:0.82rem;">Check-ი <strong>სავალდებულოა</strong> TEST-ამდე. 0 errors = გააგრძელე. errors = გაასწორე.</p>
+        </div>
+      </div>
+
+      <div class="card" style="border-left: 3px solid #8b5cf6; margin-bottom:10px;">
+        <h3>ნაბიჯი 4 — Test: Jest + Coverage Gate</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">></span> <span class="t-slash">/test</span></div>
+            <div style="margin-top:6px;"><span class="t-out">Tests: 24 passed, 0 failed</span></div>
+            <div><span class="t-out">Coverage: 67%   [gate: >60%]  ✓ PASS</span></div>
+          </div>
+        </div>
+        <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">Coverage gate = Phase-ზე დამოკიდებული threshold. Phase 1-ში >60%. Gate-ი ვერ გავიარე → tests ჩაემატება.</p>
+      </div>
+
+      <div class="card" style="border-left: 3px solid #ec4899; margin-bottom:10px;">
+        <h3>ნაბიჯი 5 — E2E: Maestro (user-facing features-ზე)</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">></span> <span class="t-slash">/e2e</span></div>
+            <div style="margin-top:6px;"><span class="t-out">Running: patient-search.yaml</span></div>
+            <div><span class="t-out">  ✓ App launches</span></div>
+            <div><span class="t-out">  ✓ District picker visible</span></div>
+            <div><span class="t-out">  ✓ Physio list loads</span></div>
+            <div><span class="t-out">PASS (3 steps)</span></div>
+          </div>
+        </div>
+        <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">Maestro მართავს app-ს Simulator-ზე და ამოწმებს real user journey-ებს. Claude ქმნის .yaml ფაილებს .maestro/ folder-ში.</p>
+      </div>
+
+      <div class="card" style="border-left: 3px solid #10b981;">
+        <h3>ნაბიჯი 6 — Done: Task Update + Skill Check</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body">
+            <div><span class="t-comment"># task marked DONE automatically</span></div>
+            <div><span class="t-out">✓ FE-003 marked DONE</span></div>
+            <div style="margin-top:10px;"><span class="t-comment"># თუ bug fix-ი იყო non-obvious</span></div>
+            <div><span class="t-prompt">></span> <span class="t-slash">/update-skill</span> <span class="t-cmd">react-native "FlashList needs estimatedItemSize"</span></div>
+            <div><span class="t-out">✓ skills/react-native.md updated</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- SECTION 2: COMMANDS -->
+  <section id="commands">
+    <div class="section-label">
+      <div class="section-num">2</div>
+      <h2>Slash Commands — სრული სია</h2>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:16px;">Claude Code chat-ში აკრიფე <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-family:var(--mono);color:var(--accent2);">/command</code> — Enter-ი.</p>
+
+    <div class="cmd-grid">
+      <div class="cmd-row">
+        <div class="cmd-key">/start</div>
+        <div class="cmd-val">
+          პირველი გაშვება — project onboarding. ერთხელ გაუშვი.
+          <small>Claude ეკითხება background-ს, ახსნის tech stack-ს, task-ებს გადიხართ ერთად.</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/phase</div>
+        <div class="cmd-val">
+          მიმდინარე სტატუსი — tasks progress + coverage gate.
+          <small>Phase 1: X/21 done · Coverage: 67% · Gate: ✓</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/check</div>
+        <div class="cmd-val">
+          TypeScript + ESLint. სავალდებულო ყოველი build-ის შემდეგ.
+          <small>tsc --noEmit + eslint · zero warnings policy</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/test</div>
+        <div class="cmd-val">
+          Jest tests + phase coverage gate შემოწმება.
+          <small>Coverage: statements, branches, functions, lines — lowest of four</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/e2e</div>
+        <div class="cmd-val">
+          Maestro E2E tests — სრული user journey-ები Simulator-ზე.
+          <small>Phase 1: 6 critical flows · Simulator must be running</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/coverage</div>
+        <div class="cmd-val">
+          Detailed coverage report vs current phase gate.
+          <small>Per-file breakdown · shows lowest coverage files</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/new-task</div>
+        <div class="cmd-val">
+          ახალი task-ის შექმნა structured format-ში.
+          <small>/new-task phase1 fe "ReviewCard component"</small>
+        </div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/update-skill</div>
+        <div class="cmd-val">
+          Bug fix-ის შემდეგ skill file-ის განახლება.
+          <small>/update-skill supabase "RLS doesn't block service role"</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout success" style="margin-top:16px;">
+      <div class="callout-icon">🎯</div>
+      <p><strong>Daily routine:</strong> <code style="background:rgba(52,211,153,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">/phase</code> → task-ი → build → <code style="background:rgba(52,211,153,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">/check</code> → <code style="background:rgba(52,211,153,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">/test</code> → <code style="background:rgba(52,211,153,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">/e2e</code> → repeat</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- SECTION 3: PHASES -->
+  <section id="phases">
+    <div class="section-label">
+      <div class="section-num">3</div>
+      <h2>Phase სისტემა — Coverage Gates</h2>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:20px;">
+      პროექტი 4 phase-ადაა დაყოფილი. ახალ phase-ზე გადასვლა შეუძლებელია სანამ წინა coverage gate არ გაიარა.
+    </p>
+
+    <div class="phases">
+      <div class="phase-row p0">
+        <span class="phase-badge">PRE-PHASE</span>
+        <div>
+          <div class="phase-title">Project Discovery & Setup</div>
+          <div class="phase-desc">Environment, onboarding, task review Claude-თან ერთად</div>
+        </div>
+        <span class="phase-gate">— no gate</span>
+      </div>
+      <div class="phase-row p1">
+        <span class="phase-badge">PHASE 1</span>
+        <div>
+          <div class="phase-title">MVP — Core Marketplace</div>
+          <div class="phase-desc">Login · Search · Booking · Push & Email · Reviews</div>
+        </div>
+        <span class="phase-gate">&gt; 60%</span>
+      </div>
+      <div class="phase-row p2">
+        <span class="phase-badge">PHASE 2</span>
+        <div>
+          <div class="phase-title">Enrich — Quiz · Calendar · Payments</div>
+          <div class="phase-desc">Intake quiz · Availability · Flitt payments · Earnings</div>
+        </div>
+        <span class="phase-gate">&gt; 70%</span>
+      </div>
+      <div class="phase-row p3">
+        <span class="phase-badge">PHASE 3</span>
+        <div>
+          <div class="phase-title">Expand — Consultations · Insurance</div>
+          <div class="phase-desc">Online sessions · Imedi L / Aldagi · Multi-city</div>
+        </div>
+        <span class="phase-gate">&gt; 85%</span>
+      </div>
+      <div class="phase-row pdone">
+        <span class="phase-badge">COMPLETE</span>
+        <div>
+          <div class="phase-title">All tasks done · Full coverage</div>
+          <div class="phase-desc">Production ready</div>
+        </div>
+        <span class="phase-gate">100%</span>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <h3 style="margin-bottom:12px;">Phase 1 Tasks Snapshot <span class="badge badge-fe">FE 11</span> <span class="badge badge-be">BE 10</span></h3>
+      <div class="card-row">
+        <div class="card">
+          <div style="font-size:0.78rem; font-weight:600; color:var(--muted); margin-bottom:10px; letter-spacing:0.06em;">FRONTEND</div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-size:0.82rem;">
+            <div>FE-001 · Login screen</div>
+            <div>FE-002 · Register screen</div>
+            <div>FE-003 · Patient home + search</div>
+            <div>FE-004 · Physio profile page</div>
+            <div>FE-005 · Booking flow</div>
+            <div>FE-006 · Patient bookings list</div>
+            <div>FE-007 · Physio dashboard</div>
+            <div>FE-008 · Physio bookings + actions</div>
+            <div>FE-009 · Physio profile edit</div>
+            <div>FE-010 · Review submission</div>
+            <div>FE-011 · Patient profile</div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.78rem; font-weight:600; color:var(--muted); margin-bottom:10px; letter-spacing:0.06em;">BACKEND / SUPABASE</div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-size:0.82rem;">
+            <div>BE-001 · DB schema migrations</div>
+            <div>BE-002 · RLS policies (every table)</div>
+            <div>BE-003 · Tbilisi districts seed</div>
+            <div>BE-004 · useAuth hook</div>
+            <div>BE-005 · useBookings hook</div>
+            <div>BE-006 · useLocation hook</div>
+            <div>BE-007 · Push notifications</div>
+            <div>BE-008 · Email via Resend</div>
+            <div>BE-009 · TypeScript types</div>
+            <div>BE-010 · Physio profile hooks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:16px;">
+      <div class="callout-icon">📋</div>
+      <p>სრული task details — <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">.claude/tasks/phase1-mvp/fe-tasks.md</code> და <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">be-tasks.md</code>. Acceptance criteria, sub-tasks, test requirements — ყველაფერი.</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- SECTION 4: SKILLS SYSTEM -->
+  <section id="skills">
+    <div class="section-label">
+      <div class="section-num">4</div>
+      <h2>Skills სისტემა — Claude ისწავლის შენს პროექტს</h2>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:20px;">
+      .claude/skills/ folder-ი იზრდება სამუშაოს პარალელურად. Claude bug-ს გაასწორებს, pattern-ს აღმოაჩენს, skill-ს განაახლებს — შემდეგ სესიაში ეს შეცდომა აღარ გამეორდება.
+    </p>
+
+    <div class="skill-flow">
+      <div class="skill-step">
+        <div class="skill-dot">🐛</div>
+        <div class="skill-content">
+          <div class="skill-title">Bug / Non-obvious Pattern</div>
+          <div class="skill-desc">Claude წააწყდება RLS-ის edge case-ს, NativeWind-ის quirk-ს, ან Supabase query-ს რომელიც expected-ი არ იყო.</div>
+        </div>
+      </div>
+      <div class="skill-step">
+        <div class="skill-dot">🔧</div>
+        <div class="skill-content">
+          <div class="skill-title">Fix + /check Pass</div>
+          <div class="skill-desc">Claude ასწორებს. /check გადის. 0 errors.</div>
+        </div>
+      </div>
+      <div class="skill-step">
+        <div class="skill-dot">📝</div>
+        <div class="skill-content">
+          <div class="skill-title">/update-skill [file] "[lesson]"</div>
+          <div class="skill-desc">Claude ახლავე ახლავს skill file-ს — problem, root cause, fix, example.</div>
+        </div>
+      </div>
+      <div class="skill-step">
+        <div class="skill-dot" style="background:rgba(52,211,153,0.1);border-color:var(--green);">✓</div>
+        <div class="skill-content">
+          <div class="skill-title">შემდეგ სესიაში — ამ შეცდომის გამეორება არ მოხდება</div>
+          <div class="skill-desc">Skill file იტვირთება context-ში. Claude "იხსომებს" lesson-ს.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:4px;">
+      <div style="font-size:0.78rem; font-weight:600; color:var(--muted); margin-bottom:12px; letter-spacing:0.06em;">SKILL FILES</div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:0.82rem;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent2); font-family:var(--mono);">react-native.md</span>
+          <span style="color:var(--muted);">RN, Expo, NativeWind</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent2); font-family:var(--mono);">supabase.md</span>
+          <span style="color:var(--muted);">queries, RLS, edge functions</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent2); font-family:var(--mono);">tdd.md</span>
+          <span style="color:var(--muted);">testing, mocks, coverage</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--accent2); font-family:var(--mono);">ui-ux.md</span>
+          <span style="color:var(--muted);">healthcare UX, accessibility</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <h3 style="margin-bottom:10px;">Community Skills — დაამატე ერთხელ</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <div class="terminal-body">
+          <div><span class="t-comment"># Official Expo skills</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add expo/skills</span></div>
+          <div style="margin-top:8px;"><span class="t-comment"># React Native best practices (Callstack)</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add callstackincubator/agent-skills</span></div>
+          <div style="margin-top:8px;"><span class="t-comment"># UI/UX Pro Max (healthcare patterns)</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add nextlevelbuilder/ui-ux-pro-max-skill</span></div>
+          <div style="margin-top:8px;"><span class="t-comment"># Georgian payments (Phase 2)</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add erekle1/georgian-payments-skills</span></div>
+        </div>
+      </div>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">სრული სია: <code style="font-family:var(--mono);">.claude/skills/INSTALL.md</code></p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- SECTION 5: RULES -->
+  <section id="rules">
+    <div class="section-label">
+      <div class="section-num">5</div>
+      <h2>წესები — რა შეიძლება და რა არ შეიძლება</h2>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <h3 style="margin-bottom:10px; color:var(--green);">✅ ყოველთვის</h3>
+      <div class="rules">
+        <div class="rule ok">
+          <div class="rule-icon">✓</div>
+          <div class="rule-text">Task ID-ით იმუშავე: <strong>"დავიწყოთ FE-003"</strong> — კონკრეტულია</div>
+        </div>
+        <div class="rule ok">
+          <div class="rule-icon">✓</div>
+          <div class="rule-text"><strong>/check</strong> → <strong>/test</strong> → <strong>/e2e</strong> — ყოველ task-ზე, ყოველ სესიაში</div>
+        </div>
+        <div class="rule ok">
+          <div class="rule-icon">✓</div>
+          <div class="rule-text">Bug fix-ის შემდეგ <strong>/update-skill</strong> — skill სისტემა ისწავლის</div>
+        </div>
+        <div class="rule ok">
+          <div class="rule-icon">✓</div>
+          <div class="rule-text"><strong>/phase</strong> — დღის დასაწყისში, ნახე სად ხარ</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <h3 style="margin-bottom:10px; color:var(--red);">❌ არასდროს</h3>
+      <div class="rules">
+        <div class="rule bad">
+          <div class="rule-icon">✗</div>
+          <div class="rule-text">Phase 2 ან 3 features — Phase 1-ის გარეშე. Claude-ი გაფრთხილებს, დაადასტური boundary.</div>
+        </div>
+        <div class="rule bad">
+          <div class="rule-icon">✗</div>
+          <div class="rule-text">Commit — Claude-ს ნუ ეტყვი "commit" სანამ check + test არ გაიარა.</div>
+        </div>
+        <div class="rule bad">
+          <div class="rule-icon">✗</div>
+          <div class="rule-text">Push — Claude-ი არ ჩააშვებს. <strong>"push"</strong> — მხოლოდ შენი explicit ბრძანება.</div>
+        </div>
+        <div class="rule bad">
+          <div class="rule-icon">✗</div>
+          <div class="rule-text">SUPABASE_SERVICE_ROLE_KEY app კოდში. Edge Functions only.</div>
+        </div>
+        <div class="rule bad">
+          <div class="rule-icon">✗</div>
+          <div class="rule-text">console.log user data-ს. Privacy rule — Claude-ი შეცდომაზე ჩაისწორებს.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom:10px; color:var(--yellow);">⚡ Tech Shortcuts (React Native-ში ახლისთვის)</h3>
+      <div class="rules">
+        <div class="rule warn">
+          <div class="rule-icon">💡</div>
+          <div class="rule-text"><strong>Expo Router</strong> = Next.js routing, მაგრამ mobile-ზე. <code style="font-family:var(--mono);background:var(--surface2);padding:1px 5px;border-radius:3px;">app/screen.tsx</code> = route <code style="font-family:var(--mono);background:var(--surface2);padding:1px 5px;border-radius:3px;">/screen</code>.</div>
+        </div>
+        <div class="rule warn">
+          <div class="rule-icon">💡</div>
+          <div class="rule-text"><strong>Supabase RLS</strong> = database-level authorization. თითოეული query ამოწმებს auth.uid()-ს. ეს security layer-ია, არა optional.</div>
+        </div>
+        <div class="rule warn">
+          <div class="rule-icon">💡</div>
+          <div class="rule-text"><strong>NativeWind</strong> = Tailwind CSS React Native-ზე. <code style="font-family:var(--mono);background:var(--surface2);padding:1px 5px;border-radius:3px;">className="text-lg font-bold"</code> — StyleSheet-ი არ გჭირდება.</div>
+        </div>
+        <div class="rule warn">
+          <div class="rule-icon">💡</div>
+          <div class="rule-text"><strong>Maestro</strong> = Playwright/Selenium, მაგრამ mobile-ისთვის. YAML-ში წერ "tap on X", "assert visible Y" — Claude წერს flow-ებს.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- QUICK REFERENCE -->
+  <section>
+    <div class="section-label">
+      <div class="section-num">6</div>
+      <h2>Quick Reference — ყოველდღიური გამოყენება</h2>
+    </div>
+
+    <div class="card-row">
+      <div class="card">
+        <h3 style="margin-bottom:12px;">🌅 სესიის დასაწყისი</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body" style="font-size:0.78rem;">
+            <div><span class="t-prompt">$</span> <span class="t-cmd">cd physio-app && claude</span></div>
+            <div><span class="t-prompt">></span> <span class="t-slash">/phase</span></div>
+            <div><span class="t-out">→ ნახე სად ხარ</span></div>
+            <div><span class="t-prompt">></span> <span class="t-cmd">დავიწყოთ [next task]</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px;">🌇 სესიის დასასრული</h3>
+        <div class="terminal">
+          <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <div class="terminal-body" style="font-size:0.78rem;">
+            <div><span class="t-prompt">></span> <span class="t-slash">/phase</span> <span class="t-comment"># progress შეამოწმე</span></div>
+            <div><span class="t-prompt">></span> <span class="t-slash">/coverage</span> <span class="t-comment"># gate status</span></div>
+            <div><span class="t-comment"># bug fix-ი ჰქონდა?</span></div>
+            <div><span class="t-prompt">></span> <span class="t-slash">/update-skill</span> <span class="t-cmd">supabase "lesson"</span></div>
+            <div><span class="t-comment"># ყოველთვის სესიის ბოლოს:</span></div>
+            <div><span class="t-prompt">></span> <span class="t-slash">/memory-save</span></div>
+            <div><span class="t-out">✓ Session saved → memory/sessions/2025-01-15.md</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout success" style="margin-top:16px;">
+      <div class="callout-icon">🚀</div>
+      <p><strong>პირველი სესია?</strong> გაუშვი <code style="background:rgba(52,211,153,0.1);padding:1px 8px;border-radius:4px;font-family:var(--mono);">claude</code> project root-ში, შემდეგ <code style="background:rgba(52,211,153,0.1);padding:1px 8px;border-radius:4px;font-family:var(--mono);">/start</code> — Claude-ი გიხელმძღვანელებს ყველაფერში.</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- SECTION 7: OBSIDIAN MEMORY -->
+  <section id="memory">
+    <div class="section-label">
+      <div class="section-num">7</div>
+      <h2>Obsidian Memory — Claude-ი ივიწყებს სესიებს შორის</h2>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:20px;">
+      Claude-ს სხვადასხვა სესიებს შორის „მეხსიერება" არ ქვს. <code style="font-family:var(--mono);background:var(--surface2);padding:1px 5px;border-radius:3px;">memory/</code> vault-ი ამას წყვეტს — სესიის ბოლოს Claude წერს notes-ს, შემდეგ სესიაში კითხულობს.
+    </p>
+
+    <div class="card" style="border-left:3px solid var(--accent2); margin-bottom:16px;">
+      <h3 style="margin-bottom:12px;">Setup — ერთხელ (pre-phase S-006)</h3>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <div style="width:24px;height:24px;background:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;color:#fff;">1</div>
+          <div style="font-size:0.875rem;">გადმოწერე <strong>Obsidian</strong> — <span style="color:var(--accent);font-family:var(--mono);">obsidian.md</span> (უფასოა, Windows/Mac/Linux)</div>
+        </div>
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <div style="width:24px;height:24px;background:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;color:#fff;">2</div>
+          <div style="font-size:0.875rem;">გახსენი Obsidian → <strong>"Open folder as vault"</strong> → აირჩიე <code style="font-family:var(--mono);background:var(--surface2);padding:1px 5px;border-radius:3px;">physio-app/memory/</code></div>
+        </div>
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <div style="width:24px;height:24px;background:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;color:#fff;">3</div>
+          <div style="font-size:0.875rem;"><code style="font-family:var(--mono);background:var(--surface2);padding:1px 5px;border-radius:3px;">INDEX.md</code> გაიხსნება — Claude-ის short-term memory. Obsidian-ი sidebar-ში გაქვს ყველა notes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <div class="card">
+        <h3 style="margin-bottom:10px;">Vault სტრუქტურა</h3>
+        <div style="font-family:var(--mono);font-size:0.78rem;line-height:2;color:var(--text);">
+          <div><span style="color:var(--accent2);">memory/</span></div>
+          <div>&nbsp;&nbsp;<span style="color:var(--accent);">INDEX.md</span> <span style="color:var(--muted);">← Claude კითხულობს</span></div>
+          <div>&nbsp;&nbsp;<span style="color:var(--muted);">sessions/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--muted);">2025-01-15.md</span></div>
+          <div>&nbsp;&nbsp;<span style="color:var(--muted);">decisions/</span></div>
+          <div>&nbsp;&nbsp;<span style="color:var(--muted);">bugs/</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:10px;">INDEX.md — მაგალითი</h3>
+        <div style="font-family:var(--mono);font-size:0.75rem;line-height:1.8;color:var(--text);">
+          <div><span style="color:var(--muted);"># Memory Index</span></div>
+          <div><span style="color:var(--accent2);">Phase:</span> Phase 1 · FE-003 done</div>
+          <div><span style="color:var(--accent2);">Last:</span> 2025-01-15</div>
+          <div><span style="color:var(--accent2);">Next:</span> FE-004</div>
+          <div style="margin-top:6px;"><span style="color:var(--muted);">## Patterns Learned</span></div>
+          <div>supabase · RLS bypassed by service role</div>
+          <div>rn · FlashList needs estimatedItemSize</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <h3 style="margin-bottom:10px;">Memory Workflow</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <div class="terminal-body" style="font-size:0.8rem;">
+          <div><span class="t-comment"># სესიის დასაწყისი — Claude ავტომატურად კითხულობს INDEX.md</span></div>
+          <div><span class="t-out">Memory loaded: Phase 1 · last session 2025-01-14 · next: FE-004</span></div>
+          <div style="margin-top:10px;"><span class="t-comment"># სესიის ბოლოს — ყოველთვის გაუშვი</span></div>
+          <div><span class="t-prompt">></span> <span class="t-slash">/memory-save</span></div>
+          <div><span class="t-out">✓ memory/sessions/2025-01-15.md created</span></div>
+          <div><span class="t-out">✓ INDEX.md updated</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <p><strong>/memory-save</strong> სესიის ბოლოს — სავალდებულოა. გამოტოვება = შემდეგ სესიაში Claude-ი ვერ გაიხსენებს სად გაჩერდი. INDEX.md ყოველთვის 50 ხაზზე ნაკლები.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>Physio App · docs/how-to-use.html · განახლება — pre-phase სესიაში</p>
+</footer>
+
+</body>
+</html>

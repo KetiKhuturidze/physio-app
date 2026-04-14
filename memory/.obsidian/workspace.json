@@ -1,0 +1,14 @@
+{
+  "main": {
+    "id": "main",
+    "type": "split",
+    "children": [
+      {
+        "id": "left",
+        "type": "leaf",
+        "state": { "type": "markdown", "state": { "file": "INDEX.md" } }
+      }
+    ]
+  },
+  "active": "left"
+}
