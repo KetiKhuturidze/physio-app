@@ -508,15 +508,22 @@
           <span class="terminal-label">terminal</span>
         </div>
         <div class="terminal-body">
-          <div><span class="t-comment"># Claude Code-ის ინსტალაცია</span></div>
+          <div><span class="t-comment"># 1. Claude Code CLI ინსტალაცია</span></div>
           <div><span class="t-prompt">$</span> <span class="t-cmd">npm install -g @anthropic-ai/claude-code</span></div>
-          <div style="margin-top:10px;"><span class="t-comment"># პროექტი გახსენი</span></div>
-          <div><span class="t-prompt">$</span> <span class="t-cmd">cd physio-app</span></div>
+          <div style="margin-top:10px;"><span class="t-comment"># 2. პროექტი clone + deps (skills ჩათვლით — ყველაფერი repo-შია)</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">git clone https://github.com/KetiKhuturidze/physio-app.git</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">cd physio-app && npm install</span></div>
+          <div style="margin-top:10px;"><span class="t-comment"># 3. Obsidian გახსენი → "Open folder as vault" → physio-app/memory/</span></div>
+          <div style="margin-top:10px;"><span class="t-comment"># 4. Claude გაუშვი + onboarding</span></div>
           <div><span class="t-prompt">$</span> <span class="t-cmd">claude</span></div>
-          <div style="margin-top:10px;"><span class="t-comment"># პირველი გაშვება — onboarding</span></div>
           <div><span class="t-prompt">></span> <span class="t-slash">/start</span></div>
+          <div><span class="t-out">✓ Skills loaded from .claude/skills/vendor/ (19 files)</span></div>
           <div><span class="t-out">Starting pre-phase onboarding...</span></div>
         </div>
+      </div>
+      <div class="callout success" style="margin-top:10px; padding:10px 14px;">
+        <div class="callout-icon">📦</div>
+        <p style="font-size:0.82rem;"><strong>plugin install არ სჭირდება.</strong> 19 community skill (Expo, Callstack RN, Caveman, GSD, Oh-My-ClaudeCode, Georgian Payments) უკვე <code style="font-family:var(--mono);background:rgba(52,211,153,0.1);">.claude/skills/vendor/</code>-შია.</p>
       </div>
     </div>
   </section>
@@ -735,6 +742,13 @@
           <small>/update-skill supabase "RLS doesn't block service role"</small>
         </div>
       </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/memory-save</div>
+        <div class="cmd-val">
+          სესიის ბოლოს — session notes → memory vault. <strong>ყოველთვის გაუშვი.</strong>
+          <small>memory/sessions/YYYY-MM-DD.md + INDEX.md update</small>
+        </div>
+      </div>
     </div>
 
     <div class="callout success" style="margin-top:16px;">
@@ -838,7 +852,7 @@
 
     <div class="callout info" style="margin-top:16px;">
       <div class="callout-icon">📋</div>
-      <p>სრული task details — <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">.claude/tasks/phase1-mvp/fe-tasks.md</code> და <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">be-tasks.md</code>. Acceptance criteria, sub-tasks, test requirements — ყველაფერი.</p>
+      <p>სრული task details — <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">.claude/tasks/phase1-mvp/fe/001.md</code> … <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">fe/011.md</code> და <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">be/001.md</code> … <code style="background:rgba(108,138,255,0.1);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:0.82rem;">be/010.md</code>. Claude კითხულობს მხოლოდ active task-ს — token-ების დაზოგვა.</p>
     </div>
   </section>
 
@@ -887,11 +901,11 @@
     </div>
 
     <div class="card" style="margin-top:4px;">
-      <div style="font-size:0.78rem; font-weight:600; color:var(--muted); margin-bottom:12px; letter-spacing:0.06em;">SKILL FILES</div>
+      <div style="font-size:0.78rem; font-weight:600; color:var(--muted); margin-bottom:12px; letter-spacing:0.06em;">PROJECT SKILLS (auto-loaded)</div>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:0.82rem;">
         <div style="display:flex; gap:8px; align-items:center;">
-          <span style="color:var(--accent2); font-family:var(--mono);">react-native.md</span>
-          <span style="color:var(--muted);">RN, Expo, NativeWind</span>
+          <span style="color:var(--accent2); font-family:var(--mono);">rn.md</span>
+          <span style="color:var(--muted);">RN, Expo, NativeWind, Zustand</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <span style="color:var(--accent2); font-family:var(--mono);">supabase.md</span>
@@ -902,28 +916,50 @@
           <span style="color:var(--muted);">testing, mocks, coverage</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-          <span style="color:var(--accent2); font-family:var(--mono);">ui-ux.md</span>
+          <span style="color:var(--accent2); font-family:var(--mono);">ui.md</span>
           <span style="color:var(--muted);">healthcare UX, accessibility</span>
         </div>
       </div>
     </div>
 
     <div style="margin-top:16px;">
-      <h3 style="margin-bottom:10px;">Community Skills — დაამატე ერთხელ</h3>
-      <div class="terminal">
-        <div class="terminal-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-        <div class="terminal-body">
-          <div><span class="t-comment"># Official Expo skills</span></div>
-          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add expo/skills</span></div>
-          <div style="margin-top:8px;"><span class="t-comment"># React Native best practices (Callstack)</span></div>
-          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add callstackincubator/agent-skills</span></div>
-          <div style="margin-top:8px;"><span class="t-comment"># UI/UX Pro Max (healthcare patterns)</span></div>
-          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add nextlevelbuilder/ui-ux-pro-max-skill</span></div>
-          <div style="margin-top:8px;"><span class="t-comment"># Georgian payments (Phase 2)</span></div>
-          <div><span class="t-prompt">$</span> <span class="t-cmd">claude plugin add erekle1/georgian-payments-skills</span></div>
+      <h3 style="margin-bottom:10px;">Vendor Skills — pre-downloaded, repo-შია</h3>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="display:grid; grid-template-columns: auto auto 1fr; font-size:0.78rem;">
+          <div style="padding:8px 14px; background:#0d0f19; color:var(--muted); font-weight:600; border-bottom:1px solid var(--border);">კატეგორია</div>
+          <div style="padding:8px 14px; background:#0d0f19; color:var(--muted); font-weight:600; border-bottom:1px solid var(--border); border-left:1px solid var(--border);">ფაილები</div>
+          <div style="padding:8px 14px; background:#0d0f19; color:var(--muted); font-weight:600; border-bottom:1px solid var(--border); border-left:1px solid var(--border);">გამოიყენება</div>
+
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); color:var(--accent2); font-family:var(--mono);">caveman/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border); color:var(--muted);">2</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border);">token budget tight → <code style="font-family:var(--mono);">/caveman</code></div>
+
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); color:var(--accent2); font-family:var(--mono);">callstack-rn/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border); color:var(--muted);">2</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border);">performance issues, FPS, re-renders</div>
+
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); color:var(--accent2); font-family:var(--mono);">expo/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border); color:var(--muted);">5</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border);">UI, NativeWind, data fetching, dev client</div>
+
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); color:var(--accent2); font-family:var(--mono);">gsd/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border); color:var(--muted);">2</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border);">dev/review workflow context</div>
+
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); color:var(--accent2); font-family:var(--mono);">omc/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border); color:var(--muted);">5</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border);">autopilot, plan, debug, self-improve, learner</div>
+
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); color:var(--accent2); font-family:var(--mono);">uiux/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border); color:var(--muted);">1</div>
+          <div style="padding:8px 14px; background:var(--surface); border-bottom:1px solid var(--border); border-left:1px solid var(--border);">design system, color, typography</div>
+
+          <div style="padding:8px 14px; background:var(--surface); color:var(--accent2); font-family:var(--mono);">georgian-payments/</div>
+          <div style="padding:8px 14px; background:var(--surface); border-left:1px solid var(--border); color:var(--muted);">2</div>
+          <div style="padding:8px 14px; background:var(--surface); border-left:1px solid var(--border);">Flitt + BoG — <strong>Phase 2-ში გამოიყენება</strong></div>
         </div>
       </div>
-      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">სრული სია: <code style="font-family:var(--mono);">.claude/skills/INSTALL.md</code></p>
+      <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;">Index: <code style="font-family:var(--mono);">.claude/skills/vendor/INDEX.md</code> · Claude loads on demand, არა ერთდროულად.</p>
     </div>
   </section>
 
@@ -954,6 +990,10 @@
         <div class="rule ok">
           <div class="rule-icon">✓</div>
           <div class="rule-text"><strong>/phase</strong> — დღის დასაწყისში, ნახე სად ხარ</div>
+        </div>
+        <div class="rule ok">
+          <div class="rule-icon">✓</div>
+          <div class="rule-text"><strong>/memory-save</strong> — სესიის ბოლოს, ყოველთვის. Claude-ი შემდეგ სესიაში გაიხსენებს სად გაჩერდი.</div>
         </div>
       </div>
     </div>
