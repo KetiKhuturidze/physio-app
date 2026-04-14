@@ -21,6 +21,8 @@ AI assistant ტერმინალიდან. ლაპარაკობ �
 ```bash
 npm install -g @anthropic-ai/claude-code
 cd physio-app
+npm install     # install project dependencies
+cp .env.example .env  # then fill in Supabase local values
 claude          # opens chat
 /start          # onboarding begins
 ```
