@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat memory/INDEX.md 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -d node_modules ] && npx tsc --noEmit 2>&1 | head -15 || echo 'tsc: skip — run npm install first (S-001)'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session end: run /update-skill if you fixed a non-obvious bug. Run /memory-save to log this session.'"
+          }
+        ]
+      }
+    ]
+  }
+}
