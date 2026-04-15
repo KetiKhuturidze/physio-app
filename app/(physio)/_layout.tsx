@@ -44,9 +44,10 @@ export default function PhysioLayout() {
         options={{ title: S.nav.bookings }}
       />
       <Tabs.Screen
-        name="profile-edit"
+        name="profile"
         options={{ title: S.nav.profile }}
       />
+      <Tabs.Screen name="profile-edit" options={{ href: null }} />
       <Tabs.Screen name="availability" options={{ href: null }} />
       <Tabs.Screen name="earnings" options={{ href: null }} />
     </Tabs>

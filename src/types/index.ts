@@ -65,6 +65,13 @@ export type Booking = {
   created_at: string;
 };
 
+export type PhysioWithJoins = PhysioProfile & {
+  user: Pick<User, 'full_name' | 'avatar_url'>;
+  base_district: District;
+  average_rating?: number;
+  review_count?: number;
+};
+
 export type Review = {
   id: string;
   booking_id: string;
