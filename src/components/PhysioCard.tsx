@@ -37,7 +37,7 @@ function Avatar({ fullName, avatarUrl }: { fullName: string; avatarUrl: string |
 }
 
 export default function PhysioCard({ physio, onPress }: Props) {
-  const { user, base_district, specialties, hourly_rate, is_verified, average_rating, review_count } = physio;
+  const { user, base_district, specialties, is_verified, average_rating, review_count } = physio;
 
   const visibleSpecialties = specialties.slice(0, 2);
   const extraCount = specialties.length - 2;
@@ -100,20 +100,13 @@ export default function PhysioCard({ physio, onPress }: Props) {
           </View>
         )}
 
-        {/* Rate + Rating */}
-        <View className="flex-row items-center justify-between mt-0.5">
-          {hourly_rate != null && (
-            <Text className="text-sm font-semibold text-green-700">
-              ₾{hourly_rate}{KA.physioCard.perHour}
-            </Text>
-          )}
-          {ratingText != null && (
-            <Text className="text-sm text-gray-500">
-              {ratingText}
-              {reviewText != null ? ` ${reviewText}` : ''}
-            </Text>
-          )}
-        </View>
+        {/* Rating */}
+        {ratingText != null && (
+          <Text className="text-sm text-gray-500 mt-0.5">
+            {ratingText}
+            {reviewText != null ? ` ${reviewText}` : ''}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );

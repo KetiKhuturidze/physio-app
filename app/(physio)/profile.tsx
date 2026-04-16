@@ -21,15 +21,23 @@ type ServiceAreaRow = {
   district: District;
 };
 
+type ServiceRow = {
+  id: string;
+  name: string;
+  duration_minutes: number;
+  price: number;
+  description: string | null;
+};
+
 type ProfileViewRow = {
   id: string;
   bio: string | null;
   specialties: string[];
   languages: string[];
-  hourly_rate: number | null;
   is_verified: boolean;
   base_district: District | null;
   physio_service_areas: ServiceAreaRow[];
+  physio_services: ServiceRow[];
 };
 
 function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
@@ -74,12 +82,12 @@ export default function PhysioProfileView() {
           bio,
           specialties,
           languages,
-          hourly_rate,
           is_verified,
           base_district:districts!physio_profiles_base_district_id_fkey(id, name_en, name_ka, center),
           physio_service_areas(
             district:districts(id, name_en, name_ka, center)
-          )
+          ),
+          physio_services(id, name, duration_minutes, price, description)
         `)
         .eq('user_id', user.id)
         .maybeSingle();
@@ -118,11 +126,6 @@ export default function PhysioProfileView() {
     );
   }
 
-  const rateString =
-    profile?.hourly_rate != null
-      ? PV.rateDisplay.replace('{{rate}}', String(profile.hourly_rate))
-      : null;
-
   return (
     <ScrollView
       className="flex-1 bg-gray-50"
@@ -153,11 +156,6 @@ export default function PhysioProfileView() {
             <Text className="text-sm text-gray-500">{profile.base_district.name_ka}</Text>
           )}
 
-          {rateString && (
-            <View className="bg-green-50 border border-green-100 rounded-full px-5 py-1.5 mt-1">
-              <Text className="text-green-700 font-bold text-base">{rateString}</Text>
-            </View>
-          )}
         </View>
       </View>
 
@@ -174,6 +172,26 @@ export default function PhysioProfileView() {
             <View className="bg-white rounded-2xl p-4">
               <SectionTitle title={PV.bioTitle} />
               <Text className="text-gray-700 text-sm leading-6">{profile.bio}</Text>
+            </View>
+          )}
+
+          {/* ── Services ── */}
+          {profile.physio_services.length > 0 && (
+            <View className="bg-white rounded-2xl p-4">
+              <SectionTitle title={PV.servicesTitle} />
+              <View className="gap-2">
+                {profile.physio_services.map((svc) => (
+                  <View key={svc.id} className="border border-gray-100 rounded-xl px-3 py-3 bg-gray-50">
+                    <Text className="text-sm font-semibold text-gray-900">{svc.name}</Text>
+                    <Text className="text-xs text-gray-500 mt-0.5">
+                      {svc.duration_minutes} {PV.serviceMinutes} · ₾{svc.price}
+                    </Text>
+                    {svc.description && (
+                      <Text className="text-xs text-gray-400 mt-0.5">{svc.description}</Text>
+                    )}
+                  </View>
+                ))}
+              </View>
             </View>
           )}
 

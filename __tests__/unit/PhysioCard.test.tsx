@@ -9,7 +9,6 @@ const basePhysio: PhysioWithJoins = {
   bio: 'Test bio',
   specialties: ['სპორტული', 'ზურგი'],
   languages: ['ქართული'],
-  hourly_rate: 50,
   base_district_id: 'district-1',
   is_verified: true,
   is_active: true,
@@ -29,11 +28,6 @@ describe('PhysioCard', () => {
   it('renders district name in Georgian', () => {
     const { getByText } = render(<PhysioCard physio={basePhysio} onPress={() => {}} />);
     expect(getByText('ვაკე')).toBeTruthy();
-  });
-
-  it('renders hourly rate with Georgian currency symbol', () => {
-    const { getByText } = render(<PhysioCard physio={basePhysio} onPress={() => {}} />);
-    expect(getByText('₾50/სთ')).toBeTruthy();
   });
 
   it('shows verified badge when is_verified is true', () => {
@@ -82,11 +76,5 @@ describe('PhysioCard', () => {
   it('shows initials avatar when no avatar_url', () => {
     const { getByText } = render(<PhysioCard physio={basePhysio} onPress={() => {}} />);
     expect(getByText('NB')).toBeTruthy();
-  });
-
-  it('does not render rate when hourly_rate is null', () => {
-    const physio = { ...basePhysio, hourly_rate: null };
-    const { queryByText } = render(<PhysioCard physio={physio} onPress={() => {}} />);
-    expect(queryByText(/₾/)).toBeNull();
   });
 });

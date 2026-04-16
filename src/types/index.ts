@@ -23,10 +23,19 @@ export type PhysioProfile = {
   bio: string | null;
   specialties: string[];
   languages: string[];
-  hourly_rate: number | null;
   base_district_id: string | null;
   is_verified: boolean;
   is_active: boolean;
+  created_at: string;
+};
+
+export type PhysioService = {
+  id: string;
+  physio_id: string;
+  name: string;
+  duration_minutes: number;
+  price: number;
+  description: string | null;
   created_at: string;
 };
 

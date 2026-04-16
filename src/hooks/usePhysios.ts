@@ -12,7 +12,6 @@ type RawPhysioRow = {
   bio: string | null;
   specialties: string[];
   languages: string[];
-  hourly_rate: number | null;
   base_district_id: string | null;
   is_verified: boolean;
   is_active: boolean;
@@ -43,7 +42,6 @@ function toPhysioWithJoins(row: RawPhysioRow): PhysioWithJoins {
     bio: row.bio,
     specialties: row.specialties,
     languages: row.languages,
-    hourly_rate: row.hourly_rate,
     base_district_id: row.base_district_id,
     is_verified: row.is_verified,
     is_active: row.is_active,

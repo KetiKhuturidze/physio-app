@@ -39,9 +39,29 @@ type ProfileRow = {
   bio: string | null;
   specialties: string[];
   languages: string[];
-  hourly_rate: number | null;
   base_district_id: string | null;
   physio_service_areas: { district_id: string }[];
+  physio_services: {
+    id: string;
+    name: string;
+    duration_minutes: number;
+    price: number;
+    description: string | null;
+  }[];
+};
+
+type ServiceDraft = {
+  name: string;
+  duration_minutes: string;
+  price: string;
+  description: string;
+};
+
+const EMPTY_SERVICE: ServiceDraft = {
+  name: '',
+  duration_minutes: '',
+  price: '',
+  description: '',
 };
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -147,9 +167,12 @@ export default function ProfileEdit() {
   const [specialtyInput, setSpecialtyInput] = useState('');
   const [languages, setLanguages] = useState<string[]>([]);
   const [languageInput, setLanguageInput] = useState('');
-  const [hourlyRate, setHourlyRate] = useState('');
   const [baseDistrictIds, setBaseDistrictIds] = useState<string[]>([]);
   const [serviceAreaIds, setServiceAreaIds] = useState<string[]>([]);
+
+  const [services, setServices] = useState<ServiceDraft[]>([]);
+  const [addingService, setAddingService] = useState(false);
+  const [serviceForm, setServiceForm] = useState<ServiceDraft>(EMPTY_SERVICE);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -167,7 +190,7 @@ export default function ProfileEdit() {
       const { data, error: dbError } = await supabase
         .from('physio_profiles')
         .select(
-          'id, bio, specialties, languages, hourly_rate, base_district_id, physio_service_areas(district_id)',
+          'id, bio, specialties, languages, base_district_id, physio_service_areas(district_id), physio_services(id, name, duration_minutes, price, description)',
         )
         .eq('user_id', user.id)
         .maybeSingle();
@@ -184,13 +207,20 @@ export default function ProfileEdit() {
         return;
       }
 
-      const row = data as ProfileRow;
+      const row = data as unknown as ProfileRow;
       setBio(row.bio ?? '');
       setSpecialties(row.specialties ?? []);
       setLanguages(row.languages ?? []);
-      setHourlyRate(row.hourly_rate != null ? String(row.hourly_rate) : '');
       setBaseDistrictIds(row.base_district_id ? [row.base_district_id] : []);
       setServiceAreaIds(row.physio_service_areas.map((sa) => sa.district_id));
+      setServices(
+        row.physio_services.map((svc) => ({
+          name: svc.name,
+          duration_minutes: String(svc.duration_minutes),
+          price: String(svc.price),
+          description: svc.description ?? '',
+        })),
+      );
       setAvatarDisplayUri(user.avatar_url);
       setLoading(false);
     }
@@ -272,14 +302,26 @@ export default function ProfileEdit() {
     setSuccessVisible(false);
   }
 
+  function confirmAddService() {
+    const name = serviceForm.name.trim();
+    const duration = parseInt(serviceForm.duration_minutes, 10);
+    const price = parseFloat(serviceForm.price);
+    if (!name || isNaN(duration) || duration <= 0 || isNaN(price) || price <= 0) return;
+    setServices((prev) => [...prev, { ...serviceForm, name }]);
+    setServiceForm(EMPTY_SERVICE);
+    setAddingService(false);
+    setSuccessVisible(false);
+  }
+
+  function removeService(index: number) {
+    setServices((prev) => prev.filter((_, i) => i !== index));
+    setSuccessVisible(false);
+  }
+
   function validate(): string | null {
     if (!bio.trim()) return `${S.bioLabel}: ${KA.errors.requiredField}`;
     if (specialties.length === 0) return `${S.specialtiesLabel}: ${KA.errors.requiredField}`;
     if (baseDistrictIds.length === 0) return `${S.baseDistrictLabel}: ${KA.errors.requiredField}`;
-    const rate = parseFloat(hourlyRate);
-    if (!hourlyRate || isNaN(rate) || rate <= 0) {
-      return `${S.hourlyRateLabel}: ${KA.errors.requiredField}`;
-    }
     return null;
   }
 
@@ -338,7 +380,6 @@ export default function ProfileEdit() {
           bio: bio.trim(),
           specialties,
           languages,
-          hourly_rate: parseFloat(hourlyRate),
           base_district_id: baseDistrictIds[0] ?? null,
           is_active: true,
         })
@@ -352,7 +393,6 @@ export default function ProfileEdit() {
           bio: bio.trim(),
           specialties,
           languages,
-          hourly_rate: parseFloat(hourlyRate),
           base_district_id: baseDistrictIds[0] ?? null,
           is_active: true,
         })
@@ -369,26 +409,56 @@ export default function ProfileEdit() {
       return;
     }
 
-    // 4. Delete existing service areas
-    const { error: deleteError } = await supabase
+    // 4. Delete + re-insert service areas
+    const { error: deleteAreasError } = await supabase
       .from('physio_service_areas')
       .delete()
       .eq('physio_id', physioId);
 
-    if (deleteError) {
-      console.error('[handleSave] physio_service_areas delete failed:', deleteError);
+    if (deleteAreasError) {
+      console.error('[handleSave] physio_service_areas delete failed:', deleteAreasError);
       setError(S.saveError);
       setSaving(false);
       return;
     }
 
-    // 5. Insert new service areas
     if (serviceAreaIds.length > 0) {
-      const { error: insertError } = await supabase
+      const { error: insertAreasError } = await supabase
         .from('physio_service_areas')
         .insert(serviceAreaIds.map((district_id) => ({ physio_id: physioId, district_id })));
-      if (insertError) {
-        console.error('[handleSave] physio_service_areas insert failed:', insertError);
+      if (insertAreasError) {
+        console.error('[handleSave] physio_service_areas insert failed:', insertAreasError);
+        setError(S.saveError);
+        setSaving(false);
+        return;
+      }
+    }
+
+    // 5. Delete + re-insert services
+    const { error: deleteSvcsError } = await supabase
+      .from('physio_services')
+      .delete()
+      .eq('physio_id', physioId);
+
+    if (deleteSvcsError) {
+      console.error('[handleSave] physio_services delete failed:', deleteSvcsError);
+      setError(S.saveError);
+      setSaving(false);
+      return;
+    }
+
+    if (services.length > 0) {
+      const { error: insertSvcsError } = await supabase.from('physio_services').insert(
+        services.map((svc) => ({
+          physio_id: physioId,
+          name: svc.name.trim(),
+          duration_minutes: parseInt(svc.duration_minutes, 10),
+          price: parseFloat(svc.price),
+          description: svc.description.trim() || null,
+        })),
+      );
+      if (insertSvcsError) {
+        console.error('[handleSave] physio_services insert failed:', insertSvcsError);
         setError(S.saveError);
         setSaving(false);
         return;
@@ -537,50 +607,153 @@ export default function ProfileEdit() {
             />
           </View>
 
-          {/* ── Hourly rate ── */}
+          {/* ── Services ── */}
           <View className="bg-white rounded-2xl p-4">
-            <FieldLabel label={S.hourlyRateLabel} />
-            <TextInput
-              className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm"
-              value={hourlyRate}
-              onChangeText={(v) => {
-                setHourlyRate(v.replace(/[^0-9.]/g, ''));
-                setSuccessVisible(false);
-              }}
-              placeholder={S.hourlyRatePlaceholder}
-              placeholderTextColor="#9ca3af"
-              keyboardType="numeric"
-              returnKeyType="done"
-            />
+            <View className="flex-row items-center justify-between mb-3">
+              <FieldLabel label={S.servicesLabel} />
+              {!addingService && (
+                <TouchableOpacity
+                  onPress={() => setAddingService(true)}
+                  className="bg-green-600 rounded-full px-3 py-1"
+                >
+                  <Text className="text-white text-sm font-medium">{S.addServiceButton}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Existing service cards */}
+            {services.length > 0 && (
+              <View className="gap-2 mb-3">
+                {services.map((svc, i) => (
+                  <View
+                    key={i}
+                    className="border border-gray-100 rounded-xl px-3 py-3 bg-gray-50 flex-row items-start justify-between"
+                  >
+                    <View className="flex-1 gap-0.5">
+                      <Text className="text-sm font-semibold text-gray-900">{svc.name}</Text>
+                      <Text className="text-xs text-gray-500">
+                        {svc.duration_minutes} {S.serviceMinutes} · ₾{svc.price}
+                      </Text>
+                      {svc.description ? (
+                        <Text className="text-xs text-gray-400 mt-0.5">{svc.description}</Text>
+                      ) : null}
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => removeService(i)}
+                      hitSlop={8}
+                      className="ml-3 mt-0.5"
+                    >
+                      <Text className="text-gray-400 text-lg font-bold">×</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Add service inline form */}
+            {addingService && (
+              <View className="border border-green-200 rounded-xl p-3 bg-green-50 gap-2">
+                <TextInput
+                  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                  value={serviceForm.name}
+                  onChangeText={(v) => setServiceForm((f) => ({ ...f, name: v }))}
+                  placeholder={S.serviceNamePlaceholder}
+                  placeholderTextColor="#9ca3af"
+                  returnKeyType="next"
+                />
+                <View className="flex-row gap-2">
+                  <TextInput
+                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                    value={serviceForm.duration_minutes}
+                    onChangeText={(v) =>
+                      setServiceForm((f) => ({ ...f, duration_minutes: v.replace(/[^0-9]/g, '') }))
+                    }
+                    placeholder={S.serviceDurationPlaceholder}
+                    placeholderTextColor="#9ca3af"
+                    keyboardType="number-pad"
+                    returnKeyType="next"
+                  />
+                  <TextInput
+                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                    value={serviceForm.price}
+                    onChangeText={(v) =>
+                      setServiceForm((f) => ({ ...f, price: v.replace(/[^0-9.]/g, '') }))
+                    }
+                    placeholder={S.servicePricePlaceholder}
+                    placeholderTextColor="#9ca3af"
+                    keyboardType="decimal-pad"
+                    returnKeyType="next"
+                  />
+                </View>
+                <TextInput
+                  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                  value={serviceForm.description}
+                  onChangeText={(v) => setServiceForm((f) => ({ ...f, description: v }))}
+                  placeholder={S.serviceDescriptionPlaceholder}
+                  placeholderTextColor="#9ca3af"
+                  returnKeyType="done"
+                />
+                <View className="flex-row gap-2 mt-1">
+                  <TouchableOpacity
+                    onPress={() => {
+                      setAddingService(false);
+                      setServiceForm(EMPTY_SERVICE);
+                    }}
+                    className="flex-1 border border-gray-300 rounded-xl py-2.5 items-center"
+                  >
+                    <Text className="text-gray-600 text-sm font-medium">{S.serviceCancel}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={confirmAddService}
+                    disabled={
+                      !serviceForm.name.trim() ||
+                      !serviceForm.duration_minutes ||
+                      !serviceForm.price
+                    }
+                    className={`flex-1 rounded-xl py-2.5 items-center ${
+                      serviceForm.name.trim() && serviceForm.duration_minutes && serviceForm.price
+                        ? 'bg-green-600'
+                        : 'bg-gray-200'
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm font-medium ${
+                        serviceForm.name.trim() && serviceForm.duration_minutes && serviceForm.price
+                          ? 'text-white'
+                          : 'text-gray-400'
+                      }`}
+                    >
+                      {S.serviceAddConfirm}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
           </View>
 
           {/* ── Base district ── */}
           <View className="bg-white rounded-2xl p-4">
             <FieldLabel label={S.baseDistrictLabel} />
-            <View className="rounded-xl border border-gray-200 overflow-hidden">
-              <DistrictPicker
-                selectedIds={baseDistrictIds}
-                onChange={(ids) => {
-                  setBaseDistrictIds(ids);
-                  setSuccessVisible(false);
-                }}
-                singleSelect
-              />
-            </View>
+            <DistrictPicker
+              selectedIds={baseDistrictIds}
+              onChange={(ids) => {
+                setBaseDistrictIds(ids);
+                setSuccessVisible(false);
+              }}
+              singleSelect
+            />
           </View>
 
           {/* ── Service areas ── */}
           <View className="bg-white rounded-2xl p-4">
             <FieldLabel label={S.serviceAreasLabel} />
-            <View className="rounded-xl border border-gray-200 overflow-hidden">
-              <DistrictPicker
-                selectedIds={serviceAreaIds}
-                onChange={(ids) => {
-                  setServiceAreaIds(ids);
-                  setSuccessVisible(false);
-                }}
-              />
-            </View>
+            <DistrictPicker
+              selectedIds={serviceAreaIds}
+              onChange={(ids) => {
+                setServiceAreaIds(ids);
+                setSuccessVisible(false);
+              }}
+            />
           </View>
 
           {/* ── Save button ── */}

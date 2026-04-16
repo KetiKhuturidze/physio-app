@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { KA } from 'src/constants/strings.ka';
 import supabase from 'src/lib/supabase';
@@ -52,32 +52,39 @@ export default function DistrictPicker({
   }
 
   return (
-    <View>
-      <Text className="text-xs text-gray-500 uppercase tracking-wide px-4 pb-2">
+    <View className="border border-gray-200 rounded-xl overflow-hidden">
+      <Text className="text-xs text-gray-500 uppercase tracking-wide px-4 pt-3 pb-2">
         {singleSelect ? KA.districtPicker.selectDistrict : KA.districtPicker.selectDistricts}
       </Text>
-      {districts.map((district) => {
-        const isSelected = selectedIds.includes(district.id);
-        return (
-          <TouchableOpacity
-            key={district.id}
-            onPress={() => handlePress(district)}
-            activeOpacity={0.7}
-            className={`flex-row items-center justify-between px-4 py-3.5 border-b border-gray-100 ${
-              isSelected ? 'bg-green-50' : 'bg-white'
-            }`}
-          >
-            <Text
-              className={`text-base ${
-                isSelected ? 'text-green-800 font-medium' : 'text-gray-800'
+      <ScrollView
+        style={{ maxHeight: 200 }}
+        nestedScrollEnabled
+        showsVerticalScrollIndicator
+        keyboardShouldPersistTaps="handled"
+      >
+        {districts.map((district) => {
+          const isSelected = selectedIds.includes(district.id);
+          return (
+            <TouchableOpacity
+              key={district.id}
+              onPress={() => handlePress(district)}
+              activeOpacity={0.7}
+              className={`flex-row items-center justify-between px-4 py-3.5 border-b border-gray-100 ${
+                isSelected ? 'bg-green-50' : 'bg-white'
               }`}
             >
-              {district.name_ka}
-            </Text>
-            {isSelected && <Text className="text-green-600 text-base">✓</Text>}
-          </TouchableOpacity>
-        );
-      })}
+              <Text
+                className={`text-base ${
+                  isSelected ? 'text-green-800 font-medium' : 'text-gray-800'
+                }`}
+              >
+                {district.name_ka}
+              </Text>
+              {isSelected && <Text className="text-green-600 text-base">✓</Text>}
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }
