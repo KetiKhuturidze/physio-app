@@ -9,7 +9,7 @@ Last updated: 2026-04-16
 | FE-002 | Register screen | ✅ DONE | app/(auth)/register.tsx |
 | FE-003 | Patient home + district search | ✅ DONE | app/(patient)/home.tsx, useLocation, PhysioCard |
 | FE-004 | Physio profile page (patient view) | ✅ DONE | app/(patient)/physio/[id].tsx — services, reviews, book button |
-| FE-005 | Booking flow | ⬜ TODO | app/(patient)/book/[physioId].tsx — empty shell |
+| FE-005 | Booking flow | ✅ DONE | service picker, address, district, time, notes → createBooking() |
 | FE-006 | Patient bookings list | ⬜ TODO | app/(patient)/bookings.tsx — empty shell |
 | FE-007 | Physio dashboard | ✅ DONE | app/(physio)/dashboard.tsx — completion check uses services |
 | FE-008 | Physio bookings + confirm/decline | ⬜ TODO | app/(physio)/bookings.tsx — empty shell |
@@ -25,7 +25,7 @@ Last updated: 2026-04-16
 | BE-002 | RLS policies | ✅ DONE | Set in Supabase dashboard — all tables covered |
 | BE-003 | Tbilisi districts seed | ✅ DONE | Seeded in Supabase dashboard |
 | BE-004 | useAuth hook + Zustand store | ✅ DONE | src/stores/useAuthStore.ts, root _layout.tsx |
-| BE-005 | useBookings hook | ⬜ TODO | src/hooks/useBookings.ts — empty function |
+| BE-005 | useBookings hook | ✅ DONE | useBookings(role), createBooking(), updateBookingStatus() |
 | BE-006 | useLocation hook | ✅ DONE | src/hooks/useLocation.ts — PostGIS nearest_district RPC |
 | BE-007 | Push notifications | ⬜ TODO | src/lib/notifications.ts — export {} only |
 | BE-008 | Email via Resend (Edge Function) | ⬜ TODO | supabase/functions/ — empty |

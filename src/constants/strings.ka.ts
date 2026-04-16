@@ -142,6 +142,22 @@ export const KA = {
     noReviewsYet: 'შეფასება ჯერ არ არის.',
     notFound: 'ფიზიოთერაპევტი ვერ მოიძებნა.',
   },
+  bookingStatus: {
+    pending: 'მოლოდინში',
+    confirmed: 'დადასტურებული',
+    declined: 'უარყოფილი',
+    completed: 'დასრულებული',
+    cancelled: 'გაუქმებული',
+  },
+  patientBookings: {
+    title: 'ჩემი ჯავშნები',
+    empty: 'ჯავშანი ჯერ არ გაქვთ.',
+    emptySubtitle: 'მოძებნეთ ფიზიოთერაპევტი და გააკეთეთ ჯავშანი.',
+    requestedTime: 'სასურველი დრო',
+    address: 'მისამართი',
+    service: 'სერვისი',
+    minutes: 'წთ',
+  },
   bookingScreen: {
     title: 'ჯავშნის გაკეთება',
     selectServiceLabel: 'სერვისის არჩევა',
