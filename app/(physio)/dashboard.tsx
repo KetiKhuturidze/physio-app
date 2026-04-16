@@ -18,14 +18,18 @@ const S = KA.dashboard;
 type DashboardProfile = {
   id: string;
   bio: string | null;
-  hourly_rate: number | null;
   base_district_id: string | null;
   is_verified: boolean;
   base_district: { name_ka: string } | null;
+  physio_services: { id: string }[];
 };
 
 function isProfileComplete(profile: DashboardProfile): boolean {
-  return Boolean(profile.bio?.trim()) && profile.base_district_id !== null;
+  return (
+    Boolean(profile.bio?.trim()) &&
+    profile.base_district_id !== null &&
+    profile.physio_services.length > 0
+  );
 }
 
 function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
@@ -64,7 +68,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('physio_profiles')
         .select(
-          'id, bio, hourly_rate, base_district_id, is_verified, base_district:districts!physio_profiles_base_district_id_fkey(name_ka)',
+          'id, bio, base_district_id, is_verified, base_district:districts!physio_profiles_base_district_id_fkey(name_ka), physio_services(id)',
         )
         .eq('user_id', user.id)
         .maybeSingle();
@@ -157,12 +161,6 @@ export default function Dashboard() {
                 {profile.base_district && (
                   <Text className="text-sm text-gray-500">
                     {profile.base_district.name_ka}
-                  </Text>
-                )}
-                {profile.hourly_rate != null && (
-                  <Text className="text-sm font-semibold text-green-700">
-                    ₾{profile.hourly_rate}
-                    {S.perHour}
                   </Text>
                 )}
               </View>

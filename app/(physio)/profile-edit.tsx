@@ -652,47 +652,59 @@ export default function ProfileEdit() {
 
             {/* Add service inline form */}
             {addingService && (
-              <View className="border border-green-200 rounded-xl p-3 bg-green-50 gap-2">
-                <TextInput
-                  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
-                  value={serviceForm.name}
-                  onChangeText={(v) => setServiceForm((f) => ({ ...f, name: v }))}
-                  placeholder={S.serviceNamePlaceholder}
-                  placeholderTextColor="#9ca3af"
-                  returnKeyType="next"
-                />
-                <View className="flex-row gap-2">
+              <View className="border border-green-200 rounded-xl p-3 bg-green-50 gap-3">
+                <View>
+                  <FieldLabel label={S.serviceNameLabel} />
                   <TextInput
-                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
-                    value={serviceForm.duration_minutes}
-                    onChangeText={(v) =>
-                      setServiceForm((f) => ({ ...f, duration_minutes: v.replace(/[^0-9]/g, '') }))
-                    }
-                    placeholder={S.serviceDurationPlaceholder}
+                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                    value={serviceForm.name}
+                    onChangeText={(v) => setServiceForm((f) => ({ ...f, name: v }))}
+                    placeholder={S.serviceNamePlaceholder}
                     placeholderTextColor="#9ca3af"
-                    keyboardType="number-pad"
-                    returnKeyType="next"
-                  />
-                  <TextInput
-                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
-                    value={serviceForm.price}
-                    onChangeText={(v) =>
-                      setServiceForm((f) => ({ ...f, price: v.replace(/[^0-9.]/g, '') }))
-                    }
-                    placeholder={S.servicePricePlaceholder}
-                    placeholderTextColor="#9ca3af"
-                    keyboardType="decimal-pad"
                     returnKeyType="next"
                   />
                 </View>
-                <TextInput
-                  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
-                  value={serviceForm.description}
-                  onChangeText={(v) => setServiceForm((f) => ({ ...f, description: v }))}
-                  placeholder={S.serviceDescriptionPlaceholder}
-                  placeholderTextColor="#9ca3af"
-                  returnKeyType="done"
-                />
+                <View className="flex-row gap-2">
+                  <View className="flex-1">
+                    <FieldLabel label={S.serviceDurationLabel} />
+                    <TextInput
+                      className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                      value={serviceForm.duration_minutes}
+                      onChangeText={(v) =>
+                        setServiceForm((f) => ({ ...f, duration_minutes: v.replace(/[^0-9]/g, '') }))
+                      }
+                      placeholder={S.serviceDurationPlaceholder}
+                      placeholderTextColor="#9ca3af"
+                      keyboardType="number-pad"
+                      returnKeyType="next"
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <FieldLabel label={S.servicePriceLabel} />
+                    <TextInput
+                      className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                      value={serviceForm.price}
+                      onChangeText={(v) =>
+                        setServiceForm((f) => ({ ...f, price: v.replace(/[^0-9.]/g, '') }))
+                      }
+                      placeholder={S.servicePricePlaceholder}
+                      placeholderTextColor="#9ca3af"
+                      keyboardType="decimal-pad"
+                      returnKeyType="next"
+                    />
+                  </View>
+                </View>
+                <View>
+                  <FieldLabel label={S.serviceDescriptionLabel} />
+                  <TextInput
+                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                    value={serviceForm.description}
+                    onChangeText={(v) => setServiceForm((f) => ({ ...f, description: v }))}
+                    placeholder={S.serviceDescriptionPlaceholder}
+                    placeholderTextColor="#9ca3af"
+                    returnKeyType="done"
+                  />
+                </View>
                 <View className="flex-row gap-2 mt-1">
                   <TouchableOpacity
                     onPress={() => {
