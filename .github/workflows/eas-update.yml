@@ -1,0 +1,59 @@
+name: EAS Update
+
+# OTA update — dev → preview channel, main → production channel
+#
+# SETUP REQUIRED (once):
+# 1. expo.dev → create account / login
+# 2. run: npx eas-cli update:configure  (creates update channels)
+# 3. GitHub repo → Settings → Secrets → add:
+#    - EXPO_TOKEN          (expo.dev → Account → Access Tokens)
+#    - EXPO_PUBLIC_SUPABASE_URL
+#    - EXPO_PUBLIC_SUPABASE_ANON_KEY
+#    - EXPO_PUBLIC_GOOGLE_MAPS_KEY
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  update:
+    name: EAS Update
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Expo + EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to preview (dev branch)
+        if: github.ref == 'refs/heads/dev'
+        run: eas update --channel preview --message "${{ github.event.head_commit.message }}" --non-interactive
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_MAPS_KEY }}
+
+      - name: Publish to production (main branch)
+        if: github.ref == 'refs/heads/main'
+        run: eas update --channel production --message "${{ github.event.head_commit.message }}" --non-interactive
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_MAPS_KEY }}
