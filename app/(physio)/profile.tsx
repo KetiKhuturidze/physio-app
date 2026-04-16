@@ -34,6 +34,7 @@ type ProfileViewRow = {
   bio: string | null;
   specialties: string[];
   languages: string[];
+  available_hours: string | null;
   is_verified: boolean;
   base_district: District | null;
   physio_service_areas: ServiceAreaRow[];
@@ -82,6 +83,7 @@ export default function PhysioProfileView() {
           bio,
           specialties,
           languages,
+          available_hours,
           is_verified,
           base_district:districts!physio_profiles_base_district_id_fkey(id, name_en, name_ka, center),
           physio_service_areas(
@@ -220,6 +222,14 @@ export default function PhysioProfileView() {
                   </View>
                 ))}
               </View>
+            </View>
+          )}
+
+          {/* ── Available hours ── */}
+          {profile.available_hours && (
+            <View className="bg-white rounded-2xl p-4">
+              <SectionTitle title={PV.availableHoursTitle} />
+              <Text className="text-gray-700 text-sm leading-6">{profile.available_hours}</Text>
             </View>
           )}
 

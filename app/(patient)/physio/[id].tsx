@@ -42,6 +42,7 @@ type PhysioDetailRow = {
   bio: string | null;
   specialties: string[];
   languages: string[];
+  available_hours: string | null;
   base_district_id: string | null;
   is_verified: boolean;
   user: { full_name: string; avatar_url: string | null };
@@ -139,6 +140,7 @@ export default function PhysioProfile() {
           specialties,
           languages,
           base_district_id,
+          available_hours,
           is_verified,
           user:users!physio_profiles_user_id_fkey(full_name, avatar_url),
           base_district:districts!physio_profiles_base_district_id_fkey(id, name_en, name_ka, center),
@@ -191,6 +193,7 @@ export default function PhysioProfile() {
     bio,
     specialties,
     languages,
+    available_hours,
     is_verified,
     base_district,
     physio_service_areas,
@@ -348,6 +351,14 @@ export default function PhysioProfile() {
                   </View>
                 ))}
               </View>
+            </View>
+          )}
+
+          {/* ── Available hours ── */}
+          {available_hours && (
+            <View className="bg-white rounded-2xl p-4">
+              <SectionTitle title={S.availableHoursTitle} />
+              <Text className="text-gray-700 text-sm leading-6">{available_hours}</Text>
             </View>
           )}
 

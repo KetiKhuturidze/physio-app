@@ -39,6 +39,7 @@ type ProfileRow = {
   bio: string | null;
   specialties: string[];
   languages: string[];
+  available_hours: string | null;
   base_district_id: string | null;
   physio_service_areas: { district_id: string }[];
   physio_services: {
@@ -167,6 +168,7 @@ export default function ProfileEdit() {
   const [specialtyInput, setSpecialtyInput] = useState('');
   const [languages, setLanguages] = useState<string[]>([]);
   const [languageInput, setLanguageInput] = useState('');
+  const [availableHours, setAvailableHours] = useState('');
   const [baseDistrictIds, setBaseDistrictIds] = useState<string[]>([]);
   const [serviceAreaIds, setServiceAreaIds] = useState<string[]>([]);
 
@@ -190,7 +192,7 @@ export default function ProfileEdit() {
       const { data, error: dbError } = await supabase
         .from('physio_profiles')
         .select(
-          'id, bio, specialties, languages, base_district_id, physio_service_areas(district_id), physio_services(id, name, duration_minutes, price, description)',
+          'id, bio, specialties, languages, available_hours, base_district_id, physio_service_areas(district_id), physio_services(id, name, duration_minutes, price, description)',
         )
         .eq('user_id', user.id)
         .maybeSingle();
@@ -211,6 +213,7 @@ export default function ProfileEdit() {
       setBio(row.bio ?? '');
       setSpecialties(row.specialties ?? []);
       setLanguages(row.languages ?? []);
+      setAvailableHours(row.available_hours ?? '');
       setBaseDistrictIds(row.base_district_id ? [row.base_district_id] : []);
       setServiceAreaIds(row.physio_service_areas.map((sa) => sa.district_id));
       setServices(
@@ -380,6 +383,7 @@ export default function ProfileEdit() {
           bio: bio.trim(),
           specialties,
           languages,
+          available_hours: availableHours.trim() || null,
           base_district_id: baseDistrictIds[0] ?? null,
           is_active: true,
         })
@@ -393,6 +397,7 @@ export default function ProfileEdit() {
           bio: bio.trim(),
           specialties,
           languages,
+          available_hours: availableHours.trim() || null,
           base_district_id: baseDistrictIds[0] ?? null,
           is_active: true,
         })
@@ -604,6 +609,23 @@ export default function ProfileEdit() {
               onRemove={(tag) => removeTag(languages, setLanguages, tag)}
               suggestions={LANGUAGE_SUGGESTIONS}
               placeholder={S.languagesLabel}
+            />
+          </View>
+
+          {/* ── Available hours ── */}
+          <View className="bg-white rounded-2xl p-4">
+            <FieldLabel label={S.availableHoursLabel} />
+            <TextInput
+              className="border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm min-h-[80px]"
+              value={availableHours}
+              onChangeText={(v) => {
+                setAvailableHours(v);
+                setSuccessVisible(false);
+              }}
+              placeholder={S.availableHoursPlaceholder}
+              placeholderTextColor="#9ca3af"
+              multiline
+              textAlignVertical="top"
             />
           </View>
 
