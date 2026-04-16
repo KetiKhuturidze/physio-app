@@ -1,0 +1,34 @@
+# Flow: Physio confirms or declines a booking request
+# Login as physio → open bookings tab → confirm pending request.
+# ⚠️  REQUIRES IMPLEMENTATION: app/(physio)/bookings.tsx is currently an empty shell.
+#     This flow will fail until FE-008 (physio bookings screen) is built.
+#     Written in advance — run once FE-008 is done.
+appId: host.exp.exponent
+env:
+  EMAIL: physio.e2e@physio.ge
+  PASSWORD: TestPass123
+---
+- launchApp:
+    clearState: true
+
+# ── Login as physio ───────────────────────────────────────────────────────────
+- runFlow: _login.yaml
+
+# ── Physio dashboard ──────────────────────────────────────────────────────────
+# Physio lands on dashboard tab
+- assertVisible: "სამართავი პანელი"
+
+# ── Navigate to bookings tab ──────────────────────────────────────────────────
+- tapOn: "ჯავშნები"
+- waitForAnimationToEnd
+
+# ── Bookings list ─────────────────────────────────────────────────────────────
+# TODO: update selectors once FE-008 is built
+# Expected: list of pending bookings showing patient name + requested time
+
+# - assertVisible: "მოლოდინში"      # 'pending' status label
+# - tapOn:
+#     text: "დადასტურება"           # confirm button on BookingCard
+#     index: 0
+# - waitForAnimationToEnd
+# - assertVisible: "დადასტურებული"  # booking status updated to 'confirmed'

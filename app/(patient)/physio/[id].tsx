@@ -152,7 +152,7 @@ export default function PhysioProfile() {
         return;
       }
 
-      setPhysio(data as PhysioDetailRow);
+      setPhysio(data as unknown as PhysioDetailRow);
       setLoading(false);
     }
 

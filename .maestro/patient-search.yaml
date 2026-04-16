@@ -1,0 +1,43 @@
+# Flow: Patient searches for physios by district
+# Login as patient → grant location permission → see physio list → open physio profile.
+# ⚠️  Requires a seeded patient account and at least one active physio in the DB.
+#     Requires the nearest_district RPC to be deployed in Supabase.
+appId: host.exp.exponent
+env:
+  EMAIL: patient.e2e@physio.ge
+  PASSWORD: TestPass123
+---
+- launchApp:
+    clearState: true
+
+# ── Login ─────────────────────────────────────────────────────────────────────
+- runFlow: _login.yaml
+
+# ── Patient home ──────────────────────────────────────────────────────────────
+- assertVisible: "ფიზიო"
+
+# Grant location permission if dialog appears
+- allowPermission
+
+# Wait for location detection to complete
+- extendedWaitUntil:
+    visible:
+      text: "შენ იმყოფები:"
+    timeout: 10000
+
+# Physio list should load
+- assertVisible: "ახლომდებარე ფიზიოთერაპევტები"
+
+# ── Open first physio profile ─────────────────────────────────────────────────
+- scrollUntilVisible:
+    direction: DOWN
+    element:
+      text: "₾"
+- tapOn:
+    text: "₾"
+    index: 0
+
+- waitForAnimationToEnd
+
+# ── Physio profile page ───────────────────────────────────────────────────────
+- assertVisible: "ჯავშნის გაკეთება"

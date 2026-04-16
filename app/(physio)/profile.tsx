@@ -84,7 +84,7 @@ export default function PhysioProfileView() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (data) setProfile(data as ProfileViewRow);
+      if (data) setProfile(data as unknown as ProfileViewRow);
 
       // Fresh-fetch avatar_url to catch updates from previous sessions
       const { data: userData } = await supabase
@@ -101,7 +101,7 @@ export default function PhysioProfileView() {
     }
 
     fetchProfile();
-  }, [user]);
+  }, [user, setUser]);
 
   async function handleLogout() {
     setLoggingOut(true);

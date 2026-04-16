@@ -1,3 +1,4 @@
+import 'react-native-url-polyfill/auto';
 import '../global.css';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -65,7 +66,7 @@ function useProtectedRoute() {
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, []);
+  }, [logout, setLoading, setUser]);
 
   useEffect(() => {
     if (!navigationState?.key) return;
@@ -87,7 +88,7 @@ function useProtectedRoute() {
       if (segments[0] !== '(physio)') router.replace('/(physio)/dashboard');
       return;
     }
-  }, [user, isLoading, segments]);
+  }, [user, isLoading, segments, navigationState?.key, router]);
 }
 
 export default function RootLayout() {

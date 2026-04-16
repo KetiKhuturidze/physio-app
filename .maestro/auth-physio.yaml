@@ -1,0 +1,51 @@
+# Flow: Physio registration
+# Registers a new physio account and verifies landing on dashboard
+# with the "complete your profile" warning (expected for new physios).
+# ⚠️  Use a fresh email each run.
+appId: host.exp.exponent
+env:
+  PHYSIO_EMAIL: physio.e2e@physio.ge
+  PHYSIO_PASSWORD: TestPass123
+---
+- launchApp:
+    clearState: true
+
+# ── Login screen ──────────────────────────────────────────────────────────────
+- assertVisible: "გამარჯობა"
+- tapOn: "რეგისტრაცია"
+
+# ── Register screen ───────────────────────────────────────────────────────────
+- assertVisible: "ვინ ხართ?"
+- tapOn: "ფიზიოთერაპევტი"
+
+- tapOn:
+    text: "შეიყვანეთ სახელი და გვარი"
+- inputText: "ტესტ ფიზიო"
+
+- tapOn:
+    text: "შეიყვანეთ ელ-ფოსტა"
+- inputText: ${PHYSIO_EMAIL}
+
+- tapOn:
+    text: "+995 5XX XXX XXX"
+- inputText: "+995555000002"
+
+- tapOn:
+    text: "მინიმუმ 8 სიმბოლო"
+- inputText: ${PHYSIO_PASSWORD}
+
+- tapOn:
+    text: "კიდევ ერთხელ შეიყვანეთ პაროლი"
+- inputText: ${PHYSIO_PASSWORD}
+
+- hideKeyboard
+- tapOn:
+    text: "რეგისტრაცია"
+    index: 1
+
+- waitForAnimationToEnd
+
+# ── Physio dashboard ──────────────────────────────────────────────────────────
+# New physio lands on dashboard with incomplete profile warning
+- assertVisible: "პროფილი არ არის შევსებული"
+- assertVisible: "შეავსე პროფილი"

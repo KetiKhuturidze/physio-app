@@ -1,0 +1,39 @@
+# Flow: Patient submits a review after a completed booking
+# Login as patient → open bookings → find completed booking → submit review.
+# ⚠️  REQUIRES IMPLEMENTATION: FE-010 (review submission) is not built yet.
+#     Also requires a booking in 'completed' status in the DB.
+#     Written in advance — run once FE-010 is done.
+appId: host.exp.exponent
+env:
+  EMAIL: patient.e2e@physio.ge
+  PASSWORD: TestPass123
+---
+- launchApp:
+    clearState: true
+
+# ── Login as patient ──────────────────────────────────────────────────────────
+- runFlow: _login.yaml
+
+# ── Navigate to bookings tab ──────────────────────────────────────────────────
+- tapOn: "ჯავშნები"
+- waitForAnimationToEnd
+
+# ── Find completed booking ────────────────────────────────────────────────────
+# TODO: update selectors once FE-006 + FE-010 are built
+
+# - assertVisible: "დასრულებული"     # 'completed' status label
+# - tapOn: "შეფასების დატოვება"      # review CTA on completed BookingCard
+# - waitForAnimationToEnd
+
+# ── Review form ───────────────────────────────────────────────────────────────
+# - tapOn:
+#     text: "★"
+#     index: 4                       # tap 5th star (5-star rating)
+# - tapOn:
+#     text: "კომენტარი"              # comment field placeholder
+# - inputText: "ძალიან კარგი სერვისი, გირჩევ!"
+# - hideKeyboard
+# - tapOn: "შეფასების გაგზავნა"
+
+# ── Confirmation ──────────────────────────────────────────────────────────────
+# - assertVisible: "შეფასება გამოქვეყნდა"

@@ -1,0 +1,53 @@
+# Flow: Patient registration
+# Registers a new patient account and verifies landing on home screen.
+# ⚠️  Use a fresh email each run — Supabase rejects duplicate registrations.
+#     Override via CLI: maestro test auth-patient.yaml --env PATIENT_EMAIL=...
+#
+# appId: host.exp.exponent  (Expo Go)
+#        ge.physio.app       (dev build — change below)
+appId: host.exp.exponent
+env:
+  PATIENT_EMAIL: patient.e2e@physio.ge
+  PATIENT_PASSWORD: TestPass123
+---
+- launchApp:
+    clearState: true
+
+# ── Login screen ──────────────────────────────────────────────────────────────
+- assertVisible: "გამარჯობა"
+- tapOn: "რეგისტრაცია"
+
+# ── Register screen ───────────────────────────────────────────────────────────
+- assertVisible: "ვინ ხართ?"
+- tapOn: "პაციენტი"
+
+- tapOn:
+    text: "შეიყვანეთ სახელი და გვარი"
+- inputText: "ტესტ პაციენტი"
+
+- tapOn:
+    text: "შეიყვანეთ ელ-ფოსტა"
+- inputText: ${PATIENT_EMAIL}
+
+- tapOn:
+    text: "+995 5XX XXX XXX"
+- inputText: "+995555000001"
+
+- tapOn:
+    text: "მინიმუმ 8 სიმბოლო"
+- inputText: ${PATIENT_PASSWORD}
+
+- tapOn:
+    text: "კიდევ ერთხელ შეიყვანეთ პაროლი"
+- inputText: ${PATIENT_PASSWORD}
+
+- hideKeyboard
+- tapOn:
+    text: "რეგისტრაცია"
+    index: 1
+
+- waitForAnimationToEnd
+
+# ── Patient home ──────────────────────────────────────────────────────────────
+- assertVisible: "ფიზიო"
+- assertVisible: "გამარჯობა,"

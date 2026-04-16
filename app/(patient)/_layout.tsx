@@ -13,7 +13,7 @@ export default function PatientLayout() {
     if (!isLoading && !user) {
       router.replace('/(auth)/login');
     }
-  }, [user, isLoading]);
+  }, [user, isLoading, router]);
 
   return (
     <Tabs

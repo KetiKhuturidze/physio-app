@@ -1,0 +1,50 @@
+# Flow: Patient books a physio
+# Login → find physio → open profile → tap Book → fill booking form → submit.
+# ⚠️  REQUIRES IMPLEMENTATION: app/(patient)/book/[physioId].tsx is currently an empty shell.
+#     This flow will fail until FE-005 (booking screen) is built.
+#     Written in advance — run once FE-005 is done.
+appId: host.exp.exponent
+env:
+  EMAIL: patient.e2e@physio.ge
+  PASSWORD: TestPass123
+---
+- launchApp:
+    clearState: true
+
+# ── Login ─────────────────────────────────────────────────────────────────────
+- runFlow: _login.yaml
+
+# ── Navigate to a physio profile ──────────────────────────────────────────────
+- allowPermission
+- extendedWaitUntil:
+    visible:
+      text: "ახლომდებარე ფიზიოთერაპევტები"
+    timeout: 10000
+- tapOn:
+    text: "₾"
+    index: 0
+- waitForAnimationToEnd
+- assertVisible: "ჯავშნის გაკეთება"
+
+# ── Tap Book ──────────────────────────────────────────────────────────────────
+- tapOn: "ჯავშნის გაკეთება"
+- waitForAnimationToEnd
+
+# ── Booking form ──────────────────────────────────────────────────────────────
+# TODO: update selectors once FE-005 is built
+# Expected elements (match to actual strings added in book/[physioId].tsx):
+# - address input
+# - requested time input
+# - notes input (optional)
+# - submit button
+
+# - tapOn:
+#     text: "მისამართი"           # patient_address field
+# - inputText: "რუსთაველის გამზ. 42, ბინა 5"
+# - tapOn:
+#     text: "სასურველი დრო"      # requested_time field
+# - inputText: "ორშაბათი 10:00"
+# - tapOn: "ჯავშნის გაგზავნა"   # submit button
+
+# ── Confirmation ──────────────────────────────────────────────────────────────
+# - assertVisible: "ჯავშანი გაგზავნილია"  # or whatever the success state shows

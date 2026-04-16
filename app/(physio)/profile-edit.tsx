@@ -10,8 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
+import { decode } from 'base64-arraybuffer';
 
 import DistrictPicker from 'src/components/DistrictPicker';
 import { KA } from 'src/constants/strings.ka';
@@ -202,7 +204,7 @@ export default function ProfileEdit() {
     if (baseId && !serviceAreaIds.includes(baseId)) {
       setServiceAreaIds((prev) => [...prev, baseId]);
     }
-  }, [baseDistrictIds]);
+  }, [baseDistrictIds, serviceAreaIds]);
 
   async function pickAvatar() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -227,19 +229,21 @@ export default function ProfileEdit() {
     if (!user) return null;
     setAvatarUploading(true);
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const arrayBuffer = decode(base64);
       const path = `${user.id}/avatar.jpg`;
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+        .upload(path, arrayBuffer, { contentType: 'image/jpeg', upsert: true });
       if (uploadError) {
         console.error('[uploadAvatar] storage upload failed:', uploadError);
         setError(S.saveError);
         return null;
       }
       const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-      return data.publicUrl;
+      return `${data.publicUrl}?t=${Date.now()}`;
     } catch (err) {
       console.error('[uploadAvatar] unexpected error:', err);
       setError(S.saveError);

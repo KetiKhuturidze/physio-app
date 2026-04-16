@@ -1,0 +1,14 @@
+# Reusable login subflow
+# Required env vars: EMAIL, PASSWORD
+# Call with: - runFlow: _login.yaml
+---
+- assertVisible: "გამარჯობა"
+- tapOn:
+    text: "შეიყვანეთ ელ-ფოსტა"
+- inputText: ${EMAIL}
+- tapOn:
+    text: "შეიყვანეთ პაროლი"
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn: "შესვლა"
+- waitForAnimationToEnd

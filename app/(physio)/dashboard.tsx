@@ -70,7 +70,7 @@ export default function Dashboard() {
         .maybeSingle();
 
       if (!error && data) {
-        setProfile(data as DashboardProfile);
+        setProfile(data as unknown as DashboardProfile);
       }
 
       // Fresh-fetch avatar_url to catch updates from previous sessions
@@ -88,7 +88,7 @@ export default function Dashboard() {
     }
 
     fetchProfile();
-  }, [user]);
+  }, [user, setUser]);
 
   const firstName = user?.full_name.trim().split(' ')[0] ?? '';
   const complete = profile ? isProfileComplete(profile) : false;
