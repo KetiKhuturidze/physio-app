@@ -21,20 +21,33 @@ jobs:
   update:
     name: EAS Update
     runs-on: ubuntu-latest
-    # Will be skipped/non-blocking until EXPO_TOKEN secret is configured
-    continue-on-error: true
 
     steps:
+      - name: Check EXPO_TOKEN
+        id: token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "EXPO_TOKEN not configured — skipping EAS update."
+            echo "configured=false" >> $GITHUB_OUTPUT
+          else
+            echo "configured=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout
+        if: steps.token.outputs.configured == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node.js 20
+        if: steps.token.outputs.configured == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Setup Expo + EAS
+        if: steps.token.outputs.configured == 'true'
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
@@ -42,10 +55,11 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
+        if: steps.token.outputs.configured == 'true'
         run: npm ci
 
       - name: Publish to preview (dev branch)
-        if: github.ref == 'refs/heads/dev'
+        if: steps.token.outputs.configured == 'true' && github.ref == 'refs/heads/dev'
         run: eas update --channel preview --message "${{ github.event.head_commit.message }}" --non-interactive
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
@@ -53,7 +67,7 @@ jobs:
           EXPO_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_MAPS_KEY }}
 
       - name: Publish to production (main branch)
-        if: github.ref == 'refs/heads/main'
+        if: steps.token.outputs.configured == 'true' && github.ref == 'refs/heads/main'
         run: eas update --channel production --message "${{ github.event.head_commit.message }}" --non-interactive
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
