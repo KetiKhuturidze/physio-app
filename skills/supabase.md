@@ -64,6 +64,38 @@ setProfile(data as unknown as ProfileRow);
 
 ---
 
+### Use check-then-update (not upsert) for physio_profiles
+**Problem:** `supabase.from('physio_profiles').upsert({...})` fails or behaves incorrectly even when a `UNIQUE` constraint exists on `user_id`. RLS policies conflict with the upsert's internal SELECT + INSERT/UPDATE logic.
+
+**Root cause:** PostgREST upsert requires the ability to SELECT existing rows to decide between insert and update. If RLS restricts SELECT in a way that returns 0 rows (e.g., `auth.uid() = user_id` but the row doesn't exist yet), the upsert may insert a duplicate or throw a constraint error.
+
+**Fix / Rule:** Always do an explicit check-then-branch:
+```typescript
+// correct
+const { data: existing } = await supabase
+  .from('physio_profiles')
+  .select('id')
+  .eq('user_id', user.id)
+  .single();
+
+if (existing?.id) {
+  await supabase.from('physio_profiles').update({...}).eq('user_id', user.id);
+} else {
+  await supabase.from('physio_profiles').insert({...});
+}
+```
+
+---
+
+### Profile completion checks must not reference removed DB columns
+**Problem:** Dashboard showed "profile incomplete" for all physios after `hourly_rate` was removed from `physio_profiles`. The check itself didn't reference `hourly_rate`, but the SELECT query still fetched it — PostgREST returns an error for unknown columns, making `data` null, making `profile` null, making the check always fail.
+
+**Root cause:** A stale column name in a `.select()` string causes a silent PostgREST error. There's no TypeScript error because Supabase query strings are untyped.
+
+**Fix / Rule:** When removing a DB column, grep for its name in every `.select()` string across the codebase — not just in types and destructures. Also update any completion/validation logic that depends on it.
+
+---
+
 ### React Native Image cache — append ?t=Date.now() after re-upload
 **Problem:** After re-uploading an avatar to the same storage path, the `Image` component shows the old image because React Native caches by URL.
 
