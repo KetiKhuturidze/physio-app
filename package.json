@@ -25,6 +25,7 @@
       "src/hooks/**/*.{ts,tsx}",
       "src/components/**/*.{ts,tsx}",
       "src/stores/**/*.{ts,tsx}",
+      "src/lib/notifications.ts",
       "!src/**/*.d.ts"
     ]
   },
@@ -39,6 +40,7 @@
     "base64-arraybuffer": "^1.0.2",
     "expo": "~54.0.33",
     "expo-constants": "~18.0.13",
+    "expo-device": "~8.0.10",
     "expo-file-system": "~19.0.21",
     "expo-font": "~14.0.11",
     "expo-image-picker": "~17.0.10",
@@ -49,6 +51,7 @@
     "expo-secure-store": "~15.0.8",
     "expo-status-bar": "~3.0.9",
     "expo-updates": "~29.0.16",
+    "jimp-compact": "^0.16.1",
     "metro-config": "^0.84.3",
     "nativewind": "^4.2.3",
     "react": "19.1.0",

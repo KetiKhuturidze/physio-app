@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -108,12 +108,34 @@ export default function Home() {
     refetch: refetchLocation,
   } = useLocation();
 
+  const [showAllPhysios, setShowAllPhysios] = useState(false);
+
+  // Reset fallback whenever district changes (e.g. user moves)
+  useEffect(() => {
+    setShowAllPhysios(false);
+  }, [district?.id]);
+
+  // Fall back to showing all physios when location resolves but district query failed
+  const physiosDistrictArg =
+    locationError && !permissionDenied
+      ? 'all'
+      : showAllPhysios
+        ? 'all'
+        : (district?.id ?? null);
+
   const {
     physios,
     loading: physiosLoading,
     error: physiosError,
     refetch: refetchPhysios,
-  } = usePhysios(district?.id ?? null);
+  } = usePhysios(physiosDistrictArg);
+
+  // Auto-fallback: district resolved, query done, zero results → show all
+  useEffect(() => {
+    if (!showAllPhysios && !physiosLoading && district && physios.length === 0 && !physiosError) {
+      setShowAllPhysios(true);
+    }
+  }, [physios.length, physiosLoading, district, showAllPhysios, physiosError]);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -156,10 +178,20 @@ export default function Home() {
         onRetry={refetchLocation}
       />
 
+      {/* ── No local physios banner ── */}
+      {showAllPhysios && district && (
+        <View className="mx-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 gap-1">
+          <Text className="text-amber-900 text-sm font-medium">{S.noPhysiosInDistrict}</Text>
+          <Text className="text-amber-700 text-sm">{S.showingAllPhysios}</Text>
+        </View>
+      )}
+
       {/* ── Section title / physios loader ── */}
       {!locationLoading && district && (
         <View className="px-4 flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-gray-900">{S.physiosNearby}</Text>
+          <Text className="text-base font-semibold text-gray-900">
+            {showAllPhysios ? S.allPhysios : S.physiosNearby}
+          </Text>
           {showPhysiosLoader && <ActivityIndicator size="small" color="#16a34a" />}
         </View>
       )}

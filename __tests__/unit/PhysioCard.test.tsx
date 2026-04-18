@@ -9,6 +9,7 @@ const basePhysio: PhysioWithJoins = {
   bio: 'Test bio',
   specialties: ['სპორტული', 'ზურგი'],
   languages: ['ქართული'],
+  available_hours: null,
   base_district_id: 'district-1',
   is_verified: true,
   is_active: true,

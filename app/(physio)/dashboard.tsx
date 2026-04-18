@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 import { KA } from 'src/constants/strings.ka';
+import { useBookings } from 'src/hooks/useBookings';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 
@@ -58,41 +59,50 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<DashboardProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!user) {
+  const { bookings, loading: bookingsLoading } = useBookings('physio');
+  const pendingCount = bookings.filter((b) => b.status === 'pending').length;
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+
+      async function fetchProfile() {
+        if (!user) {
+          setLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('physio_profiles')
+          .select(
+            'id, bio, base_district_id, is_verified, base_district:districts!physio_profiles_base_district_id_fkey(name_ka), physio_services(id)',
+          )
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (cancelled) return;
+        if (!error && data) {
+          setProfile(data as unknown as DashboardProfile);
+        }
+
+        const { data: userData } = await supabase
+          .from('users')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+
+        if (cancelled) return;
+        if (userData && userData.avatar_url !== user.avatar_url) {
+          setUser({ ...user, avatar_url: userData.avatar_url as string | null });
+        }
+
         setLoading(false);
-        return;
       }
 
-      const { data, error } = await supabase
-        .from('physio_profiles')
-        .select(
-          'id, bio, base_district_id, is_verified, base_district:districts!physio_profiles_base_district_id_fkey(name_ka), physio_services(id)',
-        )
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!error && data) {
-        setProfile(data as unknown as DashboardProfile);
-      }
-
-      // Fresh-fetch avatar_url to catch updates from previous sessions
-      const { data: userData } = await supabase
-        .from('users')
-        .select('avatar_url')
-        .eq('id', user.id)
-        .single();
-
-      if (userData && userData.avatar_url !== user.avatar_url) {
-        setUser({ ...user, avatar_url: userData.avatar_url as string | null });
-      }
-
-      setLoading(false);
-    }
-
-    fetchProfile();
-  }, [user, setUser]);
+      fetchProfile();
+      return () => { cancelled = true; };
+    }, [user, setUser]),
+  );
 
   const firstName = user?.full_name.trim().split(' ')[0] ?? '';
   const complete = profile ? isProfileComplete(profile) : false;
@@ -179,12 +189,35 @@ export default function Dashboard() {
           </View>
         )}
 
-        {/* ── My bookings (shell) ── */}
+        {/* ── My bookings summary ── */}
         <View className="bg-white rounded-2xl p-4 gap-3">
-          <Text className="text-base font-semibold text-gray-900">{S.myBookings}</Text>
-          <View className="py-6 items-center">
-            <Text className="text-gray-400 text-sm">{S.bookingsComingSoon}</Text>
+          <View className="flex-row items-center justify-between">
+            <Text className="text-base font-semibold text-gray-900">{S.myBookings}</Text>
+            <TouchableOpacity onPress={() => router.navigate('/(physio)/bookings')} activeOpacity={0.7}>
+              <Text className="text-green-600 text-sm font-medium">{S.seeAll}</Text>
+            </TouchableOpacity>
           </View>
+
+          {bookingsLoading ? (
+            <View className="py-4 items-center">
+              <ActivityIndicator color="#16a34a" size="small" />
+            </View>
+          ) : bookings.length === 0 ? (
+            <View className="py-4 items-center">
+              <Text className="text-gray-400 text-sm">{KA.physioBookings.empty}</Text>
+            </View>
+          ) : (
+            <View className="flex-row gap-4">
+              <View className="flex-1 bg-amber-50 rounded-xl p-3 items-center">
+                <Text className="text-2xl font-bold text-amber-600">{pendingCount}</Text>
+                <Text className="text-xs text-amber-700 mt-0.5">{S.pendingLabel}</Text>
+              </View>
+              <View className="flex-1 bg-green-50 rounded-xl p-3 items-center">
+                <Text className="text-2xl font-bold text-green-600">{bookings.length}</Text>
+                <Text className="text-xs text-green-700 mt-0.5">{S.totalLabel}</Text>
+              </View>
+            </View>
+          )}
         </View>
       </View>
     </ScrollView>

@@ -34,7 +34,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-location",
+      ["expo-location", { "locationWhenInUsePermission": "Physio at Home იყენებს თქვენს მდებარეობას ახლომდებარე ფიზიოთერაპევტების საჩვენებლად" }],
       "expo-notifications",
       "expo-secure-store"
     ],

@@ -12,6 +12,7 @@ type RawPhysioRow = {
   bio: string | null;
   specialties: string[];
   languages: string[];
+  available_hours: string | null;
   base_district_id: string | null;
   is_verified: boolean;
   is_active: boolean;
@@ -42,6 +43,7 @@ function toPhysioWithJoins(row: RawPhysioRow): PhysioWithJoins {
     bio: row.bio,
     specialties: row.specialties,
     languages: row.languages,
+    available_hours: row.available_hours,
     base_district_id: row.base_district_id,
     is_verified: row.is_verified,
     is_active: row.is_active,
@@ -53,7 +55,7 @@ function toPhysioWithJoins(row: RawPhysioRow): PhysioWithJoins {
   };
 }
 
-export function usePhysios(districtId: string | null): UsePhysiosResult {
+export function usePhysios(districtId: string | null | 'all'): UsePhysiosResult {
   const [physios, setPhysios] = useState<PhysioWithJoins[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +77,7 @@ export function usePhysios(districtId: string | null): UsePhysiosResult {
       setLoading(true);
       setError(null);
 
-      const { data, error: dbError } = await supabase
+      let query = supabase
         .from('physio_profiles')
         .select(`
           *,
@@ -84,8 +86,13 @@ export function usePhysios(districtId: string | null): UsePhysiosResult {
           physio_service_areas!inner(district_id),
           reviews(rating)
         `)
-        .eq('is_active', true)
-        .eq('physio_service_areas.district_id', districtId);
+        .eq('is_active', true);
+
+      if (districtId !== 'all') {
+        query = query.eq('physio_service_areas.district_id', districtId);
+      }
+
+      const { data, error: dbError } = await query;
 
       if (cancelled) return;
 
