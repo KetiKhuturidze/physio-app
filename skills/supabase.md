@@ -105,3 +105,22 @@ if (existing?.id) {
 const { data } = supabase.storage.from('avatars').getPublicUrl(path);
 return `${data.publicUrl}?t=${Date.now()}`;
 ```
+
+---
+
+### PostGIS district coordinates — always seed with ST_SetSRID or distance returns null
+**Problem:** Distance calculations (`ST_Distance`, `ST_DWithin`) return `null` for districts even when coordinates look correct.
+
+**Root cause:** `ST_MakePoint(lng, lat)` creates a geometry with SRID 0 (undefined). PostGIS can't compute distances between geometries with mismatched or undefined SRIDs.
+
+**Fix / Rule:** Always wrap `ST_MakePoint` with `ST_SetSRID(..., 4326)` when seeding geography columns. Use `geography` cast if the column type is `geography`.
+
+```sql
+-- wrong — SRID 0, distance returns null
+INSERT INTO districts (center) VALUES (ST_MakePoint(44.7833, 41.6941));
+
+-- correct
+INSERT INTO districts (center) VALUES (ST_SetSRID(ST_MakePoint(44.7833, 41.6941), 4326));
+-- or with explicit geography cast
+INSERT INTO districts (center) VALUES (ST_SetSRID(ST_MakePoint(44.7833, 41.6941), 4326)::geography);
+```

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { KA } from 'src/constants/strings.ka';
+import { triggerBookingNotification } from 'src/lib/notifications';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 import {
@@ -150,6 +151,8 @@ export async function createBooking(
     return null;
   }
 
+  triggerBookingNotification(data.id, 'new_booking');
+
   return { id: data.id };
 }
 
@@ -166,5 +169,8 @@ export async function updateBookingStatus(
     console.error('[updateBookingStatus] failed:', error);
     return false;
   }
+
+  triggerBookingNotification(bookingId, status);
+
   return true;
 }

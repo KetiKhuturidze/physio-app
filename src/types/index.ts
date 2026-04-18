@@ -14,6 +14,9 @@ export type User = {
   full_name: string;
   role: UserRole;
   avatar_url: string | null;
+  push_token: string | null;
+  default_address: string | null;
+  default_district_id: string | null;
   created_at: string;
 };
 

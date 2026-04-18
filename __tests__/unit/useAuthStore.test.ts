@@ -8,6 +8,9 @@ const mockUser: User = {
   full_name: 'ნინო ბერიძე',
   role: 'physio',
   avatar_url: null,
+  push_token: null,
+  default_address: null,
+  default_district_id: null,
   created_at: '2024-01-01T00:00:00Z',
 };
 

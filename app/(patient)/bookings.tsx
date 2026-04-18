@@ -51,14 +51,23 @@ export default function PatientBookings() {
               activeOpacity={0.8}
               className="bg-green-600 rounded-2xl px-6 py-3"
             >
-              <Text className="text-white font-semibold text-sm">{KA.patientHome.appName}</Text>
+              <Text className="text-white font-semibold text-sm">{KA.patientHome.findPhysio}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {/* ── Bookings list ── */}
         {bookings.map((booking) => (
-          <BookingCard key={booking.id} booking={booking} role="patient" />
+          <BookingCard
+            key={booking.id}
+            booking={booking}
+            role="patient"
+            onReview={
+              booking.status === 'completed'
+                ? () => router.push(`/(patient)/review/${booking.id}`)
+                : undefined
+            }
+          />
         ))}
       </ScrollView>
     </View>

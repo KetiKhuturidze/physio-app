@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 import { KA } from 'src/constants/strings.ka';
 import supabase from 'src/lib/supabase';
@@ -72,46 +72,52 @@ export default function PhysioProfileView() {
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!user) { setLoading(false); return; }
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
 
-      const { data } = await supabase
-        .from('physio_profiles')
-        .select(`
-          id,
-          bio,
-          specialties,
-          languages,
-          available_hours,
-          is_verified,
-          base_district:districts!physio_profiles_base_district_id_fkey(id, name_en, name_ka, center),
-          physio_service_areas(
-            district:districts(id, name_en, name_ka, center)
-          ),
-          physio_services(id, name, duration_minutes, price, description)
-        `)
-        .eq('user_id', user.id)
-        .maybeSingle();
+      async function fetchProfile() {
+        if (!user) { setLoading(false); return; }
 
-      if (data) setProfile(data as unknown as ProfileViewRow);
+        const { data } = await supabase
+          .from('physio_profiles')
+          .select(`
+            id,
+            bio,
+            specialties,
+            languages,
+            available_hours,
+            is_verified,
+            base_district:districts!physio_profiles_base_district_id_fkey(id, name_en, name_ka, center),
+            physio_service_areas(
+              district:districts(id, name_en, name_ka, center)
+            ),
+            physio_services(id, name, duration_minutes, price, description)
+          `)
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      // Fresh-fetch avatar_url to catch updates from previous sessions
-      const { data: userData } = await supabase
-        .from('users')
-        .select('avatar_url')
-        .eq('id', user.id)
-        .single();
+        if (cancelled) return;
+        if (data) setProfile(data as unknown as ProfileViewRow);
 
-      if (userData && userData.avatar_url !== user.avatar_url) {
-        setUser({ ...user, avatar_url: userData.avatar_url as string | null });
+        const { data: userData } = await supabase
+          .from('users')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+
+        if (cancelled) return;
+        if (userData && userData.avatar_url !== user.avatar_url) {
+          setUser({ ...user, avatar_url: userData.avatar_url as string | null });
+        }
+
+        setLoading(false);
       }
 
-      setLoading(false);
-    }
-
-    fetchProfile();
-  }, [user, setUser]);
+      fetchProfile();
+      return () => { cancelled = true; };
+    }, [user, setUser]),
+  );
 
   async function handleLogout() {
     setLoggingOut(true);

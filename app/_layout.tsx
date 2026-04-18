@@ -3,6 +3,7 @@ import '../global.css';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
+import { registerForPushNotifications } from 'src/lib/notifications';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 import { User } from 'src/types/index';
@@ -35,7 +36,9 @@ function useProtectedRoute() {
         return;
       }
 
-      setUser(userData as User);
+      const user = userData as User;
+      setUser(user);
+      registerForPushNotifications(user.id);
       setLoading(false);
     };
 
@@ -59,7 +62,9 @@ function useProtectedRoute() {
           return;
         }
 
-        setUser(userData as User);
+        const signedInUser = userData as User;
+        setUser(signedInUser);
+        registerForPushNotifications(signedInUser.id);
       }
     });
 

@@ -46,8 +46,10 @@ export default function BookPhysio() {
   const [loading, setLoading] = useState(true);
 
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
-  const [address, setAddress] = useState('');
-  const [districtIds, setDistrictIds] = useState<string[]>([]);
+  const [address, setAddress] = useState(user?.default_address ?? '');
+  const [districtIds, setDistrictIds] = useState<string[]>(
+    user?.default_district_id ? [user.default_district_id] : [],
+  );
   const [requestedTime, setRequestedTime] = useState('');
   const [notes, setNotes] = useState('');
 

@@ -1,4 +1,4 @@
-import { Image, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { KA } from 'src/constants/strings.ka';
 import { BookingStatus, BookingWithJoins, UserRole } from 'src/types';
@@ -6,6 +6,10 @@ import { BookingStatus, BookingWithJoins, UserRole } from 'src/types';
 type Props = {
   booking: BookingWithJoins;
   role: UserRole;
+  onConfirm?: () => void;
+  onDecline?: () => void;
+  onReview?: () => void;
+  actionLoading?: boolean;
 };
 
 const STATUS_STYLES: Record<BookingStatus, { bg: string; text: string; label: string }> = {
@@ -42,24 +46,24 @@ function formatDate(iso: string): string {
     .padStart(2, '0')}.${d.getFullYear()}`;
 }
 
-export default function BookingCard({ booking, role }: Props) {
+export default function BookingCard({ booking, role, onConfirm, onDecline, onReview, actionLoading }: Props) {
   const S = KA.patientBookings;
   const status = STATUS_STYLES[booking.status];
 
   // Patient sees physio info; physio sees patient info
   const primaryName =
     role === 'patient'
-      ? booking.physio_profile.user.full_name
-      : booking.patient.full_name;
+      ? (booking.physio_profile?.user?.full_name ?? '—')
+      : (booking.patient?.full_name ?? '—');
 
   const avatarUri =
-    role === 'patient' ? booking.physio_profile.user.avatar_url : null;
+    role === 'patient' ? (booking.physio_profile?.user?.avatar_url ?? null) : null;
 
   const subtitle =
-    role === 'patient' && booking.physio_profile.base_district
+    role === 'patient' && booking.physio_profile?.base_district
       ? booking.physio_profile.base_district.name_ka
       : role === 'physio'
-      ? booking.patient.phone
+      ? (booking.patient?.phone ?? null)
       : null;
 
   return (
@@ -112,6 +116,55 @@ export default function BookingCard({ booking, role }: Props) {
       <Text className="text-xs text-gray-400 mt-1 text-right">
         {formatDate(booking.created_at)}
       </Text>
+
+      {/* ── Review button (patient, completed only) ── */}
+      {role === 'patient' && booking.status === 'completed' && onReview && (
+        <View className="mt-3 pt-3 border-t border-gray-100">
+          <TouchableOpacity
+            onPress={onReview}
+            activeOpacity={0.75}
+            className="rounded-xl bg-amber-50 border border-amber-200 py-2.5 items-center"
+          >
+            <Text className="text-amber-800 text-sm font-medium">
+              {KA.reviewScreen.reviewButton}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* ── Confirm / Decline (physio, pending only) ── */}
+      {role === 'physio' && booking.status === 'pending' && (onConfirm || onDecline) && (
+        <View className="flex-row gap-2 mt-3 pt-3 border-t border-gray-100">
+          {onDecline && (
+            <TouchableOpacity
+              onPress={onDecline}
+              disabled={actionLoading}
+              activeOpacity={0.75}
+              className="flex-1 rounded-xl border border-red-200 bg-red-50 py-2.5 items-center"
+            >
+              {actionLoading ? (
+                <ActivityIndicator size="small" color="#dc2626" />
+              ) : (
+                <Text className="text-red-700 text-sm font-medium">{KA.nav.decline}</Text>
+              )}
+            </TouchableOpacity>
+          )}
+          {onConfirm && (
+            <TouchableOpacity
+              onPress={onConfirm}
+              disabled={actionLoading}
+              activeOpacity={0.75}
+              className="flex-1 rounded-xl bg-green-600 py-2.5 items-center"
+            >
+              {actionLoading ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <Text className="text-white text-sm font-semibold">{KA.nav.confirm}</Text>
+              )}
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </View>
   );
 }

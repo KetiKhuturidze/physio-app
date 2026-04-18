@@ -55,7 +55,7 @@ function toPhysioWithJoins(row: RawPhysioRow): PhysioWithJoins {
   };
 }
 
-export function usePhysios(districtId: string | null): UsePhysiosResult {
+export function usePhysios(districtId: string | null | 'all'): UsePhysiosResult {
   const [physios, setPhysios] = useState<PhysioWithJoins[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +77,7 @@ export function usePhysios(districtId: string | null): UsePhysiosResult {
       setLoading(true);
       setError(null);
 
-      const { data, error: dbError } = await supabase
+      let query = supabase
         .from('physio_profiles')
         .select(`
           *,
@@ -86,8 +86,13 @@ export function usePhysios(districtId: string | null): UsePhysiosResult {
           physio_service_areas!inner(district_id),
           reviews(rating)
         `)
-        .eq('is_active', true)
-        .eq('physio_service_areas.district_id', districtId);
+        .eq('is_active', true);
+
+      if (districtId !== 'all') {
+        query = query.eq('physio_service_areas.district_id', districtId);
+      }
+
+      const { data, error: dbError } = await query;
 
       if (cancelled) return;
 
