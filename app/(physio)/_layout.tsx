@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Tabs, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
 
@@ -8,6 +9,7 @@ const S = KA;
 export default function PhysioLayout() {
   const { user, isLoading } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -25,9 +27,9 @@ export default function PhysioLayout() {
           backgroundColor: '#ffffff',
           borderTopColor: '#f3f4f6',
           borderTopWidth: 1,
-          paddingBottom: 8,
           paddingTop: 8,
-          height: 60,
+          paddingBottom: insets.bottom,
+          height: 60 + insets.bottom,
         },
         tabBarLabelStyle: {
           fontSize: 12,

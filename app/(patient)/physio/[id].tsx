@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KA } from 'src/constants/strings.ka';
 import supabase from 'src/lib/supabase';
@@ -119,6 +120,7 @@ function formatDate(iso: string): string {
 export default function PhysioProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [physio, setPhysio] = useState<PhysioDetailRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -215,7 +217,7 @@ export default function PhysioProfile() {
   return (
     <View className="flex-1 bg-gray-50">
       {/* ── Back button header ── */}
-      <View className="bg-white px-4 pt-14 pb-3 flex-row items-center border-b border-gray-100">
+      <View className="bg-white px-4 pb-3 flex-row items-center border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
@@ -401,7 +403,7 @@ export default function PhysioProfile() {
       </ScrollView>
 
       {/* ── Fixed book button ── */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pt-3 pb-8">
+      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pt-3" style={{ paddingBottom: insets.bottom + 12 }}>
         <TouchableOpacity
           onPress={() => router.push(`/(patient)/book/${physio.id}`)}
           activeOpacity={0.85}

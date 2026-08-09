@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BookingCard from 'src/components/BookingCard';
 import { KA } from 'src/constants/strings.ka';
@@ -9,13 +10,20 @@ import { BookingWithJoins } from 'src/types';
 const S = KA.physioBookings;
 
 export default function PhysioBookings() {
+  const insets = useSafeAreaInsets();
   const { bookings, loading, error, refetch } = useBookings('physio');
   const [actionBookingId, setActionBookingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function handleAction(booking: BookingWithJoins, action: 'confirmed' | 'declined') {
     setActionBookingId(booking.id);
-    await updateBookingStatus(booking.id, action);
+    setActionError(null);
+    const ok = await updateBookingStatus(booking.id, action);
     setActionBookingId(null);
+    if (!ok) {
+      setActionError(KA.errors.generic);
+      return;
+    }
     refetch();
   }
 
@@ -33,7 +41,7 @@ export default function PhysioBookings() {
   return (
     <View className="flex-1 bg-gray-50">
       {/* ── Header ── */}
-      <View className="bg-white px-6 pt-14 pb-5 border-b border-gray-100">
+      <View className="bg-white px-6 pb-5 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
       </View>
 
@@ -46,9 +54,9 @@ export default function PhysioBookings() {
         }
       >
         {/* ── Error ── */}
-        {error && (
+        {(error || actionError) && (
           <View className="mx-4 mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <Text className="text-red-700 text-sm">{error}</Text>
+            <Text className="text-red-700 text-sm">{error ?? actionError}</Text>
           </View>
         )}
 

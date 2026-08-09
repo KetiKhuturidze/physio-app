@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import PhysioCard from 'src/components/PhysioCard';
 import { KA } from 'src/constants/strings.ka';
@@ -99,6 +100,7 @@ function EmptyState({ locationLoading }: { locationLoading: boolean }) {
 export default function Home() {
   const { user } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const {
     district,
@@ -159,7 +161,7 @@ export default function Home() {
   const ListHeader = (
     <View className="gap-4 pb-4">
       {/* ── App header ── */}
-      <View className="bg-white px-6 pt-14 pb-5">
+      <View className="bg-white px-6 pb-5" style={{ paddingTop: insets.top + 12 }}>
         <Text className="text-xs font-semibold tracking-widest text-green-600 uppercase mb-1">
           {S.appName}
         </Text>

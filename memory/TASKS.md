@@ -57,6 +57,23 @@ All Phase 1 tasks done. Pending user action:
 
 ---
 
+## Bug Fixes
+
+| ID | Bug | Status |
+|----|-----|--------|
+| BUG-001 | Missing safe area on screens (notch/nav bar overlap) | ✅ DONE |
+| BUG-002 | Reviews not showing + rating on PhysioCard missing + physio can't see own reviews | ✅ DONE |
+| BUG-003 | Bottom tab bar covered by Android nav bar (Galaxy A32) | ✅ DONE |
+| BUG-004 | App stuck on loading screen on Samsung Android | ✅ DONE | 6s query timeout via Promise.race in INITIAL_SESSION; removed console.log user data; auth listener deps → [] |
+| BUG-005 | profile.tsx: no name validation, logout error swallowed, phone type null | ✅ DONE | Required fullName check; handleLogout try/finally; User.phone → string \| null |
+| BUG-006 | profile.tsx useFocusEffect discarded in-progress edits | ✅ DONE | Removed useFocusEffect — useState init from store is sufficient |
+| BUG-007 | (physio)/profile.tsx handleLogout: no error handling, spinner never resets | ✅ DONE | try/finally pattern, same as BUG-005 |
+| BUG-008 | console.error with DB errors/booking IDs in profile-edit + review screen | ✅ DONE | Removed all console.error calls; also caught in useBookings.ts |
+| BUG-009 | (physio)/bookings.tsx: updateBookingStatus errors silently swallowed | ✅ DONE | Check boolean return, show actionError banner |
+| BUG-010 | (physio)/profile-edit.tsx: .single() used to check if profile exists — errors on no rows | ✅ DONE | Switched to .maybeSingle() + explicit error check |
+
+---
+
 ## Phase 2 Tasks
 
 | ID | Task | Status | Notes |

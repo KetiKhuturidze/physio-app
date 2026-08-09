@@ -10,7 +10,7 @@ export type BookingStatus =
 export type User = {
   id: string;
   email: string;
-  phone: string;
+  phone: string | null;
   full_name: string;
   role: UserRole;
   avatar_url: string | null;

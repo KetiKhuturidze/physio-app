@@ -14,6 +14,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { decode } from 'base64-arraybuffer';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DistrictPicker from 'src/components/DistrictPicker';
 import { KA } from 'src/constants/strings.ka';
@@ -156,6 +157,7 @@ function TagInput({
 export default function ProfileEdit() {
   const { user, setUser } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [isFirstSave, setIsFirstSave] = useState(false);
 
@@ -271,14 +273,12 @@ export default function ProfileEdit() {
         .from('avatars')
         .upload(path, arrayBuffer, { contentType: 'image/jpeg', upsert: true });
       if (uploadError) {
-        console.error('[uploadAvatar] storage upload failed:', uploadError);
         setError(S.saveError);
         return null;
       }
       const { data } = supabase.storage.from('avatars').getPublicUrl(path);
       return `${data.publicUrl}?t=${Date.now()}`;
-    } catch (err) {
-      console.error('[uploadAvatar] unexpected error:', err);
+    } catch {
       setError(S.saveError);
       return null;
     } finally {
@@ -358,7 +358,6 @@ export default function ProfileEdit() {
         .update({ avatar_url: avatarUrl })
         .eq('id', user.id);
       if (userError) {
-        console.error('[handleSave] users update failed:', userError);
         setError(S.saveError);
         setSaving(false);
         return;
@@ -367,11 +366,17 @@ export default function ProfileEdit() {
     }
 
     // 3. Check if profile row exists, then update or insert
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from('physio_profiles')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
+
+    if (existingError) {
+      setError(S.saveError);
+      setSaving(false);
+      return;
+    }
 
     let profileError = null;
     let physioId: string = existing?.id ?? '';
@@ -408,7 +413,6 @@ export default function ProfileEdit() {
     }
 
     if (profileError) {
-      console.error('[handleSave] profile save failed:', profileError);
       setError(S.saveError);
       setSaving(false);
       return;
@@ -421,7 +425,6 @@ export default function ProfileEdit() {
       .eq('physio_id', physioId);
 
     if (deleteAreasError) {
-      console.error('[handleSave] physio_service_areas delete failed:', deleteAreasError);
       setError(S.saveError);
       setSaving(false);
       return;
@@ -432,7 +435,6 @@ export default function ProfileEdit() {
         .from('physio_service_areas')
         .insert(serviceAreaIds.map((district_id) => ({ physio_id: physioId, district_id })));
       if (insertAreasError) {
-        console.error('[handleSave] physio_service_areas insert failed:', insertAreasError);
         setError(S.saveError);
         setSaving(false);
         return;
@@ -446,7 +448,6 @@ export default function ProfileEdit() {
       .eq('physio_id', physioId);
 
     if (deleteSvcsError) {
-      console.error('[handleSave] physio_services delete failed:', deleteSvcsError);
       setError(S.saveError);
       setSaving(false);
       return;
@@ -463,7 +464,6 @@ export default function ProfileEdit() {
         })),
       );
       if (insertSvcsError) {
-        console.error('[handleSave] physio_services insert failed:', insertSvcsError);
         setError(S.saveError);
         setSaving(false);
         return;
@@ -512,7 +512,7 @@ export default function ProfileEdit() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="bg-white px-6 pt-14 pb-5 border-b border-gray-100">
+        <View className="bg-white px-6 pb-5 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
           <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
         </View>
 

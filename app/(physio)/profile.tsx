@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KA } from 'src/constants/strings.ka';
 import supabase from 'src/lib/supabase';
@@ -29,6 +30,14 @@ type ServiceRow = {
   description: string | null;
 };
 
+type ReviewRow = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  patient: { full_name: string } | null;
+};
+
 type ProfileViewRow = {
   id: string;
   bio: string | null;
@@ -39,6 +48,7 @@ type ProfileViewRow = {
   base_district: District | null;
   physio_service_areas: ServiceAreaRow[];
   physio_services: ServiceRow[];
+  reviews: ReviewRow[];
 };
 
 function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
@@ -64,9 +74,25 @@ function SectionTitle({ title }: { title: string }) {
   return <Text className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{title}</Text>;
 }
 
+function StarRow({ rating }: { rating: number }) {
+  return (
+    <View className="flex-row gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Text key={s} className={`text-sm ${s <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}>★</Text>
+      ))}
+    </View>
+  );
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
+}
+
 export default function PhysioProfileView() {
   const { user, logout, setUser } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [profile, setProfile] = useState<ProfileViewRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,7 +118,11 @@ export default function PhysioProfileView() {
             physio_service_areas(
               district:districts(id, name_en, name_ka, center)
             ),
-            physio_services(id, name, duration_minutes, price, description)
+            physio_services(id, name, duration_minutes, price, description),
+            reviews(
+              id, rating, comment, created_at,
+              patient:users!reviews_patient_id_fkey(full_name)
+            )
           `)
           .eq('user_id', user.id)
           .maybeSingle();
@@ -121,9 +151,14 @@ export default function PhysioProfileView() {
 
   async function handleLogout() {
     setLoggingOut(true);
-    await supabase.auth.signOut();
-    logout();
-    router.replace('/(auth)/login');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) return;
+      logout();
+      router.replace('/(auth)/login');
+    } finally {
+      setLoggingOut(false);
+    }
   }
 
   if (loading) {
@@ -141,7 +176,7 @@ export default function PhysioProfileView() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Header ── */}
-      <View className="bg-white px-6 pt-14 pb-6 border-b border-gray-100">
+      <View className="bg-white px-6 pb-6 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
       </View>
 
@@ -253,6 +288,38 @@ export default function PhysioProfileView() {
               </View>
             </View>
           )}
+
+          {/* ── Reviews ── */}
+          <View className="bg-white rounded-2xl p-4">
+            <SectionTitle title={PV.reviewsTitle} />
+            {profile.reviews.length === 0 ? (
+              <Text className="text-gray-400 text-sm">{PV.noReviewsYet}</Text>
+            ) : (
+              <View className="gap-4">
+                {profile.reviews
+                  .slice()
+                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                  .map((review) => (
+                    <View key={review.id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                      <View className="flex-row items-center justify-between mb-1">
+                        <View className="flex-row items-center gap-2">
+                          <StarRow rating={review.rating} />
+                          {review.patient && (
+                            <Text className="text-sm text-gray-700 font-medium">
+                              {review.patient.full_name.split(' ')[0]}
+                            </Text>
+                          )}
+                        </View>
+                        <Text className="text-xs text-gray-400">{formatDate(review.created_at)}</Text>
+                      </View>
+                      {review.comment && (
+                        <Text className="text-sm text-gray-600 leading-5">{review.comment}</Text>
+                      )}
+                    </View>
+                  ))}
+              </View>
+            )}
+          </View>
         </View>
       )}
 

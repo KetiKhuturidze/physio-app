@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DistrictPicker from 'src/components/DistrictPicker';
 import { KA } from 'src/constants/strings.ka';
@@ -34,6 +35,7 @@ function FieldLabel({ label }: { label: string }) {
 export default function PatientProfile() {
   const { user, logout, setUser } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [fullName, setFullName] = useState(user?.full_name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
@@ -46,19 +48,12 @@ export default function PatientProfile() {
   const [saveResult, setSaveResult] = useState<'success' | 'error' | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (user) {
-        setFullName(user.full_name);
-        setPhone(user.phone);
-        setDefaultAddress(user.default_address ?? '');
-        setDefaultDistrictIds(user.default_district_id ? [user.default_district_id] : []);
-      }
-    }, [user]),
-  );
-
   async function handleSave() {
     if (!user) return;
+    if (!fullName.trim()) {
+      setSaveResult('error');
+      return;
+    }
     setSaving(true);
     setSaveResult(null);
 
@@ -66,7 +61,7 @@ export default function PatientProfile() {
       .from('users')
       .update({
         full_name: fullName.trim(),
-        phone: phone.trim(),
+        phone: phone.trim() || null,
         default_address: defaultAddress.trim() || null,
         default_district_id: defaultDistrictIds[0] ?? null,
       })
@@ -82,7 +77,7 @@ export default function PatientProfile() {
     setUser({
       ...user,
       full_name: fullName.trim(),
-      phone: phone.trim(),
+      phone: phone.trim() || null,
       default_address: defaultAddress.trim() || null,
       default_district_id: defaultDistrictIds[0] ?? null,
     });
@@ -91,9 +86,17 @@ export default function PatientProfile() {
 
   async function handleLogout() {
     setLoggingOut(true);
-    await supabase.auth.signOut();
-    logout();
-    router.replace('/(auth)/login');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        setSaveResult('error');
+        return;
+      }
+      logout();
+      router.replace('/(auth)/login');
+    } finally {
+      setLoggingOut(false);
+    }
   }
 
   const initials = (user?.full_name ?? '')
@@ -116,7 +119,7 @@ export default function PatientProfile() {
         keyboardShouldPersistTaps="handled"
       >
         {/* ── Header ── */}
-        <View className="bg-white px-6 pt-14 pb-5 border-b border-gray-100">
+        <View className="bg-white px-6 pb-5 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
           <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
         </View>
 

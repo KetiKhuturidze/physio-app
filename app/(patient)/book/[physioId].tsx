@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DistrictPicker from 'src/components/DistrictPicker';
 import { KA } from 'src/constants/strings.ka';
@@ -40,6 +41,7 @@ export default function BookPhysio() {
   const { physioId } = useLocalSearchParams<{ physioId: string }>();
   const router = useRouter();
   const { user } = useAuthStore();
+  const insets = useSafeAreaInsets();
 
   const [physio, setPhysio] = useState<BookingPhysioRow | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -152,7 +154,7 @@ export default function BookPhysio() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* ── Header ── */}
-      <View className="bg-white px-4 pt-14 pb-3 flex-row items-center border-b border-gray-100">
+      <View className="bg-white px-4 pb-3 flex-row items-center border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}

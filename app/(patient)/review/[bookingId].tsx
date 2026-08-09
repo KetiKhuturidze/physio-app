@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KA } from 'src/constants/strings.ka';
 import supabase from 'src/lib/supabase';
@@ -41,6 +42,7 @@ export default function ReviewScreen() {
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
   const router = useRouter();
   const { user } = useAuthStore();
+  const insets = useSafeAreaInsets();
 
   const [bookingInfo, setBookingInfo] = useState<BookingInfo | null>(null);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
@@ -81,7 +83,6 @@ export default function ReviewScreen() {
       ]);
 
       if (bookingRes.error || !bookingRes.data) {
-        console.error('[ReviewScreen] booking load error:', bookingRes.error);
         setLoadError(KA.errors.generic);
         setLoading(false);
         return;
@@ -174,7 +175,7 @@ export default function ReviewScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* ── Header ── */}
-      <View className="bg-white px-4 pt-14 pb-3 flex-row items-center border-b border-gray-100">
+      <View className="bg-white px-4 pb-3 flex-row items-center border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}

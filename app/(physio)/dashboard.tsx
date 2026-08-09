@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KA } from 'src/constants/strings.ka';
 import { useBookings } from 'src/hooks/useBookings';
@@ -55,6 +56,7 @@ function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
 export default function Dashboard() {
   const { user, setUser } = useAuthStore();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [profile, setProfile] = useState<DashboardProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -122,7 +124,7 @@ export default function Dashboard() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Header ── */}
-      <View className="bg-white px-6 pt-14 pb-6 border-b border-gray-100">
+      <View className="bg-white px-6 pb-6 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <Text className="text-sm text-gray-500 mb-0.5">{KA.general.welcome}</Text>
         <Text className="text-2xl font-bold text-gray-900">{firstName}</Text>
       </View>

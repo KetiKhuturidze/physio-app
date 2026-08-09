@@ -166,7 +166,6 @@ export async function updateBookingStatus(
     .eq('id', bookingId);
 
   if (error) {
-    console.error('[updateBookingStatus] failed:', error);
     return false;
   }
 

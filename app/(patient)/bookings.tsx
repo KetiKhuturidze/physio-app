@@ -1,5 +1,6 @@
 import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BookingCard from 'src/components/BookingCard';
 import { KA } from 'src/constants/strings.ka';
@@ -9,6 +10,7 @@ const S = KA.patientBookings;
 
 export default function PatientBookings() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { bookings, loading, error, refetch } = useBookings('patient');
 
   if (loading) {
@@ -22,7 +24,7 @@ export default function PatientBookings() {
   return (
     <View className="flex-1 bg-gray-50">
       {/* ── Header ── */}
-      <View className="bg-white px-6 pt-14 pb-5 border-b border-gray-100">
+      <View className="bg-white px-6 pb-5 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
         <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
       </View>
 

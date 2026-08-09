@@ -3,6 +3,7 @@ import '../global.css';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { registerForPushNotifications } from 'src/lib/notifications';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
@@ -14,63 +15,77 @@ function useProtectedRoute() {
   const { user, isLoading, setUser, setLoading, logout } = useAuthStore();
   const navigationState = useRootNavigationState();
 
+  // Safety net: if loading never resolves (e.g. network hang on Android), unblock after 10s
   useEffect(() => {
-    const bootstrap = async () => {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (!isLoading) return;
+    const timeout = setTimeout(() => {
+      console.warn('[Auth] Loading timeout — forcing logout');
+      logout();
+      setLoading(false);
+    }, 10000);
+    return () => clearTimeout(timeout);
+  }, [isLoading, logout, setLoading]);
 
-      if (sessionError || !sessionData.session) {
-        logout();
-        setLoading(false);
-        return;
-      }
-
-      const { data: userData, error: userError } = await supabase
+  useEffect(() => {
+    async function fetchUser(userId: string): Promise<User | null> {
+      const queryPromise = supabase
         .from('users')
         .select('*')
-        .eq('id', sessionData.session.user.id)
+        .eq('id', userId)
         .single();
 
-      if (userError || !userData) {
-        logout();
-        setLoading(false);
-        return;
-      }
+      // On Android (especially Samsung), the Supabase query can hang indefinitely
+      // on a slow/offline network. Race it against a 6s timeout so the 10s safety
+      // net above is a last resort rather than the first line of defence.
+      const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+        setTimeout(() => resolve({ data: null, error: new Error('query timeout') }), 6000),
+      );
 
-      const user = userData as User;
-      setUser(user);
-      registerForPushNotifications(user.id);
-      setLoading(false);
-    };
-
-    bootstrap();
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+      if (error || !data) return null;
+      return data as User;
+    }
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        logout();
+      if (event === 'INITIAL_SESSION') {
+        if (!session) {
+          logout();
+          setLoading(false);
+          return;
+        }
+
+        const u = await fetchUser(session.user.id);
+        if (!u) {
+          logout();
+          setLoading(false);
+          return;
+        }
+
+        setUser(u);
+        registerForPushNotifications(u.id);
+        setLoading(false);
         return;
       }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+        if (!session) return;
+        const u = await fetchUser(session.user.id);
+        if (!u) { logout(); return; }
+        setUser(u);
+        registerForPushNotifications(u.id);
+        return;
+      }
 
-        if (userError || !userData) {
-          logout();
-          return;
-        }
-
-        const signedInUser = userData as User;
-        setUser(signedInUser);
-        registerForPushNotifications(signedInUser.id);
+      if (event === 'SIGNED_OUT') {
+        logout();
       }
     });
 
     return () => {
       listener.subscription.unsubscribe();
     };
+    // Zustand actions (logout, setLoading, setUser) are stable references —
+    // listing them satisfies exhaustive-deps without risking re-subscription.
   }, [logout, setLoading, setUser]);
 
   useEffect(() => {
@@ -103,15 +118,19 @@ export default function RootLayout() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <SafeAreaProvider>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaProvider>
     );
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-    </Stack>
+    <SafeAreaProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    </SafeAreaProvider>
   );
 }
