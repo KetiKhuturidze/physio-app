@@ -86,13 +86,18 @@ export default function Login() {
       >
         <View className="flex-1 justify-center px-6 py-16">
 
-          {/* Header */}
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
-            {S.auth.login.title}
-          </Text>
-          <Text className="text-base text-gray-500 mb-10">
-            {S.auth.login.subtitle}
-          </Text>
+          {/* Brand mark */}
+          <View className="mb-8">
+            <View className="w-14 h-14 rounded-2xl bg-teal-600 items-center justify-center mb-4">
+              <Text className="text-white text-2xl font-bold">F</Text>
+            </View>
+            <Text className="text-3xl font-bold text-gray-900 mb-1.5">
+              {S.auth.login.title}
+            </Text>
+            <Text className="text-base text-gray-500">
+              {S.auth.login.subtitle}
+            </Text>
+          </View>
 
           {/* Email */}
           <Text className="text-sm font-medium text-gray-700 mb-1">
@@ -138,7 +143,7 @@ export default function Login() {
           {/* Submit button */}
           <TouchableOpacity
             className={`rounded-xl py-4 items-center ${
-              isLoading ? 'bg-blue-400' : 'bg-blue-600'
+              isLoading ? 'bg-teal-400' : 'bg-teal-600'
             }`}
             onPress={handleLogin}
             disabled={isLoading}
@@ -160,7 +165,7 @@ export default function Login() {
             </Text>
             <Link href="/(auth)/register" asChild>
               <TouchableOpacity>
-                <Text className="text-blue-600 text-sm font-semibold">
+                <Text className="text-teal-600 text-sm font-semibold">
                   {S.auth.login.registerLink}
                 </Text>
               </TouchableOpacity>

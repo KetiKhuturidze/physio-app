@@ -47,8 +47,8 @@ function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
     return <Image source={{ uri }} className="w-16 h-16 rounded-full bg-gray-200" />;
   }
   return (
-    <View className="w-16 h-16 rounded-full bg-green-100 items-center justify-center">
-      <Text className="text-green-700 text-xl font-semibold">{initials}</Text>
+    <View className="w-16 h-16 rounded-full bg-teal-100 items-center justify-center">
+      <Text className="text-teal-700 text-xl font-semibold">{initials}</Text>
     </View>
   );
 }
@@ -112,7 +112,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -163,8 +163,8 @@ export default function Dashboard() {
                     {user?.full_name}
                   </Text>
                   {profile.is_verified && (
-                    <View className="bg-green-100 rounded-full px-2 py-0.5">
-                      <Text className="text-green-700 text-xs font-medium">
+                    <View className="bg-teal-100 rounded-full px-2 py-0.5">
+                      <Text className="text-teal-700 text-xs font-medium">
                         {S.verifiedBadge}
                       </Text>
                     </View>
@@ -196,13 +196,13 @@ export default function Dashboard() {
           <View className="flex-row items-center justify-between">
             <Text className="text-base font-semibold text-gray-900">{S.myBookings}</Text>
             <TouchableOpacity onPress={() => router.navigate('/(physio)/bookings')} activeOpacity={0.7}>
-              <Text className="text-green-600 text-sm font-medium">{S.seeAll}</Text>
+              <Text className="text-teal-600 text-sm font-medium">{S.seeAll}</Text>
             </TouchableOpacity>
           </View>
 
           {bookingsLoading ? (
             <View className="py-4 items-center">
-              <ActivityIndicator color="#16a34a" size="small" />
+              <ActivityIndicator color="#0891b2" size="small" />
             </View>
           ) : bookings.length === 0 ? (
             <View className="py-4 items-center">
@@ -214,9 +214,9 @@ export default function Dashboard() {
                 <Text className="text-2xl font-bold text-amber-600">{pendingCount}</Text>
                 <Text className="text-xs text-amber-700 mt-0.5">{S.pendingLabel}</Text>
               </View>
-              <View className="flex-1 bg-green-50 rounded-xl p-3 items-center">
-                <Text className="text-2xl font-bold text-green-600">{bookings.length}</Text>
-                <Text className="text-xs text-green-700 mt-0.5">{S.totalLabel}</Text>
+              <View className="flex-1 bg-teal-50 rounded-xl p-3 items-center">
+                <Text className="text-2xl font-bold text-teal-600">{bookings.length}</Text>
+                <Text className="text-xs text-teal-700 mt-0.5">{S.totalLabel}</Text>
               </View>
             </View>
           )}

@@ -102,8 +102,8 @@ function Avatar({
     );
   }
   return (
-    <View className={`${dim} rounded-full bg-green-100 items-center justify-center`}>
-      <Text className={`${textSize} font-semibold text-green-700`}>{initials}</Text>
+    <View className={`${dim} rounded-full bg-teal-100 items-center justify-center`}>
+      <Text className={`${textSize} font-semibold text-teal-700`}>{initials}</Text>
     </View>
   );
 }
@@ -174,7 +174,7 @@ export default function PhysioProfile() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -184,7 +184,7 @@ export default function PhysioProfile() {
       <View className="flex-1 bg-white items-center justify-center px-8">
         <Text className="text-gray-500 text-base text-center">{error ?? S.notFound}</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-green-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -223,8 +223,8 @@ export default function PhysioProfile() {
           hitSlop={12}
           className="flex-row items-center gap-1.5"
         >
-          <Text className="text-green-600 text-xl">‹</Text>
-          <Text className="text-green-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-teal-600 text-xl">‹</Text>
+          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
 
@@ -241,8 +241,8 @@ export default function PhysioProfile() {
             <View className="flex-row items-center gap-2 flex-wrap justify-center">
               <Text className="text-xl font-bold text-gray-900">{user.full_name}</Text>
               {is_verified && (
-                <View className="bg-green-100 rounded-full px-2.5 py-0.5">
-                  <Text className="text-green-700 text-xs font-medium">
+                <View className="bg-teal-100 rounded-full px-2.5 py-0.5">
+                  <Text className="text-teal-700 text-xs font-medium">
                     {KA.physioCard.verified}
                   </Text>
                 </View>
@@ -288,7 +288,7 @@ export default function PhysioProfile() {
                   <View key={svc.id} className="border border-gray-100 rounded-xl px-3 py-3 bg-gray-50">
                     <View className="flex-row items-center justify-between">
                       <Text className="text-sm font-semibold text-gray-900 flex-1">{svc.name}</Text>
-                      <Text className="text-sm font-bold text-green-700">₾{svc.price}</Text>
+                      <Text className="text-sm font-bold text-teal-700">₾{svc.price}</Text>
                     </View>
                     <Text className="text-xs text-gray-500 mt-0.5">
                       {svc.duration_minutes} {S.serviceMinutes}
@@ -348,7 +348,7 @@ export default function PhysioProfile() {
                     key={district.id}
                     className="flex-row items-center gap-2"
                   >
-                    <View className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-teal-500" />
                     <Text className="text-gray-700 text-sm">{district.name_ka}</Text>
                   </View>
                 ))}
@@ -407,7 +407,7 @@ export default function PhysioProfile() {
         <TouchableOpacity
           onPress={() => router.push(`/(patient)/book/${physio.id}`)}
           activeOpacity={0.85}
-          className="bg-green-600 rounded-2xl py-4 items-center"
+          className="bg-teal-600 rounded-2xl py-4 items-center"
         >
           <Text className="text-white font-semibold text-base">{S.bookButton}</Text>
         </TouchableOpacity>

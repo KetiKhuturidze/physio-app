@@ -64,8 +64,8 @@ function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
     return <Image source={{ uri }} className="w-24 h-24 rounded-full bg-gray-200" />;
   }
   return (
-    <View className="w-24 h-24 rounded-full bg-green-100 items-center justify-center">
-      <Text className="text-green-700 text-2xl font-semibold">{initials}</Text>
+    <View className="w-24 h-24 rounded-full bg-teal-100 items-center justify-center">
+      <Text className="text-teal-700 text-2xl font-semibold">{initials}</Text>
     </View>
   );
 }
@@ -164,7 +164,7 @@ export default function PhysioProfileView() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -188,8 +188,8 @@ export default function PhysioProfileView() {
           <Text className="text-xl font-bold text-gray-900">{user?.full_name}</Text>
 
           {profile?.is_verified && (
-            <View className="bg-green-100 rounded-full px-3 py-1">
-              <Text className="text-green-700 text-xs font-medium">
+            <View className="bg-teal-100 rounded-full px-3 py-1">
+              <Text className="text-teal-700 text-xs font-medium">
                 {KA.physioCard.verified}
               </Text>
             </View>
@@ -281,7 +281,7 @@ export default function PhysioProfileView() {
               <View className="gap-2">
                 {profile.physio_service_areas.map(({ district }) => (
                   <View key={district.id} className="flex-row items-center gap-2">
-                    <View className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-teal-500" />
                     <Text className="text-gray-700 text-sm">{district.name_ka}</Text>
                   </View>
                 ))}
@@ -328,7 +328,7 @@ export default function PhysioProfileView() {
         <TouchableOpacity
           onPress={() => router.navigate('/(physio)/profile-edit')}
           activeOpacity={0.8}
-          className="bg-green-600 rounded-2xl py-4 items-center"
+          className="bg-teal-600 rounded-2xl py-4 items-center"
         >
           <Text className="text-white font-semibold text-base">{S.editButton}</Text>
         </TouchableOpacity>

@@ -132,7 +132,7 @@ export default function BookPhysio() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -142,7 +142,7 @@ export default function BookPhysio() {
       <View className="flex-1 bg-white items-center justify-center px-8">
         <Text className="text-gray-500 text-base text-center">{loadError ?? S.loadError}</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-green-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -160,8 +160,8 @@ export default function BookPhysio() {
           hitSlop={12}
           className="flex-row items-center gap-1.5 mr-3"
         >
-          <Text className="text-green-600 text-xl">‹</Text>
-          <Text className="text-green-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-teal-600 text-xl">‹</Text>
+          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
         <Text className="text-base font-semibold text-gray-900 flex-1" numberOfLines={1}>
           {S.title} — {physio.user.full_name}
@@ -201,14 +201,14 @@ export default function BookPhysio() {
                       activeOpacity={0.75}
                       className={`flex-row items-center justify-between px-4 py-3.5 rounded-xl border ${
                         selected
-                          ? 'border-green-500 bg-green-50'
+                          ? 'border-teal-500 bg-teal-50'
                           : 'border-gray-200 bg-gray-50'
                       }`}
                     >
                       <View className="flex-1 gap-0.5">
                         <Text
                           className={`text-sm font-semibold ${
-                            selected ? 'text-green-800' : 'text-gray-900'
+                            selected ? 'text-teal-800' : 'text-gray-900'
                           }`}
                         >
                           {svc.name}
@@ -218,7 +218,7 @@ export default function BookPhysio() {
                         </Text>
                       </View>
                       {selected && (
-                        <Text className="text-green-600 text-base font-bold ml-3">✓</Text>
+                        <Text className="text-teal-600 text-base font-bold ml-3">✓</Text>
                       )}
                     </TouchableOpacity>
                   );
@@ -293,7 +293,7 @@ export default function BookPhysio() {
             disabled={submitting}
             activeOpacity={0.8}
             className={`rounded-2xl py-4 items-center ${
-              submitting ? 'bg-green-300' : 'bg-green-600'
+              submitting ? 'bg-teal-300' : 'bg-teal-600'
             }`}
           >
             {submitting ? (

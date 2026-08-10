@@ -28,8 +28,8 @@ function Avatar({ fullName, avatarUrl }: { fullName: string; avatarUrl: string |
     );
   }
   return (
-    <View className="w-16 h-16 rounded-full bg-green-100 items-center justify-center">
-      <Text className="text-green-700 text-lg font-semibold">
+    <View className="w-16 h-16 rounded-full bg-teal-100 items-center justify-center">
+      <Text className="text-teal-700 text-lg font-semibold">
         {getInitials(fullName)}
       </Text>
     </View>
@@ -69,8 +69,8 @@ export default function PhysioCard({ physio, onPress }: Props) {
             {user.full_name}
           </Text>
           {is_verified && (
-            <View className="bg-green-100 rounded-full px-2 py-0.5">
-              <Text className="text-green-700 text-xs font-medium">
+            <View className="bg-teal-100 rounded-full px-2 py-0.5">
+              <Text className="text-teal-700 text-xs font-medium">
                 {KA.physioCard.verified}
               </Text>
             </View>
@@ -102,9 +102,11 @@ export default function PhysioCard({ physio, onPress }: Props) {
 
         {/* Rating */}
         {ratingText != null && (
-          <Text className="text-sm text-gray-500 mt-0.5">
+          <Text className="text-sm text-amber-600 mt-0.5 font-medium">
             {ratingText}
-            {reviewText != null ? ` ${reviewText}` : ''}
+            <Text className="text-gray-400 font-normal">
+              {reviewText != null ? ` ${reviewText}` : ''}
+            </Text>
           </Text>
         )}
       </View>

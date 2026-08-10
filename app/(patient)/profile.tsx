@@ -125,14 +125,14 @@ export default function PatientProfile() {
 
         {/* ── Hero ── */}
         <View className="bg-white px-6 pt-6 pb-6 items-center gap-3 border-b border-gray-100">
-          <View className="w-20 h-20 rounded-full bg-blue-100 items-center justify-center">
-            <Text className="text-blue-700 text-2xl font-semibold">{initials}</Text>
+          <View className="w-20 h-20 rounded-full bg-teal-100 items-center justify-center">
+            <Text className="text-teal-700 text-2xl font-semibold">{initials}</Text>
           </View>
           <View className="items-center gap-1.5">
             <Text className="text-xl font-bold text-gray-900">{user?.full_name}</Text>
             <Text className="text-sm text-gray-400">{user?.email}</Text>
-            <View className="bg-blue-100 rounded-full px-3 py-1">
-              <Text className="text-blue-700 text-xs font-medium">
+            <View className="bg-teal-100 rounded-full px-3 py-1">
+              <Text className="text-teal-700 text-xs font-medium">
                 {KA.auth.register.rolePatient}
               </Text>
             </View>
@@ -204,7 +204,7 @@ export default function PatientProfile() {
             onPress={handleSave}
             disabled={saving}
             activeOpacity={0.8}
-            className={`rounded-2xl py-4 items-center ${saving ? 'bg-green-300' : 'bg-green-600'}`}
+            className={`rounded-2xl py-4 items-center ${saving ? 'bg-teal-300' : 'bg-teal-600'}`}
           >
             {saving ? (
               <ActivityIndicator color="#ffffff" />

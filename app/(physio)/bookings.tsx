@@ -33,7 +33,7 @@ export default function PhysioBookings() {
   if (loading) {
     return (
       <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -50,7 +50,7 @@ export default function PhysioBookings() {
         contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#16a34a" />
+          <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#0891b2" />
         }
       >
         {/* ── Error ── */}

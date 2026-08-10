@@ -46,7 +46,7 @@ export default function DistrictPicker({
   if (loading) {
     return (
       <View className="py-6 items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -70,17 +70,17 @@ export default function DistrictPicker({
               onPress={() => handlePress(district)}
               activeOpacity={0.7}
               className={`flex-row items-center justify-between px-4 py-3.5 border-b border-gray-100 ${
-                isSelected ? 'bg-green-50' : 'bg-white'
+                isSelected ? 'bg-teal-50' : 'bg-white'
               }`}
             >
               <Text
                 className={`text-base ${
-                  isSelected ? 'text-green-800 font-medium' : 'text-gray-800'
+                  isSelected ? 'text-teal-800 font-medium' : 'text-gray-800'
                 }`}
               >
                 {district.name_ka}
               </Text>
-              {isSelected && <Text className="text-green-600 text-base">✓</Text>}
+              {isSelected && <Text className="text-teal-600 text-base">✓</Text>}
             </TouchableOpacity>
           );
         })}

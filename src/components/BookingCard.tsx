@@ -33,8 +33,8 @@ function Avatar({ uri, name }: { uri: string | null; name: string }) {
     return <Image source={{ uri }} className="w-11 h-11 rounded-full bg-gray-200" />;
   }
   return (
-    <View className="w-11 h-11 rounded-full bg-green-100 items-center justify-center">
-      <Text className="text-green-700 text-sm font-semibold">{initials}</Text>
+    <View className="w-11 h-11 rounded-full bg-teal-100 items-center justify-center">
+      <Text className="text-teal-700 text-sm font-semibold">{initials}</Text>
     </View>
   );
 }
@@ -154,7 +154,7 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
               onPress={onConfirm}
               disabled={actionLoading}
               activeOpacity={0.75}
-              className="flex-1 rounded-xl bg-green-600 py-2.5 items-center"
+              className="flex-1 rounded-xl bg-teal-600 py-2.5 items-center"
             >
               {actionLoading ? (
                 <ActivityIndicator size="small" color="#ffffff" />

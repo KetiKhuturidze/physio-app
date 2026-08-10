@@ -36,9 +36,9 @@ function LocationBar({
 }) {
   if (loading) {
     return (
-      <View className="flex-row items-center gap-2 bg-blue-50 px-4 py-3 mx-4 rounded-xl">
-        <ActivityIndicator size="small" color="#2563eb" />
-        <Text className="text-blue-700 text-sm">{S.locationDetecting}</Text>
+      <View className="flex-row items-center gap-2 bg-teal-50 px-4 py-3 mx-4 rounded-xl">
+        <ActivityIndicator size="small" color="#0891b2" />
+        <Text className="text-teal-700 text-sm">{S.locationDetecting}</Text>
       </View>
     );
   }
@@ -70,9 +70,9 @@ function LocationBar({
 
   if (districtName) {
     return (
-      <View className="flex-row items-center gap-1.5 bg-green-50 px-4 py-3 mx-4 rounded-xl">
-        <Text className="text-green-600 text-sm">📍</Text>
-        <Text className="text-green-800 text-sm font-medium">
+      <View className="flex-row items-center gap-1.5 bg-teal-50 px-4 py-3 mx-4 rounded-xl">
+        <Text className="text-teal-600 text-sm font-bold">·</Text>
+        <Text className="text-teal-800 text-sm font-medium">
           {S.locationFound}
           <Text className="font-semibold">{districtName}</Text>
         </Text>
@@ -89,7 +89,7 @@ function EmptyState({ locationLoading }: { locationLoading: boolean }) {
   if (locationLoading) return null;
   return (
     <View className="flex-1 items-center justify-center px-8 py-16">
-      <Text className="text-4xl mb-4">🔍</Text>
+      <Text className="text-gray-300 text-5xl mb-4 font-light">—</Text>
       <Text className="text-gray-500 text-center text-base">{S.noPhysiosInArea}</Text>
     </View>
   );
@@ -162,12 +162,12 @@ export default function Home() {
     <View className="gap-4 pb-4">
       {/* ── App header ── */}
       <View className="bg-white px-6 pb-5" style={{ paddingTop: insets.top + 12 }}>
-        <Text className="text-xs font-semibold tracking-widest text-green-600 uppercase mb-1">
+        <Text className="text-xs font-semibold tracking-widest text-teal-600 uppercase mb-1">
           {S.appName}
         </Text>
         <Text className="text-2xl font-bold text-gray-900">
           {KA.general.welcome}{' '}
-          <Text className="text-green-700">{firstName}</Text>
+          <Text className="text-teal-600">{firstName}</Text>
         </Text>
       </View>
 
@@ -194,7 +194,7 @@ export default function Home() {
           <Text className="text-base font-semibold text-gray-900">
             {showAllPhysios ? S.allPhysios : S.physiosNearby}
           </Text>
-          {showPhysiosLoader && <ActivityIndicator size="small" color="#16a34a" />}
+          {showPhysiosLoader && <ActivityIndicator size="small" color="#0891b2" />}
         </View>
       )}
 

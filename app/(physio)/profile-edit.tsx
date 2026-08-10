@@ -99,11 +99,11 @@ function TagInput({
           {tags.map((tag) => (
             <View
               key={tag}
-              className="flex-row items-center bg-green-100 rounded-full px-3 py-1.5 gap-1"
+              className="flex-row items-center bg-teal-100 rounded-full px-3 py-1.5 gap-1"
             >
-              <Text className="text-green-800 text-sm">{tag}</Text>
+              <Text className="text-teal-800 text-sm">{tag}</Text>
               <TouchableOpacity onPress={() => onRemove(tag)} hitSlop={8}>
-                <Text className="text-green-600 text-sm font-bold">×</Text>
+                <Text className="text-teal-600 text-sm font-bold">×</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -123,7 +123,7 @@ function TagInput({
           onPress={() => onAdd()}
           disabled={!input.trim()}
           className={`w-12 rounded-xl items-center justify-center ${
-            input.trim() ? 'bg-green-600' : 'bg-gray-100'
+            input.trim() ? 'bg-teal-600' : 'bg-gray-100'
           }`}
         >
           <Text
@@ -493,7 +493,7 @@ export default function ProfileEdit() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -552,7 +552,7 @@ export default function ProfileEdit() {
                   <ActivityIndicator color="#ffffff" />
                 </View>
               )}
-              <View className="absolute bottom-0 right-0 bg-green-600 rounded-full w-7 h-7 items-center justify-center border-2 border-white">
+              <View className="absolute bottom-0 right-0 bg-teal-600 rounded-full w-7 h-7 items-center justify-center border-2 border-white">
                 <Text className="text-white text-xs">✎</Text>
               </View>
             </TouchableOpacity>
@@ -636,7 +636,7 @@ export default function ProfileEdit() {
               {!addingService && (
                 <TouchableOpacity
                   onPress={() => setAddingService(true)}
-                  className="bg-green-600 rounded-full px-3 py-1"
+                  className="bg-teal-600 rounded-full px-3 py-1"
                 >
                   <Text className="text-white text-sm font-medium">{S.addServiceButton}</Text>
                 </TouchableOpacity>
@@ -746,7 +746,7 @@ export default function ProfileEdit() {
                     }
                     className={`flex-1 rounded-xl py-2.5 items-center ${
                       serviceForm.name.trim() && serviceForm.duration_minutes && serviceForm.price
-                        ? 'bg-green-600'
+                        ? 'bg-teal-600'
                         : 'bg-gray-200'
                     }`}
                   >
@@ -795,7 +795,7 @@ export default function ProfileEdit() {
             onPress={handleSave}
             disabled={isBusy}
             activeOpacity={0.8}
-            className={`rounded-2xl py-4 items-center ${isBusy ? 'bg-green-300' : 'bg-green-600'}`}
+            className={`rounded-2xl py-4 items-center ${isBusy ? 'bg-teal-300' : 'bg-teal-600'}`}
           >
             {saving ? (
               <ActivityIndicator color="#ffffff" />

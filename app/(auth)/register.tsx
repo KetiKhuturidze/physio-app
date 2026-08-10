@@ -84,7 +84,6 @@ export default function Register() {
     });
 
     if (signUpError || !authData.user) {
-      console.error('[register] signUp error:', signUpError);
       const isEmailInUse =
         signUpError?.message.toLowerCase().includes('already registered') ||
         signUpError?.message.toLowerCase().includes('already been registered');
@@ -106,7 +105,6 @@ export default function Register() {
       .single();
 
     if (userInsertError || !userRow) {
-      console.error('[register] users insert error:', userInsertError);
       setFormError(S.errors.generic);
       setIsLoading(false);
       return;
@@ -124,7 +122,6 @@ export default function Register() {
         });
 
       if (profileInsertError) {
-        console.error('[register] physio_profiles insert error:', profileInsertError);
         setFormError(S.errors.generic);
         setIsLoading(false);
         return;
@@ -147,13 +144,18 @@ export default function Register() {
       >
         <View className="px-6 py-16">
 
-          {/* Header */}
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
-            {S.auth.register.title}
-          </Text>
-          <Text className="text-base text-gray-500 mb-8">
-            {S.auth.register.subtitle}
-          </Text>
+          {/* Brand mark */}
+          <View className="mb-8">
+            <View className="w-14 h-14 rounded-2xl bg-teal-600 items-center justify-center mb-4">
+              <Text className="text-white text-2xl font-bold">F</Text>
+            </View>
+            <Text className="text-3xl font-bold text-gray-900 mb-1.5">
+              {S.auth.register.title}
+            </Text>
+            <Text className="text-base text-gray-500">
+              {S.auth.register.subtitle}
+            </Text>
+          </View>
 
           {/* Role selector */}
           <Text className="text-sm font-medium text-gray-700 mb-3">
@@ -163,7 +165,7 @@ export default function Register() {
             <TouchableOpacity
               className={`flex-1 rounded-xl border-2 px-4 py-4 ${
                 role === 'patient'
-                  ? 'border-blue-600 bg-blue-50'
+                  ? 'border-teal-600 bg-teal-50'
                   : 'border-gray-200 bg-white'
               }`}
               onPress={() => setRole('patient')}
@@ -172,14 +174,14 @@ export default function Register() {
             >
               <Text
                 className={`text-sm font-semibold mb-1 ${
-                  role === 'patient' ? 'text-blue-600' : 'text-gray-700'
+                  role === 'patient' ? 'text-teal-600' : 'text-gray-700'
                 }`}
               >
                 {S.auth.register.rolePatient}
               </Text>
               <Text
                 className={`text-xs ${
-                  role === 'patient' ? 'text-blue-500' : 'text-gray-400'
+                  role === 'patient' ? 'text-teal-500' : 'text-gray-400'
                 }`}
               >
                 {S.auth.register.rolePatientDesc}
@@ -189,7 +191,7 @@ export default function Register() {
             <TouchableOpacity
               className={`flex-1 rounded-xl border-2 px-4 py-4 ${
                 role === 'physio'
-                  ? 'border-blue-600 bg-blue-50'
+                  ? 'border-teal-600 bg-teal-50'
                   : 'border-gray-200 bg-white'
               }`}
               onPress={() => setRole('physio')}
@@ -198,14 +200,14 @@ export default function Register() {
             >
               <Text
                 className={`text-sm font-semibold mb-1 ${
-                  role === 'physio' ? 'text-blue-600' : 'text-gray-700'
+                  role === 'physio' ? 'text-teal-600' : 'text-gray-700'
                 }`}
               >
                 {S.auth.register.rolePhysio}
               </Text>
               <Text
                 className={`text-xs ${
-                  role === 'physio' ? 'text-blue-500' : 'text-gray-400'
+                  role === 'physio' ? 'text-teal-500' : 'text-gray-400'
                 }`}
               >
                 {S.auth.register.rolePhysioDesc}
@@ -353,7 +355,7 @@ export default function Register() {
           {/* Submit button */}
           <TouchableOpacity
             className={`rounded-xl py-4 items-center ${
-              isLoading ? 'bg-blue-400' : 'bg-blue-600'
+              isLoading ? 'bg-teal-400' : 'bg-teal-600'
             }`}
             onPress={handleRegister}
             disabled={isLoading}
@@ -375,7 +377,7 @@ export default function Register() {
             </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="text-blue-600 text-sm font-semibold">
+                <Text className="text-teal-600 text-sm font-semibold">
                   {S.auth.register.loginLink}
                 </Text>
               </TouchableOpacity>

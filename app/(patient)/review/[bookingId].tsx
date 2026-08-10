@@ -153,7 +153,7 @@ export default function ReviewScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#16a34a" />
+        <ActivityIndicator color="#0891b2" />
       </View>
     );
   }
@@ -163,7 +163,7 @@ export default function ReviewScreen() {
       <View className="flex-1 bg-white items-center justify-center px-8">
         <Text className="text-gray-500 text-base text-center">{loadError}</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-green-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -181,8 +181,8 @@ export default function ReviewScreen() {
           hitSlop={12}
           className="flex-row items-center gap-1.5 mr-3"
         >
-          <Text className="text-green-600 text-xl">‹</Text>
-          <Text className="text-green-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-teal-600 text-xl">‹</Text>
+          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
         <Text className="text-base font-semibold text-gray-900 flex-1" numberOfLines={1}>
           {S.title}
@@ -209,21 +209,21 @@ export default function ReviewScreen() {
             <View className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-4 items-center">
               <Text className="text-amber-800 text-sm font-medium">{S.alreadyReviewed}</Text>
               <TouchableOpacity onPress={() => router.back()} className="mt-3">
-                <Text className="text-green-600 font-medium text-sm">{KA.nav.back}</Text>
+                <Text className="text-teal-600 font-medium text-sm">{KA.nav.back}</Text>
               </TouchableOpacity>
             </View>
           )}
 
           {/* ── Success state ── */}
           {submitted && !alreadyReviewed && (
-            <View className="bg-green-50 border border-green-200 rounded-2xl px-6 py-8 items-center gap-3">
-              <Text className="text-3xl">⭐</Text>
-              <Text className="text-lg font-bold text-green-800">{S.successTitle}</Text>
-              <Text className="text-sm text-green-700 text-center">{S.successMessage}</Text>
+            <View className="bg-teal-50 border border-teal-200 rounded-2xl px-6 py-8 items-center gap-3">
+              <Text className="text-amber-400 text-4xl">★</Text>
+              <Text className="text-lg font-bold text-teal-800">{S.successTitle}</Text>
+              <Text className="text-sm text-teal-700 text-center">{S.successMessage}</Text>
               <TouchableOpacity
                 onPress={() => router.back()}
                 activeOpacity={0.8}
-                className="mt-2 bg-green-600 rounded-2xl px-8 py-3"
+                className="mt-2 bg-teal-600 rounded-2xl px-8 py-3"
               >
                 <Text className="text-white font-semibold">{KA.nav.back}</Text>
               </TouchableOpacity>
@@ -265,7 +265,7 @@ export default function ReviewScreen() {
                 disabled={submitting}
                 activeOpacity={0.8}
                 className={`rounded-2xl py-4 items-center ${
-                  submitting ? 'bg-green-300' : 'bg-green-600'
+                  submitting ? 'bg-teal-300' : 'bg-teal-600'
                 }`}
               >
                 {submitting ? (
