@@ -23,15 +23,31 @@ function Avatar({ fullName, avatarUrl }: { fullName: string; avatarUrl: string |
     return (
       <Image
         source={{ uri: avatarUrl }}
-        className="w-16 h-16 rounded-full bg-gray-200"
+        className="w-16 h-16 rounded-full"
+        style={{ borderWidth: 2, borderColor: '#ccfbf1' }}
       />
     );
   }
   return (
-    <View className="w-16 h-16 rounded-full bg-teal-100 items-center justify-center">
-      <Text className="text-teal-700 text-lg font-semibold">
+    <View
+      className="w-16 h-16 rounded-full bg-teal-100 items-center justify-center"
+      style={{ borderWidth: 2, borderColor: '#ccfbf1' }}
+    >
+      <Text className="text-teal-700 text-lg font-bold">
         {getInitials(fullName)}
       </Text>
+    </View>
+  );
+}
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <View className="flex-row gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Text key={s} className={`text-xs ${s <= Math.round(rating) ? 'text-amber-400' : 'text-gray-200'}`}>
+          ★
+        </Text>
+      ))}
     </View>
   );
 }
@@ -42,73 +58,74 @@ export default function PhysioCard({ physio, onPress }: Props) {
   const visibleSpecialties = specialties.slice(0, 2);
   const extraCount = specialties.length - 2;
 
-  const ratingText =
-    average_rating != null
-      ? `★ ${average_rating.toFixed(1)}`
-      : null;
-
-  const reviewText =
-    review_count != null && review_count > 0
-      ? `(${review_count} ${KA.physioCard.reviews})`
-      : null;
-
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.75}
-      className="bg-white rounded-2xl mx-4 mb-3 p-4 flex-row items-start shadow-sm border border-gray-100"
+      className="bg-white mx-4 mb-3 rounded-2xl overflow-hidden"
+      style={{
+        shadowColor: '#0f172a',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.07,
+        shadowRadius: 8,
+        elevation: 3,
+      }}
     >
-      {/* Avatar */}
-      <Avatar fullName={user.full_name} avatarUrl={user.avatar_url} />
+      {/* ── Main row ── */}
+      <View className="p-4 flex-row items-start gap-3">
+        <Avatar fullName={user.full_name} avatarUrl={user.avatar_url} />
 
-      {/* Info */}
-      <View className="flex-1 ml-3">
-        {/* Name + verified badge */}
-        <View className="flex-row items-center flex-wrap gap-x-1.5 mb-0.5">
-          <Text className="text-base font-semibold text-gray-900">
-            {user.full_name}
-          </Text>
-          {is_verified && (
-            <View className="bg-teal-100 rounded-full px-2 py-0.5">
-              <Text className="text-teal-700 text-xs font-medium">
-                {KA.physioCard.verified}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* District */}
-        <Text className="text-sm text-gray-500 mb-1.5">
-          {base_district.name_ka}
-        </Text>
-
-        {/* Specialties */}
-        {visibleSpecialties.length > 0 && (
-          <View className="flex-row flex-wrap gap-1 mb-1.5">
-            {visibleSpecialties.map((specialty) => (
-              <View key={specialty} className="bg-gray-100 rounded-full px-2.5 py-0.5">
-                <Text className="text-xs text-gray-600">{specialty}</Text>
-              </View>
-            ))}
-            {extraCount > 0 && (
-              <View className="bg-gray-100 rounded-full px-2.5 py-0.5">
-                <Text className="text-xs text-gray-500">
-                  +{extraCount} {KA.physioCard.moreSpecialties}
-                </Text>
+        <View className="flex-1">
+          {/* Name + verified */}
+          <View className="flex-row items-center gap-1.5 flex-wrap mb-0.5">
+            <Text className="text-base font-bold text-gray-900">{user.full_name}</Text>
+            {is_verified && (
+              <View className="bg-teal-600 rounded-full w-4 h-4 items-center justify-center">
+                <Text className="text-white text-xs font-bold" style={{ fontSize: 9 }}>✓</Text>
               </View>
             )}
           </View>
-        )}
 
-        {/* Rating */}
-        {ratingText != null && (
-          <Text className="text-sm text-amber-600 mt-0.5 font-medium">
-            {ratingText}
-            <Text className="text-gray-400 font-normal">
-              {reviewText != null ? ` ${reviewText}` : ''}
-            </Text>
-          </Text>
-        )}
+          {/* District */}
+          <Text className="text-sm text-gray-400 mb-2">{base_district.name_ka}</Text>
+
+          {/* Rating */}
+          {average_rating != null && (
+            <View className="flex-row items-center gap-1.5 mb-2">
+              <Stars rating={average_rating} />
+              <Text className="text-xs font-semibold text-amber-500">
+                {average_rating.toFixed(1)}
+              </Text>
+              {review_count != null && review_count > 0 && (
+                <Text className="text-xs text-gray-400">
+                  ({review_count} {KA.physioCard.reviews})
+                </Text>
+              )}
+            </View>
+          )}
+
+          {/* Specialties */}
+          {visibleSpecialties.length > 0 && (
+            <View className="flex-row flex-wrap gap-1">
+              {visibleSpecialties.map((s) => (
+                <View key={s} className="bg-slate-100 rounded-full px-2.5 py-0.5">
+                  <Text className="text-xs text-slate-600 font-medium">{s}</Text>
+                </View>
+              ))}
+              {extraCount > 0 && (
+                <View className="bg-slate-100 rounded-full px-2.5 py-0.5">
+                  <Text className="text-xs text-slate-500">+{extraCount}</Text>
+                </View>
+              )}
+            </View>
+          )}
+        </View>
+      </View>
+
+      {/* ── Footer strip ── */}
+      <View className="flex-row items-center justify-between px-4 py-2.5 bg-teal-50 border-t border-teal-100">
+        <Text className="text-xs text-teal-700 font-medium">{KA.physioCard.verified}</Text>
+        <Text className="text-teal-600 text-sm font-bold">›</Text>
       </View>
     </TouchableOpacity>
   );

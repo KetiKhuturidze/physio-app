@@ -22,10 +22,10 @@ export default function PatientBookings() {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
-      {/* ── Header ── */}
-      <View className="bg-white px-6 pb-5 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
-        <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
+    <View className="flex-1 bg-slate-50">
+      {/* ── Teal header ── */}
+      <View className="bg-teal-600 px-6 pb-5" style={{ paddingTop: insets.top + 20 }}>
+        <Text className="text-white text-2xl font-bold">{S.title}</Text>
       </View>
 
       <ScrollView

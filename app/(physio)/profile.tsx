@@ -61,11 +61,20 @@ function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
     .join('');
 
   if (uri) {
-    return <Image source={{ uri }} className="w-24 h-24 rounded-full bg-gray-200" />;
+    return (
+      <Image
+        source={{ uri }}
+        className="w-24 h-24 rounded-full"
+        style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
+      />
+    );
   }
   return (
-    <View className="w-24 h-24 rounded-full bg-teal-100 items-center justify-center">
-      <Text className="text-teal-700 text-2xl font-semibold">{initials}</Text>
+    <View
+      className="w-24 h-24 rounded-full bg-white/20 items-center justify-center"
+      style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
+    >
+      <Text className="text-white text-3xl font-bold">{initials}</Text>
     </View>
   );
 }
@@ -171,34 +180,26 @@ export default function PhysioProfileView() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-slate-50"
       contentContainerStyle={{ paddingBottom: 48 }}
       showsVerticalScrollIndicator={false}
     >
-      {/* ── Header ── */}
-      <View className="bg-white px-6 pb-6 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
-        <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
-      </View>
-
-      {/* ── Hero ── */}
-      <View className="bg-white px-6 pt-6 pb-6 items-center gap-3 border-b border-gray-100">
+      {/* ── Teal hero ── */}
+      <View className="bg-teal-600 px-6 pb-8 items-center" style={{ paddingTop: insets.top + 20 }}>
+        <Text className="text-teal-100 text-sm font-semibold uppercase tracking-widest mb-4 self-start">
+          {S.title}
+        </Text>
         <Avatar uri={user?.avatar_url ?? null} fullName={user?.full_name ?? ''} />
-
-        <View className="items-center gap-1.5">
-          <Text className="text-xl font-bold text-gray-900">{user?.full_name}</Text>
-
+        <View className="items-center mt-3 gap-1.5">
+          <Text className="text-white text-xl font-bold">{user?.full_name}</Text>
+          {profile?.base_district && (
+            <Text className="text-teal-100 text-sm">{profile.base_district.name_ka}</Text>
+          )}
           {profile?.is_verified && (
-            <View className="bg-teal-100 rounded-full px-3 py-1">
-              <Text className="text-teal-700 text-xs font-medium">
-                {KA.physioCard.verified}
-              </Text>
+            <View className="bg-white/20 rounded-full px-3 py-1 mt-1">
+              <Text className="text-teal-50 text-xs font-semibold">{KA.physioCard.verified}</Text>
             </View>
           )}
-
-          {profile?.base_district && (
-            <Text className="text-sm text-gray-500">{profile.base_district.name_ka}</Text>
-          )}
-
         </View>
       </View>
 

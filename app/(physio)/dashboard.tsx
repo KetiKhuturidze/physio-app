@@ -119,17 +119,17 @@ export default function Dashboard() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-slate-50"
       contentContainerStyle={{ paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      {/* ── Header ── */}
-      <View className="bg-white px-6 pb-6 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
-        <Text className="text-sm text-gray-500 mb-0.5">{KA.general.welcome}</Text>
-        <Text className="text-2xl font-bold text-gray-900">{firstName}</Text>
+      {/* ── Teal hero header ── */}
+      <View className="bg-teal-600 px-6 pb-6" style={{ paddingTop: insets.top + 20 }}>
+        <Text className="text-teal-100 text-sm mb-0.5">{KA.general.welcome}</Text>
+        <Text className="text-white text-2xl font-bold">{firstName}</Text>
       </View>
 
-      <View className="px-4 mt-5 gap-4">
+      <View className="px-4 mt-4 gap-4">
         {/* ── Incomplete warning ── */}
         {(!profile || !complete) && (
           <View className="bg-amber-50 border border-amber-200 rounded-2xl p-4 gap-3">

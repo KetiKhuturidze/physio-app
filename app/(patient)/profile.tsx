@@ -109,7 +109,7 @@ export default function PatientProfile() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-slate-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -118,24 +118,23 @@ export default function PatientProfile() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* ── Header ── */}
-        <View className="bg-white px-6 pb-5 border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
-          <Text className="text-2xl font-bold text-gray-900">{S.title}</Text>
-        </View>
-
-        {/* ── Hero ── */}
-        <View className="bg-white px-6 pt-6 pb-6 items-center gap-3 border-b border-gray-100">
-          <View className="w-20 h-20 rounded-full bg-teal-100 items-center justify-center">
-            <Text className="text-teal-700 text-2xl font-semibold">{initials}</Text>
+        {/* ── Teal hero ── */}
+        <View className="bg-teal-600 px-6 pb-8 items-center" style={{ paddingTop: insets.top + 20 }}>
+          <Text className="text-teal-100 text-sm font-semibold uppercase tracking-widest mb-4 self-start">
+            {S.title}
+          </Text>
+          <View
+            className="w-20 h-20 rounded-full bg-white/20 items-center justify-center mb-3"
+            style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
+          >
+            <Text className="text-white text-2xl font-bold">{initials}</Text>
           </View>
-          <View className="items-center gap-1.5">
-            <Text className="text-xl font-bold text-gray-900">{user?.full_name}</Text>
-            <Text className="text-sm text-gray-400">{user?.email}</Text>
-            <View className="bg-teal-100 rounded-full px-3 py-1">
-              <Text className="text-teal-700 text-xs font-medium">
-                {KA.auth.register.rolePatient}
-              </Text>
-            </View>
+          <Text className="text-white text-xl font-bold">{user?.full_name}</Text>
+          <Text className="text-teal-100 text-sm mt-0.5">{user?.email}</Text>
+          <View className="bg-white/20 rounded-full px-3 py-1 mt-2">
+            <Text className="text-teal-50 text-xs font-semibold">
+              {KA.auth.register.rolePatient}
+            </Text>
           </View>
         </View>
 

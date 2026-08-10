@@ -11,6 +11,7 @@ import {
   type TextInput as TextInputType,
 } from 'react-native';
 import { Link } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
@@ -31,6 +32,7 @@ const isValidEmail = (value: string) =>
 
 export default function Register() {
   const { setUser } = useAuthStore();
+  const insets = useSafeAreaInsets();
 
   const [role, setRole] = useState<UserRole>('patient');
   const [fullName, setFullName] = useState('');
@@ -135,93 +137,74 @@ export default function Register() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white"
+      className="flex-1 bg-teal-600"
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-6 py-16">
+        {/* ── Hero section ── */}
+        <View className="px-7 pb-10" style={{ paddingTop: insets.top + 32 }}>
+          <Text className="text-teal-100 text-sm font-semibold tracking-widest uppercase mb-3">
+            Physio
+          </Text>
+          <Text className="text-white text-4xl font-bold leading-tight mb-2">
+            {S.auth.register.title}
+          </Text>
+          <Text className="text-teal-100 text-base">
+            {S.auth.register.subtitle}
+          </Text>
+        </View>
 
-          {/* Brand mark */}
-          <View className="mb-8">
-            <View className="w-14 h-14 rounded-2xl bg-teal-600 items-center justify-center mb-4">
-              <Text className="text-white text-2xl font-bold">F</Text>
-            </View>
-            <Text className="text-3xl font-bold text-gray-900 mb-1.5">
-              {S.auth.register.title}
-            </Text>
-            <Text className="text-base text-gray-500">
-              {S.auth.register.subtitle}
-            </Text>
-          </View>
+        {/* ── Form card ── */}
+        <View className="flex-1 bg-white rounded-t-3xl px-6 pt-8">
 
           {/* Role selector */}
-          <Text className="text-sm font-medium text-gray-700 mb-3">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
             {S.auth.register.roleLabel}
           </Text>
-          <View className="flex-row gap-3 mb-8">
+          <View className="flex-row gap-3 mb-6">
             <TouchableOpacity
-              className={`flex-1 rounded-xl border-2 px-4 py-4 ${
-                role === 'patient'
-                  ? 'border-teal-600 bg-teal-50'
-                  : 'border-gray-200 bg-white'
+              className={`flex-1 rounded-2xl border-2 px-4 py-4 ${
+                role === 'patient' ? 'border-teal-600 bg-teal-50' : 'border-gray-200 bg-gray-50'
               }`}
               onPress={() => setRole('patient')}
               disabled={isLoading}
               activeOpacity={0.8}
             >
-              <Text
-                className={`text-sm font-semibold mb-1 ${
-                  role === 'patient' ? 'text-teal-600' : 'text-gray-700'
-                }`}
-              >
+              <Text className={`text-sm font-bold mb-0.5 ${role === 'patient' ? 'text-teal-700' : 'text-gray-600'}`}>
                 {S.auth.register.rolePatient}
               </Text>
-              <Text
-                className={`text-xs ${
-                  role === 'patient' ? 'text-teal-500' : 'text-gray-400'
-                }`}
-              >
+              <Text className={`text-xs ${role === 'patient' ? 'text-teal-500' : 'text-gray-400'}`}>
                 {S.auth.register.rolePatientDesc}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className={`flex-1 rounded-xl border-2 px-4 py-4 ${
-                role === 'physio'
-                  ? 'border-teal-600 bg-teal-50'
-                  : 'border-gray-200 bg-white'
+              className={`flex-1 rounded-2xl border-2 px-4 py-4 ${
+                role === 'physio' ? 'border-teal-600 bg-teal-50' : 'border-gray-200 bg-gray-50'
               }`}
               onPress={() => setRole('physio')}
               disabled={isLoading}
               activeOpacity={0.8}
             >
-              <Text
-                className={`text-sm font-semibold mb-1 ${
-                  role === 'physio' ? 'text-teal-600' : 'text-gray-700'
-                }`}
-              >
+              <Text className={`text-sm font-bold mb-0.5 ${role === 'physio' ? 'text-teal-700' : 'text-gray-600'}`}>
                 {S.auth.register.rolePhysio}
               </Text>
-              <Text
-                className={`text-xs ${
-                  role === 'physio' ? 'text-teal-500' : 'text-gray-400'
-                }`}
-              >
+              <Text className={`text-xs ${role === 'physio' ? 'text-teal-500' : 'text-gray-400'}`}>
                 {S.auth.register.rolePhysioDesc}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Full name */}
-          <Text className="text-sm font-medium text-gray-700 mb-1">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
             {S.auth.register.nameLabel}
           </Text>
           <TextInput
-            className={`border rounded-xl px-4 py-3.5 text-base text-gray-900 mb-1 bg-gray-50 ${
-              fieldErrors.fullName ? 'border-red-400' : 'border-gray-300'
+            className={`border rounded-2xl px-4 py-4 text-base text-gray-900 mb-1 bg-gray-50 ${
+              fieldErrors.fullName ? 'border-red-400' : 'border-gray-200'
             }`}
             placeholder={S.auth.register.namePlaceholder}
             placeholderTextColor="#9ca3af"
@@ -233,21 +216,20 @@ export default function Register() {
             onSubmitEditing={() => emailRef.current?.focus()}
             editable={!isLoading}
           />
-          {fieldErrors.fullName && (
-            <Text className="text-red-500 text-xs mb-3">
-              {fieldErrors.fullName}
-            </Text>
+          {fieldErrors.fullName ? (
+            <Text className="text-red-500 text-xs mb-3">{fieldErrors.fullName}</Text>
+          ) : (
+            <View className="mb-4" />
           )}
-          {!fieldErrors.fullName && <View className="mb-4" />}
 
           {/* Email */}
-          <Text className="text-sm font-medium text-gray-700 mb-1">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
             {S.auth.register.emailLabel}
           </Text>
           <TextInput
             ref={emailRef}
-            className={`border rounded-xl px-4 py-3.5 text-base text-gray-900 mb-1 bg-gray-50 ${
-              fieldErrors.email ? 'border-red-400' : 'border-gray-300'
+            className={`border rounded-2xl px-4 py-4 text-base text-gray-900 mb-1 bg-gray-50 ${
+              fieldErrors.email ? 'border-red-400' : 'border-gray-200'
             }`}
             placeholder={S.auth.register.emailPlaceholder}
             placeholderTextColor="#9ca3af"
@@ -260,21 +242,20 @@ export default function Register() {
             onSubmitEditing={() => phoneRef.current?.focus()}
             editable={!isLoading}
           />
-          {fieldErrors.email && (
-            <Text className="text-red-500 text-xs mb-3">
-              {fieldErrors.email}
-            </Text>
+          {fieldErrors.email ? (
+            <Text className="text-red-500 text-xs mb-3">{fieldErrors.email}</Text>
+          ) : (
+            <View className="mb-4" />
           )}
-          {!fieldErrors.email && <View className="mb-4" />}
 
           {/* Phone */}
-          <Text className="text-sm font-medium text-gray-700 mb-1">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
             {S.auth.register.phoneLabel}
           </Text>
           <TextInput
             ref={phoneRef}
-            className={`border rounded-xl px-4 py-3.5 text-base text-gray-900 mb-1 bg-gray-50 ${
-              fieldErrors.phone ? 'border-red-400' : 'border-gray-300'
+            className={`border rounded-2xl px-4 py-4 text-base text-gray-900 mb-1 bg-gray-50 ${
+              fieldErrors.phone ? 'border-red-400' : 'border-gray-200'
             }`}
             placeholder={S.auth.register.phonePlaceholder}
             placeholderTextColor="#9ca3af"
@@ -286,21 +267,20 @@ export default function Register() {
             onSubmitEditing={() => passwordRef.current?.focus()}
             editable={!isLoading}
           />
-          {fieldErrors.phone && (
-            <Text className="text-red-500 text-xs mb-3">
-              {fieldErrors.phone}
-            </Text>
+          {fieldErrors.phone ? (
+            <Text className="text-red-500 text-xs mb-3">{fieldErrors.phone}</Text>
+          ) : (
+            <View className="mb-4" />
           )}
-          {!fieldErrors.phone && <View className="mb-4" />}
 
           {/* Password */}
-          <Text className="text-sm font-medium text-gray-700 mb-1">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
             {S.auth.register.passwordLabel}
           </Text>
           <TextInput
             ref={passwordRef}
-            className={`border rounded-xl px-4 py-3.5 text-base text-gray-900 mb-1 bg-gray-50 ${
-              fieldErrors.password ? 'border-red-400' : 'border-gray-300'
+            className={`border rounded-2xl px-4 py-4 text-base text-gray-900 mb-1 bg-gray-50 ${
+              fieldErrors.password ? 'border-red-400' : 'border-gray-200'
             }`}
             placeholder={S.auth.register.passwordPlaceholder}
             placeholderTextColor="#9ca3af"
@@ -312,21 +292,20 @@ export default function Register() {
             onSubmitEditing={() => confirmPasswordRef.current?.focus()}
             editable={!isLoading}
           />
-          {fieldErrors.password && (
-            <Text className="text-red-500 text-xs mb-3">
-              {fieldErrors.password}
-            </Text>
+          {fieldErrors.password ? (
+            <Text className="text-red-500 text-xs mb-3">{fieldErrors.password}</Text>
+          ) : (
+            <View className="mb-4" />
           )}
-          {!fieldErrors.password && <View className="mb-4" />}
 
           {/* Confirm password */}
-          <Text className="text-sm font-medium text-gray-700 mb-1">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
             {S.auth.register.confirmPasswordLabel}
           </Text>
           <TextInput
             ref={confirmPasswordRef}
-            className={`border rounded-xl px-4 py-3.5 text-base text-gray-900 mb-1 bg-gray-50 ${
-              fieldErrors.confirmPassword ? 'border-red-400' : 'border-gray-300'
+            className={`border rounded-2xl px-4 py-4 text-base text-gray-900 mb-1 bg-gray-50 ${
+              fieldErrors.confirmPassword ? 'border-red-400' : 'border-gray-200'
             }`}
             placeholder={S.auth.register.confirmPasswordPlaceholder}
             placeholderTextColor="#9ca3af"
@@ -338,46 +317,45 @@ export default function Register() {
             onSubmitEditing={handleRegister}
             editable={!isLoading}
           />
-          {fieldErrors.confirmPassword && (
-            <Text className="text-red-500 text-xs mb-3">
-              {fieldErrors.confirmPassword}
-            </Text>
+          {fieldErrors.confirmPassword ? (
+            <Text className="text-red-500 text-xs mb-3">{fieldErrors.confirmPassword}</Text>
+          ) : (
+            <View className="mb-5" />
           )}
-          {!fieldErrors.confirmPassword && <View className="mb-6" />}
 
           {/* Form-level error */}
           {formError && (
-            <Text className="text-red-500 text-sm mb-4 text-center">
-              {formError}
-            </Text>
+            <View className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4">
+              <Text className="text-red-600 text-sm text-center">{formError}</Text>
+            </View>
           )}
 
-          {/* Submit button */}
+          {/* Submit */}
           <TouchableOpacity
-            className={`rounded-xl py-4 items-center ${
+            className={`rounded-2xl py-4 items-center mb-6 ${
               isLoading ? 'bg-teal-400' : 'bg-teal-600'
             }`}
             onPress={handleRegister}
             disabled={isLoading}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
             {isLoading ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
-              <Text className="text-white font-semibold text-base">
+              <Text className="text-white font-bold text-base tracking-wide">
                 {S.auth.register.submitButton}
               </Text>
             )}
           </TouchableOpacity>
 
           {/* Login link */}
-          <View className="flex-row justify-center items-center mt-6 mb-4">
+          <View className="flex-row justify-center items-center pb-8">
             <Text className="text-gray-500 text-sm">
               {S.auth.register.hasAccount}{' '}
             </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="text-teal-600 text-sm font-semibold">
+                <Text className="text-teal-600 text-sm font-bold">
                   {S.auth.register.loginLink}
                 </Text>
               </TouchableOpacity>

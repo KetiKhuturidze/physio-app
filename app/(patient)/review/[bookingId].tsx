@@ -175,16 +175,16 @@ export default function ReviewScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* ── Header ── */}
-      <View className="bg-white px-4 pb-3 flex-row items-center border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
+      <View className="bg-teal-600 px-4 pb-4 flex-row items-center gap-3" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
-          className="flex-row items-center gap-1.5 mr-3"
+          className="flex-row items-center gap-1"
         >
-          <Text className="text-teal-600 text-xl">‹</Text>
-          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-white text-xl">‹</Text>
+          <Text className="text-teal-100 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
-        <Text className="text-base font-semibold text-gray-900 flex-1" numberOfLines={1}>
+        <Text className="text-white text-base font-bold flex-1" numberOfLines={1}>
           {S.title}
         </Text>
       </View>

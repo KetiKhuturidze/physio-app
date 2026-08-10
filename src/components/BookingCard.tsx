@@ -12,12 +12,20 @@ type Props = {
   actionLoading?: boolean;
 };
 
-const STATUS_STYLES: Record<BookingStatus, { bg: string; text: string; label: string }> = {
-  pending:   { bg: 'bg-amber-100',  text: 'text-amber-800',  label: KA.bookingStatus.pending },
-  confirmed: { bg: 'bg-green-100',  text: 'text-green-800',  label: KA.bookingStatus.confirmed },
-  declined:  { bg: 'bg-red-100',    text: 'text-red-800',    label: KA.bookingStatus.declined },
-  completed: { bg: 'bg-gray-100',   text: 'text-gray-600',   label: KA.bookingStatus.completed },
-  cancelled: { bg: 'bg-gray-100',   text: 'text-gray-600',   label: KA.bookingStatus.cancelled },
+const STATUS_CONFIG: Record<BookingStatus, { bg: string; text: string; dot: string; label: string }> = {
+  pending:   { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-400',  label: KA.bookingStatus.pending },
+  confirmed: { bg: 'bg-teal-50',   text: 'text-teal-700',   dot: 'bg-teal-500',   label: KA.bookingStatus.confirmed },
+  declined:  { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-400',    label: KA.bookingStatus.declined },
+  completed: { bg: 'bg-slate-100', text: 'text-slate-600',  dot: 'bg-slate-400',  label: KA.bookingStatus.completed },
+  cancelled: { bg: 'bg-slate-100', text: 'text-slate-600',  dot: 'bg-slate-400',  label: KA.bookingStatus.cancelled },
+};
+
+const STATUS_BORDER: Record<BookingStatus, string> = {
+  pending:   '#f59e0b',
+  confirmed: '#0d9488',
+  declined:  '#f87171',
+  completed: '#94a3b8',
+  cancelled: '#94a3b8',
 };
 
 function Avatar({ uri, name }: { uri: string | null; name: string }) {
@@ -30,11 +38,11 @@ function Avatar({ uri, name }: { uri: string | null; name: string }) {
     .join('');
 
   if (uri) {
-    return <Image source={{ uri }} className="w-11 h-11 rounded-full bg-gray-200" />;
+    return <Image source={{ uri }} className="w-11 h-11 rounded-full bg-gray-100" />;
   }
   return (
     <View className="w-11 h-11 rounded-full bg-teal-100 items-center justify-center">
-      <Text className="text-teal-700 text-sm font-semibold">{initials}</Text>
+      <Text className="text-teal-700 text-sm font-bold">{initials}</Text>
     </View>
   );
 }
@@ -48,9 +56,8 @@ function formatDate(iso: string): string {
 
 export default function BookingCard({ booking, role, onConfirm, onDecline, onReview, actionLoading }: Props) {
   const S = KA.patientBookings;
-  const status = STATUS_STYLES[booking.status];
+  const cfg = STATUS_CONFIG[booking.status];
 
-  // Patient sees physio info; physio sees patient info
   const primaryName =
     role === 'patient'
       ? (booking.physio_profile?.user?.full_name ?? '—')
@@ -67,74 +74,78 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
       : null;
 
   return (
-    <View className="bg-white rounded-2xl mx-4 mb-3 p-4 border border-gray-100">
-      {/* ── Top row: avatar + name + status badge ── */}
-      <View className="flex-row items-center justify-between mb-3">
+    <View
+      className="bg-white mx-4 mb-3 rounded-2xl overflow-hidden"
+      style={{
+        shadowColor: '#0f172a',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2,
+        borderLeftWidth: 4,
+        borderLeftColor: STATUS_BORDER[booking.status],
+      }}
+    >
+      {/* ── Top row: avatar + name + status ── */}
+      <View className="flex-row items-center justify-between px-4 pt-4 pb-3">
         <View className="flex-row items-center gap-3 flex-1">
           <Avatar uri={avatarUri} name={primaryName} />
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-gray-900" numberOfLines={1}>
+            <Text className="text-sm font-bold text-gray-900" numberOfLines={1}>
               {primaryName}
             </Text>
             {subtitle && (
-              <Text className="text-xs text-gray-500 mt-0.5">{subtitle}</Text>
+              <Text className="text-xs text-gray-400 mt-0.5">{subtitle}</Text>
             )}
           </View>
         </View>
-        <View className={`rounded-full px-3 py-1 ml-2 ${status.bg}`}>
-          <Text className={`text-xs font-medium ${status.text}`}>{status.label}</Text>
+        <View className={`flex-row items-center gap-1.5 rounded-full px-3 py-1.5 ml-2 ${cfg.bg}`}>
+          <View className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+          <Text className={`text-xs font-semibold ${cfg.text}`}>{cfg.label}</Text>
         </View>
       </View>
 
-      {/* ── Service ── */}
-      {booking.service && (
-        <View className="flex-row items-center gap-1.5 mb-1.5">
-          <Text className="text-xs text-gray-500">{S.service}:</Text>
-          <Text className="text-xs text-gray-800 font-medium">
-            {booking.service.name} · {booking.service.duration_minutes} {S.minutes} · ₾{booking.service.price}
-          </Text>
-        </View>
-      )}
-
-      {/* ── Requested time ── */}
-      {booking.requested_time && (
-        <View className="flex-row items-center gap-1.5 mb-1.5">
-          <Text className="text-xs text-gray-500">{S.requestedTime}:</Text>
-          <Text className="text-xs text-gray-800">{booking.requested_time}</Text>
-        </View>
-      )}
-
-      {/* ── Address ── */}
-      {booking.patient_address && (
-        <View className="flex-row items-start gap-1.5 mb-1.5">
-          <Text className="text-xs text-gray-500">{S.address}:</Text>
-          <Text className="text-xs text-gray-800 flex-1">{booking.patient_address}</Text>
-        </View>
-      )}
-
-      {/* ── Date ── */}
-      <Text className="text-xs text-gray-400 mt-1 text-right">
-        {formatDate(booking.created_at)}
-      </Text>
-
-      {/* ── Review button (patient, completed only) ── */}
-      {role === 'patient' && booking.status === 'completed' && onReview && (
-        <View className="mt-3 pt-3 border-t border-gray-100">
-          <TouchableOpacity
-            onPress={onReview}
-            activeOpacity={0.75}
-            className="rounded-xl bg-amber-50 border border-amber-200 py-2.5 items-center"
-          >
-            <Text className="text-amber-800 text-sm font-medium">
-              {KA.reviewScreen.reviewButton}
+      {/* ── Details ── */}
+      <View className="px-4 pb-3 gap-1.5">
+        {booking.service && (
+          <View className="flex-row items-center gap-1.5">
+            <Text className="text-xs text-gray-400 w-16">{S.service}</Text>
+            <Text className="text-xs text-gray-800 font-semibold flex-1">
+              {booking.service.name} · {booking.service.duration_minutes} {S.minutes} · ₾{booking.service.price}
             </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        )}
+        {booking.requested_time && (
+          <View className="flex-row items-center gap-1.5">
+            <Text className="text-xs text-gray-400 w-16">{S.requestedTime}</Text>
+            <Text className="text-xs text-gray-700 flex-1">{booking.requested_time}</Text>
+          </View>
+        )}
+        {booking.patient_address && (
+          <View className="flex-row items-start gap-1.5">
+            <Text className="text-xs text-gray-400 w-16">{S.address}</Text>
+            <Text className="text-xs text-gray-700 flex-1">{booking.patient_address}</Text>
+          </View>
+        )}
+        <Text className="text-xs text-gray-300 text-right mt-0.5">{formatDate(booking.created_at)}</Text>
+      </View>
+
+      {/* ── Review button ── */}
+      {role === 'patient' && booking.status === 'completed' && onReview && (
+        <TouchableOpacity
+          onPress={onReview}
+          activeOpacity={0.75}
+          className="mx-4 mb-4 rounded-xl border border-amber-200 bg-amber-50 py-2.5 items-center"
+        >
+          <Text className="text-amber-700 text-sm font-semibold">
+            {KA.reviewScreen.reviewButton}
+          </Text>
+        </TouchableOpacity>
       )}
 
-      {/* ── Confirm / Decline (physio, pending only) ── */}
+      {/* ── Confirm / Decline ── */}
       {role === 'physio' && booking.status === 'pending' && (onConfirm || onDecline) && (
-        <View className="flex-row gap-2 mt-3 pt-3 border-t border-gray-100">
+        <View className="flex-row gap-2 px-4 pb-4">
           {onDecline && (
             <TouchableOpacity
               onPress={onDecline}
@@ -145,7 +156,7 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
               {actionLoading ? (
                 <ActivityIndicator size="small" color="#dc2626" />
               ) : (
-                <Text className="text-red-700 text-sm font-medium">{KA.nav.decline}</Text>
+                <Text className="text-red-600 text-sm font-semibold">{KA.nav.decline}</Text>
               )}
             </TouchableOpacity>
           )}
@@ -159,7 +170,7 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
               {actionLoading ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text className="text-white text-sm font-semibold">{KA.nav.confirm}</Text>
+                <Text className="text-white text-sm font-bold">{KA.nav.confirm}</Text>
               )}
             </TouchableOpacity>
           )}

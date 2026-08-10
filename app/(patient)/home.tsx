@@ -36,22 +36,22 @@ function LocationBar({
 }) {
   if (loading) {
     return (
-      <View className="flex-row items-center gap-2 bg-teal-50 px-4 py-3 mx-4 rounded-xl">
-        <ActivityIndicator size="small" color="#0891b2" />
-        <Text className="text-teal-700 text-sm">{S.locationDetecting}</Text>
+      <View className="flex-row items-center gap-2 bg-white/20 px-3 py-2 rounded-xl">
+        <ActivityIndicator size="small" color="#ffffff" />
+        <Text className="text-teal-50 text-sm">{S.locationDetecting}</Text>
       </View>
     );
   }
 
   if (permissionDenied) {
     return (
-      <View className="bg-amber-50 border border-amber-200 px-4 py-3 mx-4 rounded-xl gap-2">
-        <Text className="text-amber-800 text-sm">{S.permissionDenied}</Text>
+      <View className="bg-white/15 px-3 py-2.5 rounded-xl gap-2">
+        <Text className="text-teal-50 text-sm">{S.permissionDenied}</Text>
         <TouchableOpacity
           onPress={() => Linking.openSettings()}
-          className="self-start bg-amber-100 rounded-lg px-3 py-1.5"
+          className="self-start bg-white/20 rounded-lg px-3 py-1"
         >
-          <Text className="text-amber-800 text-xs font-medium">{S.openSettings}</Text>
+          <Text className="text-white text-xs font-semibold">{S.openSettings}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -59,10 +59,10 @@ function LocationBar({
 
   if (error) {
     return (
-      <View className="flex-row items-center justify-between bg-red-50 border border-red-100 px-4 py-3 mx-4 rounded-xl">
-        <Text className="text-red-700 text-sm">{S.locationError}</Text>
+      <View className="flex-row items-center justify-between bg-red-500/20 px-3 py-2 rounded-xl">
+        <Text className="text-red-100 text-sm">{S.locationError}</Text>
         <TouchableOpacity onPress={onRetry} hitSlop={8}>
-          <Text className="text-red-600 text-sm font-medium">↻</Text>
+          <Text className="text-white text-sm font-bold">↻</Text>
         </TouchableOpacity>
       </View>
     );
@@ -70,11 +70,11 @@ function LocationBar({
 
   if (districtName) {
     return (
-      <View className="flex-row items-center gap-1.5 bg-teal-50 px-4 py-3 mx-4 rounded-xl">
-        <Text className="text-teal-600 text-sm font-bold">·</Text>
-        <Text className="text-teal-800 text-sm font-medium">
+      <View className="flex-row items-center gap-2 bg-white/15 px-3 py-2 rounded-xl">
+        <View className="w-1.5 h-1.5 rounded-full bg-teal-200" />
+        <Text className="text-teal-50 text-sm font-medium">
           {S.locationFound}
-          <Text className="font-semibold">{districtName}</Text>
+          <Text className="text-white font-semibold">{districtName}</Text>
         </Text>
       </View>
     );
@@ -88,9 +88,11 @@ function LocationBar({
 function EmptyState({ locationLoading }: { locationLoading: boolean }) {
   if (locationLoading) return null;
   return (
-    <View className="flex-1 items-center justify-center px-8 py-16">
-      <Text className="text-gray-300 text-5xl mb-4 font-light">—</Text>
-      <Text className="text-gray-500 text-center text-base">{S.noPhysiosInArea}</Text>
+    <View className="flex-1 items-center justify-center px-8 py-20">
+      <View className="w-16 h-16 rounded-full bg-slate-100 items-center justify-center mb-4">
+        <Text className="text-slate-400 text-2xl">?</Text>
+      </View>
+      <Text className="text-gray-500 text-center text-base font-medium">{S.noPhysiosInArea}</Text>
     </View>
   );
 }
@@ -159,56 +161,53 @@ export default function Home() {
   const showPhysiosLoader = !locationLoading && district !== null && physiosLoading;
 
   const ListHeader = (
-    <View className="gap-4 pb-4">
-      {/* ── App header ── */}
-      <View className="bg-white px-6 pb-5" style={{ paddingTop: insets.top + 12 }}>
-        <Text className="text-xs font-semibold tracking-widest text-teal-600 uppercase mb-1">
+    <View className="pb-2">
+      {/* ── Teal hero header ── */}
+      <View className="bg-teal-600 px-6 pb-5" style={{ paddingTop: insets.top + 20 }}>
+        <Text className="text-teal-100 text-xs font-semibold tracking-widest uppercase mb-1">
           {S.appName}
         </Text>
-        <Text className="text-2xl font-bold text-gray-900">
-          {KA.general.welcome}{' '}
-          <Text className="text-teal-600">{firstName}</Text>
+        <Text className="text-white text-2xl font-bold mb-4">
+          {KA.general.welcome}, <Text className="text-teal-100">{firstName}</Text>
         </Text>
+
+        <LocationBar
+          loading={locationLoading}
+          districtName={district?.name_ka ?? null}
+          permissionDenied={permissionDenied}
+          error={locationError}
+          onRetry={refetchLocation}
+        />
       </View>
 
-      {/* ── Location bar ── */}
-      <LocationBar
-        loading={locationLoading}
-        districtName={district?.name_ka ?? null}
-        permissionDenied={permissionDenied}
-        error={locationError}
-        onRetry={refetchLocation}
-      />
-
-      {/* ── No local physios banner ── */}
+      {/* ── Alerts below hero ── */}
       {showAllPhysios && district && (
-        <View className="mx-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 gap-1">
-          <Text className="text-amber-900 text-sm font-medium">{S.noPhysiosInDistrict}</Text>
+        <View className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 gap-1">
+          <Text className="text-amber-900 text-sm font-semibold">{S.noPhysiosInDistrict}</Text>
           <Text className="text-amber-700 text-sm">{S.showingAllPhysios}</Text>
         </View>
       )}
 
-      {/* ── Section title / physios loader ── */}
-      {!locationLoading && district && (
-        <View className="px-4 flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-gray-900">
-            {showAllPhysios ? S.allPhysios : S.physiosNearby}
-          </Text>
-          {showPhysiosLoader && <ActivityIndicator size="small" color="#0891b2" />}
+      {physiosError && (
+        <View className="mx-4 mt-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+          <Text className="text-red-700 text-sm">{physiosError}</Text>
         </View>
       )}
 
-      {/* ── Physios error ── */}
-      {physiosError && (
-        <View className="mx-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
-          <Text className="text-red-700 text-sm">{physiosError}</Text>
+      {/* ── Section title ── */}
+      {!locationLoading && district && (
+        <View className="px-4 pt-5 pb-2 flex-row items-center justify-between">
+          <Text className="text-base font-bold text-gray-900">
+            {showAllPhysios ? S.allPhysios : S.physiosNearby}
+          </Text>
+          {showPhysiosLoader && <ActivityIndicator size="small" color="#0891b2" />}
         </View>
       )}
     </View>
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-slate-50">
       <FlatList<PhysioWithJoins>
         data={physios}
         keyExtractor={(item) => item.id}

@@ -217,14 +217,14 @@ export default function PhysioProfile() {
   return (
     <View className="flex-1 bg-gray-50">
       {/* ── Back button header ── */}
-      <View className="bg-white px-4 pb-3 flex-row items-center border-b border-gray-100" style={{ paddingTop: insets.top + 12 }}>
+      <View className="bg-teal-600 px-4 pb-3 flex-row items-center" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
           className="flex-row items-center gap-1.5"
         >
-          <Text className="text-teal-600 text-xl">‹</Text>
-          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-white text-xl">‹</Text>
+          <Text className="text-teal-100 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
 
@@ -407,7 +407,7 @@ export default function PhysioProfile() {
         <TouchableOpacity
           onPress={() => router.push(`/(patient)/book/${physio.id}`)}
           activeOpacity={0.85}
-          className="bg-teal-600 rounded-2xl py-4 items-center"
+          className="bg-teal-600 rounded-2xl py-4 items-center shadow-sm"
         >
           <Text className="text-white font-semibold text-base">{S.bookButton}</Text>
         </TouchableOpacity>
