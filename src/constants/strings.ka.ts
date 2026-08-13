@@ -128,7 +128,7 @@ export const KA = {
     locationPermissionNeeded: 'გთხოვთ, ნებართვა მიეცით მდებარეობაზე',
     locationError: 'მდებარეობა ვერ განისაზღვრა',
     openSettings: 'პარამეტრებში გახსნა',
-    appName: 'ფიზიო',
+    appName: 'Movla',
     findPhysio: 'ფიზიოს პოვნა',
     physiosNearby: 'ახლომდებარე ფიზიოთერაპევტები',
     allPhysios: 'ყველა ფიზიოთერაპევტი',

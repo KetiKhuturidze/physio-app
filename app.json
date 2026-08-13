@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Physio",
+    "name": "Movla",
     "slug": "physio-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -34,7 +34,7 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-location", { "locationWhenInUsePermission": "Physio at Home იყენებს თქვენს მდებარეობას ახლომდებარე ფიზიოთერაპევტების საჩვენებლად" }],
+      ["expo-location", { "locationWhenInUsePermission": "Movla იყენებს თქვენს მდებარეობას ახლომდებარე ფიზიოთერაპევტების საჩვენებლად" }],
       "expo-notifications",
       "expo-secure-store"
     ],

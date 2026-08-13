@@ -147,8 +147,8 @@ export default function Register() {
         {/* ── Hero section ── */}
         <View className="px-7 pb-10" style={{ paddingTop: insets.top + 32 }}>
           <Text className="text-teal-100 text-sm font-semibold tracking-widest uppercase mb-3">
-            Physio
-          </Text>
+            Movla
+</Text>
           <Text className="text-white text-4xl font-bold leading-tight mb-2">
             {S.auth.register.title}
           </Text>
