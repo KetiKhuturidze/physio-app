@@ -88,7 +88,7 @@ export default function Login() {
         {/* ── Hero section ── */}
         <View className="px-7 pb-10" style={{ paddingTop: insets.top + 32 }}>
           <Text className="text-teal-100 text-sm font-semibold tracking-widest uppercase mb-3">
-            Movla
+            Thera
           </Text>
           <Text className="text-white text-4xl font-bold leading-tight mb-2">
             {S.auth.login.title}

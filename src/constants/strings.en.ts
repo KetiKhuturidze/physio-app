@@ -109,7 +109,7 @@ export const EN = {
     locationPermissionNeeded: 'Please grant location permission',
     locationError: 'Could not detect location',
     openSettings: 'Open Settings',
-    appName: 'Movla',
+    appName: 'Thera',
     physiosNearby: 'Physiotherapists nearby',
     noPhysiosInArea: 'No physiotherapists found in your area.',
     searchPlaceholder: 'Search physiotherapists...',

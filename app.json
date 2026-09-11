@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Movla",
+    "name": "Thera",
     "slug": "physio-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -34,9 +34,16 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-location", { "locationWhenInUsePermission": "Movla იყენებს თქვენს მდებარეობას ახლომდებარე ფიზიოთერაპევტების საჩვენებლად" }],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Thera იყენებს თქვენს მდებარეობას ახლომდებარე ფიზიოთერაპევტების საჩვენებლად"
+        }
+      ],
       "expo-notifications",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font",
+      "expo-status-bar"
     ],
     "scheme": "physio",
     "experiments": {
