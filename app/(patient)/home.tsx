@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -163,7 +164,13 @@ export default function Home() {
   const ListHeader = (
     <View className="pb-2">
       {/* ── Teal hero header ── */}
-      <View className="bg-teal-600 px-6 pb-5" style={{ paddingTop: insets.top + 20 }}>
+      <LinearGradient
+        colors={['#0c4a6e', '#0891b2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="px-6 pb-5"
+        style={{ paddingTop: insets.top + 20 }}
+      >
         <Text className="text-teal-100 text-xs font-semibold tracking-widest uppercase mb-1">
           {S.appName}
         </Text>
@@ -178,7 +185,7 @@ export default function Home() {
           error={locationError}
           onRetry={refetchLocation}
         />
-      </View>
+      </LinearGradient>
 
       {/* ── Alerts below hero ── */}
       {showAllPhysios && district && (

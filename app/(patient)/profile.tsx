@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -119,7 +120,13 @@ export default function PatientProfile() {
         keyboardShouldPersistTaps="handled"
       >
         {/* ── Teal hero ── */}
-        <View className="bg-teal-600 px-6 pb-8 items-center" style={{ paddingTop: insets.top + 20 }}>
+        <LinearGradient
+          colors={['#0c4a6e', '#0891b2']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="px-6 pb-8 items-center"
+          style={{ paddingTop: insets.top + 20 }}
+        >
           <Text className="text-teal-100 text-sm font-semibold uppercase tracking-widest mb-4 self-start">
             {S.title}
           </Text>
@@ -136,7 +143,7 @@ export default function PatientProfile() {
               {KA.auth.register.rolePatient}
             </Text>
           </View>
-        </View>
+        </LinearGradient>
 
         <View className="px-4 mt-4 gap-4">
           {/* ── Result banner ── */}

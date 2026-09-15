@@ -1,4 +1,5 @@
 import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -24,9 +25,15 @@ export default function PatientBookings() {
   return (
     <View className="flex-1 bg-slate-50">
       {/* ── Teal header ── */}
-      <View className="bg-teal-600 px-6 pb-5" style={{ paddingTop: insets.top + 20 }}>
+      <LinearGradient
+        colors={['#0c4a6e', '#0891b2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="px-6 pb-5"
+        style={{ paddingTop: insets.top + 20 }}
+      >
         <Text className="text-white text-2xl font-bold">{S.title}</Text>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         className="flex-1"

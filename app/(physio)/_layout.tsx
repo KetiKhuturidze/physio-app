@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Tabs, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
@@ -39,15 +40,30 @@ export default function PhysioLayout() {
     >
       <Tabs.Screen
         name="dashboard"
-        options={{ title: S.nav.dashboard }}
+        options={{
+          title: S.nav.dashboard,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'grid' : 'grid-outline'} size={size} color={color} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="bookings"
-        options={{ title: S.nav.bookings }}
+        options={{
+          title: S.nav.bookings,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={size} color={color} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: S.nav.profile }}
+        options={{
+          title: S.nav.profile,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+          ),
+        }}
       />
       <Tabs.Screen name="profile-edit" options={{ href: null }} />
       <Tabs.Screen name="availability" options={{ href: null }} />

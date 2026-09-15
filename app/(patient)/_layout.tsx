@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Tabs, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
@@ -39,15 +40,30 @@ export default function PatientLayout() {
     >
       <Tabs.Screen
         name="home"
-        options={{ title: S.nav.home }}
+        options={{
+          title: S.nav.home,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="bookings"
-        options={{ title: S.nav.bookings }}
+        options={{
+          title: S.nav.bookings,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={size} color={color} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: S.nav.profile }}
+        options={{
+          title: S.nav.profile,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+          ),
+        }}
       />
       <Tabs.Screen name="physio/[id]" options={{ href: null }} />
       <Tabs.Screen name="book/[physioId]" options={{ href: null }} />

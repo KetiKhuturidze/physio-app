@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -124,10 +125,16 @@ export default function Dashboard() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Teal hero header ── */}
-      <View className="bg-teal-600 px-6 pb-6" style={{ paddingTop: insets.top + 20 }}>
+      <LinearGradient
+        colors={['#0c4a6e', '#0891b2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="px-6 pb-6"
+        style={{ paddingTop: insets.top + 20 }}
+      >
         <Text className="text-teal-100 text-sm mb-0.5">{KA.general.welcome}</Text>
         <Text className="text-white text-2xl font-bold">{firstName}</Text>
-      </View>
+      </LinearGradient>
 
       <View className="px-4 mt-4 gap-4">
         {/* ── Incomplete warning ── */}

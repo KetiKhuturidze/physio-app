@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -185,7 +186,13 @@ export default function PhysioProfileView() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Teal hero ── */}
-      <View className="bg-teal-600 px-6 pb-8 items-center" style={{ paddingTop: insets.top + 20 }}>
+      <LinearGradient
+        colors={['#0c4a6e', '#0891b2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="px-6 pb-8 items-center"
+        style={{ paddingTop: insets.top + 20 }}
+      >
         <Text className="text-teal-100 text-sm font-semibold uppercase tracking-widest mb-4 self-start">
           {S.title}
         </Text>
@@ -201,7 +208,7 @@ export default function PhysioProfileView() {
             </View>
           )}
         </View>
-      </View>
+      </LinearGradient>
 
       {!profile && (
         <View className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
