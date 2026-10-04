@@ -31,7 +31,7 @@ const BOOKING_SELECT = `
   physio_profile:physio_profiles!bookings_physio_id_fkey(
     id,
     available_hours,
-    user:users!physio_profiles_user_id_fkey(full_name, avatar_url),
+    user:users!physio_profiles_user_id_fkey(full_name, avatar_url, phone),
     base_district:districts!physio_profiles_base_district_id_fkey(name_ka)
   ),
   patient:users!bookings_patient_id_fkey(full_name, phone),
@@ -147,7 +147,6 @@ export async function createBooking(
     .single();
 
   if (error || !data) {
-    console.error('[createBooking] failed:', error);
     return null;
   }
 

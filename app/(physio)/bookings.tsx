@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BookingCard from 'src/components/BookingCard';
@@ -16,7 +15,7 @@ export default function PhysioBookings() {
   const [actionBookingId, setActionBookingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  async function handleAction(booking: BookingWithJoins, action: 'confirmed' | 'declined') {
+  async function handleAction(booking: BookingWithJoins, action: 'confirmed' | 'declined' | 'completed') {
     setActionBookingId(booking.id);
     setActionError(null);
     const ok = await updateBookingStatus(booking.id, action);
@@ -33,31 +32,27 @@ export default function PhysioBookings() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator color="#0891b2" />
+      <View className="flex-1 bg-brand-50 items-center justify-center">
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-slate-50">
-      {/* ── Teal header ── */}
-      <LinearGradient
-        colors={['#0c4a6e', '#0891b2']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="px-6 pb-5"
-        style={{ paddingTop: insets.top + 20 }}
+    <View className="flex-1 bg-brand-50">
+      <View
+        className="bg-brand-900 px-6 rounded-b-[28px] justify-center"
+        style={{ paddingTop: insets.top, height: insets.top + 84 }}
       >
         <Text className="text-white text-2xl font-bold">{S.title}</Text>
-      </LinearGradient>
+      </View>
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#0891b2" />
+          <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#3F6690" />
         }
       >
         {/* ── Error ── */}
@@ -78,7 +73,7 @@ export default function PhysioBookings() {
         {/* ── Pending bookings ── */}
         {pending.length > 0 && (
           <>
-            <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 mb-2">
+            <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
               {S.pendingSection}
             </Text>
             {pending.map((booking) => (
@@ -94,15 +89,37 @@ export default function PhysioBookings() {
           </>
         )}
 
-        {/* ── History ── */}
-        {others.length > 0 && (
+        {/* ── Confirmed ── */}
+        {others.filter((b) => b.status === 'confirmed').length > 0 && (
           <>
-            <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 mb-2 mt-4">
+            <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2 mt-4">
+              {KA.bookingStatus.confirmed}
+            </Text>
+            {others
+              .filter((b) => b.status === 'confirmed')
+              .map((booking) => (
+                <BookingCard
+                  key={booking.id}
+                  booking={booking}
+                  role="physio"
+                  actionLoading={actionBookingId === booking.id}
+                  onComplete={() => handleAction(booking, 'completed')}
+                />
+              ))}
+          </>
+        )}
+
+        {/* ── History (completed / declined / cancelled) ── */}
+        {others.filter((b) => b.status !== 'confirmed').length > 0 && (
+          <>
+            <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2 mt-4">
               {S.otherSection}
             </Text>
-            {others.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} role="physio" />
-            ))}
+            {others
+              .filter((b) => b.status !== 'confirmed')
+              .map((booking) => (
+                <BookingCard key={booking.id} booking={booking} role="physio" />
+              ))}
           </>
         )}
       </ScrollView>

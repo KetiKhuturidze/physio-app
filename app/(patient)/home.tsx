@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,6 +18,14 @@ import useAuthStore from 'src/stores/useAuthStore';
 import { PhysioWithJoins } from 'src/types';
 
 const S = KA.patientHome;
+
+const CARD_SHADOW = {
+  shadowColor: '#0f172a',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.06,
+  shadowRadius: 8,
+  elevation: 2,
+};
 
 // ─── Location bar ─────────────────────────────────────────────────────────────
 
@@ -37,20 +44,26 @@ function LocationBar({
 }) {
   if (loading) {
     return (
-      <View className="flex-row items-center gap-2 bg-white/20 px-3 py-2 rounded-xl">
-        <ActivityIndicator size="small" color="#ffffff" />
-        <Text className="text-teal-50 text-sm">{S.locationDetecting}</Text>
+      <View
+        className="flex-row items-center gap-2 bg-white px-4 py-3 rounded-2xl"
+        style={CARD_SHADOW}
+      >
+        <ActivityIndicator size="small" color="#3F6690" />
+        <Text className="text-brand-700 text-sm font-medium">{S.locationDetecting}</Text>
       </View>
     );
   }
 
   if (permissionDenied) {
     return (
-      <View className="bg-white/15 px-3 py-2.5 rounded-xl gap-2">
-        <Text className="text-teal-50 text-sm">{S.permissionDenied}</Text>
+      <View
+        className="bg-white px-4 py-3 rounded-2xl gap-2"
+        style={CARD_SHADOW}
+      >
+        <Text className="text-amber-800 text-sm font-medium">{S.permissionDenied}</Text>
         <TouchableOpacity
           onPress={() => Linking.openSettings()}
-          className="self-start bg-white/20 rounded-lg px-3 py-1"
+          className="self-start bg-amber-500 rounded-lg px-3 py-1.5"
         >
           <Text className="text-white text-xs font-semibold">{S.openSettings}</Text>
         </TouchableOpacity>
@@ -60,10 +73,13 @@ function LocationBar({
 
   if (error) {
     return (
-      <View className="flex-row items-center justify-between bg-red-500/20 px-3 py-2 rounded-xl">
-        <Text className="text-red-100 text-sm">{S.locationError}</Text>
-        <TouchableOpacity onPress={onRetry} hitSlop={8}>
-          <Text className="text-white text-sm font-bold">↻</Text>
+      <View
+        className="flex-row items-center justify-between gap-2 bg-white px-4 py-3 rounded-2xl"
+        style={CARD_SHADOW}
+      >
+        <Text className="text-red-600 text-sm font-medium flex-1">{S.locationError}</Text>
+        <TouchableOpacity onPress={onRetry} hitSlop={8} className="bg-red-50 rounded-full w-8 h-8 items-center justify-center">
+          <Text className="text-red-600 text-sm font-bold">↻</Text>
         </TouchableOpacity>
       </View>
     );
@@ -71,11 +87,14 @@ function LocationBar({
 
   if (districtName) {
     return (
-      <View className="flex-row items-center gap-2 bg-white/15 px-3 py-2 rounded-xl">
-        <View className="w-1.5 h-1.5 rounded-full bg-teal-200" />
-        <Text className="text-teal-50 text-sm font-medium">
+      <View
+        className="flex-row items-center gap-2.5 bg-white px-4 py-3 rounded-2xl"
+        style={CARD_SHADOW}
+      >
+        <View className="w-2 h-2 rounded-full bg-accent-500" />
+        <Text className="text-gray-500 text-sm">
           {S.locationFound}
-          <Text className="text-white font-semibold">{districtName}</Text>
+          <Text className="text-gray-900 font-semibold">{districtName}</Text>
         </Text>
       </View>
     );
@@ -90,8 +109,8 @@ function EmptyState({ locationLoading }: { locationLoading: boolean }) {
   if (locationLoading) return null;
   return (
     <View className="flex-1 items-center justify-center px-8 py-20">
-      <View className="w-16 h-16 rounded-full bg-slate-100 items-center justify-center mb-4">
-        <Text className="text-slate-400 text-2xl">?</Text>
+      <View className="w-16 h-16 rounded-full bg-brand-100 items-center justify-center mb-4">
+        <Text className="text-brand-400 text-2xl">?</Text>
       </View>
       <Text className="text-gray-500 text-center text-base font-medium">{S.noPhysiosInArea}</Text>
     </View>
@@ -163,21 +182,19 @@ export default function Home() {
 
   const ListHeader = (
     <View className="pb-2">
-      {/* ── Teal hero header ── */}
-      <LinearGradient
-        colors={['#0c4a6e', '#0891b2']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="px-6 pb-5"
-        style={{ paddingTop: insets.top + 20 }}
+      <View
+        className="bg-brand-900 px-6 rounded-b-[28px] justify-center"
+        style={{ paddingTop: insets.top, height: insets.top + 84 }}
       >
-        <Text className="text-teal-100 text-xs font-semibold tracking-widest uppercase mb-1">
+        <Text className="text-brand-200 text-xs font-bold tracking-widest uppercase mb-1">
           {S.appName}
         </Text>
-        <Text className="text-white text-2xl font-bold mb-4">
-          {KA.general.welcome}, <Text className="text-teal-100">{firstName}</Text>
+        <Text className="text-white text-2xl font-bold">
+          {KA.general.welcome} <Text className="text-brand-200">{firstName}</Text>
         </Text>
+      </View>
 
+      <View className="mx-4 mt-4">
         <LocationBar
           loading={locationLoading}
           districtName={district?.name_ka ?? null}
@@ -185,7 +202,7 @@ export default function Home() {
           error={locationError}
           onRetry={refetchLocation}
         />
-      </LinearGradient>
+      </View>
 
       {/* ── Alerts below hero ── */}
       {showAllPhysios && district && (
@@ -207,14 +224,14 @@ export default function Home() {
           <Text className="text-base font-bold text-gray-900">
             {showAllPhysios ? S.allPhysios : S.physiosNearby}
           </Text>
-          {showPhysiosLoader && <ActivityIndicator size="small" color="#0891b2" />}
+          {showPhysiosLoader && <ActivityIndicator size="small" color="#3F6690" />}
         </View>
       )}
     </View>
   );
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-brand-50">
       <FlatList<PhysioWithJoins>
         data={physios}
         keyExtractor={(item) => item.id}

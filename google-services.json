@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1080082980186",
+    "project_id": "thera-161ca",
+    "storage_bucket": "thera-161ca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080082980186:android:7941f5f395dbb97d5ce763",
+        "android_client_info": {
+          "package_name": "ge.thera.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbCPe-WcU0Dju9Xjb8WWpYeMsLsoJ7-J4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DistrictPicker from 'src/components/DistrictPicker';
 import { KA } from 'src/constants/strings.ka';
+import { deleteAccount } from 'src/hooks/useAccount';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 
@@ -48,6 +48,9 @@ export default function PatientProfile() {
   const [saving, setSaving] = useState(false);
   const [saveResult, setSaveResult] = useState<'success' | 'error' | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [deleteConfirming, setDeleteConfirming] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
 
   async function handleSave() {
     if (!user) return;
@@ -100,6 +103,20 @@ export default function PatientProfile() {
     }
   }
 
+  async function handleDeleteAccount() {
+    setDeletingAccount(true);
+    setDeleteError(false);
+    const ok = await deleteAccount();
+    if (!ok) {
+      setDeleteError(true);
+      setDeletingAccount(false);
+      return;
+    }
+    await supabase.auth.signOut();
+    logout();
+    router.replace('/(auth)/login');
+  }
+
   const initials = (user?.full_name ?? '')
     .trim()
     .split(' ')
@@ -110,7 +127,7 @@ export default function PatientProfile() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-slate-50"
+      className="flex-1 bg-brand-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -118,32 +135,39 @@ export default function PatientProfile() {
         contentContainerStyle={{ paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        bounces={false}
+        overScrollMode="never"
       >
-        {/* ── Teal hero ── */}
-        <LinearGradient
-          colors={['#0c4a6e', '#0891b2']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="px-6 pb-8 items-center"
-          style={{ paddingTop: insets.top + 20 }}
+        <View
+          className="bg-brand-900 px-6 rounded-b-[28px] justify-center"
+          style={{ paddingTop: insets.top, height: insets.top + 84 }}
         >
-          <Text className="text-teal-100 text-sm font-semibold uppercase tracking-widest mb-4 self-start">
+          <Text className="text-brand-200 text-sm font-semibold uppercase tracking-widest">
             {S.title}
           </Text>
-          <View
-            className="w-20 h-20 rounded-full bg-white/20 items-center justify-center mb-3"
-            style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
-          >
-            <Text className="text-white text-2xl font-bold">{initials}</Text>
+        </View>
+
+        <View
+          className="mx-4 mt-4 bg-white rounded-2xl p-5 items-center"
+          style={{
+            shadowColor: '#0f172a',
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.08,
+            shadowRadius: 10,
+            elevation: 3,
+          }}
+        >
+          <View className="w-20 h-20 rounded-full bg-brand-100 items-center justify-center mb-3">
+            <Text className="text-brand-700 text-2xl font-bold">{initials}</Text>
           </View>
-          <Text className="text-white text-xl font-bold">{user?.full_name}</Text>
-          <Text className="text-teal-100 text-sm mt-0.5">{user?.email}</Text>
-          <View className="bg-white/20 rounded-full px-3 py-1 mt-2">
-            <Text className="text-teal-50 text-xs font-semibold">
+          <Text className="text-gray-900 text-xl font-bold">{user?.full_name}</Text>
+          <Text className="text-gray-500 text-sm mt-0.5">{user?.email}</Text>
+          <View className="bg-brand-100 rounded-full px-3 py-1 mt-2">
+            <Text className="text-brand-700 text-xs font-semibold">
               {KA.auth.register.rolePatient}
             </Text>
           </View>
-        </LinearGradient>
+        </View>
 
         <View className="px-4 mt-4 gap-4">
           {/* ── Result banner ── */}
@@ -210,7 +234,7 @@ export default function PatientProfile() {
             onPress={handleSave}
             disabled={saving}
             activeOpacity={0.8}
-            className={`rounded-2xl py-4 items-center ${saving ? 'bg-teal-300' : 'bg-teal-600'}`}
+            className={`rounded-2xl py-4 items-center ${saving ? 'bg-accent-300' : 'bg-accent-600'}`}
           >
             {saving ? (
               <ActivityIndicator color="#ffffff" />
@@ -234,6 +258,48 @@ export default function PatientProfile() {
               <Text className="text-red-600 font-semibold text-base">{S.logoutButton}</Text>
             )}
           </TouchableOpacity>
+
+          {/* ── Delete account ── */}
+          {deleteError && (
+            <View className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <Text className="text-red-700 text-sm">{S.deleteAccountError}</Text>
+            </View>
+          )}
+          {deleteConfirming ? (
+            <View className="bg-red-50 border border-red-200 rounded-2xl p-4 gap-3">
+              <Text className="text-red-800 text-sm leading-5">{S.deleteAccountWarning}</Text>
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  onPress={() => setDeleteConfirming(false)}
+                  disabled={deletingAccount}
+                  activeOpacity={0.8}
+                  className="flex-1 rounded-xl py-3 items-center border border-gray-300 bg-white"
+                >
+                  <Text className="text-gray-700 font-semibold text-sm">{S.deleteAccountCancel}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleDeleteAccount}
+                  disabled={deletingAccount}
+                  activeOpacity={0.8}
+                  className="flex-1 rounded-xl py-3 items-center bg-red-600"
+                >
+                  {deletingAccount ? (
+                    <ActivityIndicator color="#ffffff" />
+                  ) : (
+                    <Text className="text-white font-semibold text-sm">{S.deleteAccountConfirm}</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={() => setDeleteConfirming(true)}
+              activeOpacity={0.8}
+              className="items-center py-2"
+            >
+              <Text className="text-red-400 text-sm">{S.deleteAccountButton}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

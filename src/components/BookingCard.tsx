@@ -1,7 +1,19 @@
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 
 import { KA } from 'src/constants/strings.ka';
 import { BookingStatus, BookingWithJoins, UserRole } from 'src/types';
+
+function toTelHref(phone: string): string {
+  return `tel:${phone.replace(/[^\d+]/g, '')}`;
+}
+
+function toWhatsAppHref(phone: string): string {
+  let digits = phone.replace(/\D/g, '');
+  if (!digits.startsWith('995') && digits.length === 9) {
+    digits = `995${digits}`;
+  }
+  return `https://wa.me/${digits}`;
+}
 
 type Props = {
   booking: BookingWithJoins;
@@ -9,12 +21,13 @@ type Props = {
   onConfirm?: () => void;
   onDecline?: () => void;
   onReview?: () => void;
+  onComplete?: () => void;
   actionLoading?: boolean;
 };
 
 const STATUS_CONFIG: Record<BookingStatus, { bg: string; text: string; dot: string; label: string }> = {
   pending:   { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-400',  label: KA.bookingStatus.pending },
-  confirmed: { bg: 'bg-teal-50',   text: 'text-teal-700',   dot: 'bg-teal-500',   label: KA.bookingStatus.confirmed },
+  confirmed: { bg: 'bg-accent-50',  text: 'text-accent-700',  dot: 'bg-accent-500', label: KA.bookingStatus.confirmed },
   declined:  { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-400',    label: KA.bookingStatus.declined },
   completed: { bg: 'bg-slate-100', text: 'text-slate-600',  dot: 'bg-slate-400',  label: KA.bookingStatus.completed },
   cancelled: { bg: 'bg-slate-100', text: 'text-slate-600',  dot: 'bg-slate-400',  label: KA.bookingStatus.cancelled },
@@ -22,7 +35,7 @@ const STATUS_CONFIG: Record<BookingStatus, { bg: string; text: string; dot: stri
 
 const STATUS_BORDER: Record<BookingStatus, string> = {
   pending:   '#f59e0b',
-  confirmed: '#0d9488',
+  confirmed: '#16A34A',
   declined:  '#f87171',
   completed: '#94a3b8',
   cancelled: '#94a3b8',
@@ -41,8 +54,8 @@ function Avatar({ uri, name }: { uri: string | null; name: string }) {
     return <Image source={{ uri }} className="w-11 h-11 rounded-full bg-gray-100" />;
   }
   return (
-    <View className="w-11 h-11 rounded-full bg-teal-100 items-center justify-center">
-      <Text className="text-teal-700 text-sm font-bold">{initials}</Text>
+    <View className="w-11 h-11 rounded-full bg-brand-100 items-center justify-center">
+      <Text className="text-brand-700 text-sm font-bold">{initials}</Text>
     </View>
   );
 }
@@ -54,7 +67,7 @@ function formatDate(iso: string): string {
     .padStart(2, '0')}.${d.getFullYear()}`;
 }
 
-export default function BookingCard({ booking, role, onConfirm, onDecline, onReview, actionLoading }: Props) {
+export default function BookingCard({ booking, role, onConfirm, onDecline, onReview, onComplete, actionLoading }: Props) {
   const S = KA.patientBookings;
   const cfg = STATUS_CONFIG[booking.status];
 
@@ -72,6 +85,12 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
       : role === 'physio'
       ? (booking.patient?.phone ?? null)
       : null;
+
+  const contactPhone =
+    role === 'patient' ? (booking.physio_profile?.user?.phone ?? null) : (booking.patient?.phone ?? null);
+
+  const canContact =
+    contactPhone && (booking.status === 'confirmed' || booking.status === 'completed');
 
   return (
     <View
@@ -130,6 +149,26 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
         <Text className="text-xs text-gray-300 text-right mt-0.5">{formatDate(booking.created_at)}</Text>
       </View>
 
+      {/* ── Call / WhatsApp ── */}
+      {canContact && contactPhone && (
+        <View className="flex-row gap-2 px-4 pb-3">
+          <TouchableOpacity
+            onPress={() => Linking.openURL(toTelHref(contactPhone))}
+            activeOpacity={0.75}
+            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 py-2.5"
+          >
+            <Text className="text-gray-700 text-sm font-semibold">{KA.nav.call}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Linking.openURL(toWhatsAppHref(contactPhone))}
+            activeOpacity={0.75}
+            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-accent-200 bg-accent-50 py-2.5"
+          >
+            <Text className="text-accent-700 text-sm font-semibold">{KA.nav.whatsapp}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* ── Review button ── */}
       {role === 'patient' && booking.status === 'completed' && onReview && (
         <TouchableOpacity
@@ -141,6 +180,24 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
             {KA.reviewScreen.reviewButton}
           </Text>
         </TouchableOpacity>
+      )}
+
+      {/* ── Mark as completed ── */}
+      {role === 'physio' && booking.status === 'confirmed' && onComplete && (
+        <View className="px-4 pb-4">
+          <TouchableOpacity
+            onPress={onComplete}
+            disabled={actionLoading}
+            activeOpacity={0.75}
+            className="rounded-xl bg-slate-700 py-2.5 items-center"
+          >
+            {actionLoading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text className="text-white text-sm font-bold">{KA.nav.complete}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* ── Confirm / Decline ── */}
@@ -165,7 +222,7 @@ export default function BookingCard({ booking, role, onConfirm, onDecline, onRev
               onPress={onConfirm}
               disabled={actionLoading}
               activeOpacity={0.75}
-              className="flex-1 rounded-xl bg-teal-600 py-2.5 items-center"
+              className="flex-1 rounded-xl bg-accent-600 py-2.5 items-center"
             >
               {actionLoading ? (
                 <ActivityIndicator size="small" color="#ffffff" />

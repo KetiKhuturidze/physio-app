@@ -16,6 +16,7 @@ import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
 import { type UserRole } from 'src/types/index';
+import DistrictPicker from 'src/components/DistrictPicker';
 
 const S = KA;
 
@@ -25,6 +26,7 @@ type FieldErrors = {
   phone?: string;
   password?: string;
   confirmPassword?: string;
+  district?: string;
 };
 
 const isValidEmail = (value: string) =>
@@ -38,6 +40,7 @@ export default function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [districtIds, setDistrictIds] = useState<string[]>([]);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -59,6 +62,9 @@ export default function Register() {
       errors.email = S.errors.invalidEmail;
     }
     if (!phone.trim()) errors.phone = S.errors.requiredField;
+    if (role === 'physio' && districtIds.length === 0) {
+      errors.district = S.errors.requiredField;
+    }
     if (!password) {
       errors.password = S.errors.requiredField;
     } else if (password.length < 8) {
@@ -113,17 +119,30 @@ export default function Register() {
     }
 
     if (role === 'physio') {
-      const { error: profileInsertError } = await supabase
+      const { data: profileRow, error: profileInsertError } = await supabase
         .from('physio_profiles')
         .insert({
           user_id: authData.user.id,
           specialties: [],
           languages: [],
+          base_district_id: districtIds[0],
           is_verified: false,
           is_active: true,
-        });
+        })
+        .select('id')
+        .single();
 
-      if (profileInsertError) {
+      if (profileInsertError || !profileRow) {
+        setFormError(S.errors.generic);
+        setIsLoading(false);
+        return;
+      }
+
+      const { error: serviceAreaInsertError } = await supabase
+        .from('physio_service_areas')
+        .insert({ physio_id: profileRow.id, district_id: districtIds[0] });
+
+      if (serviceAreaInsertError) {
         setFormError(S.errors.generic);
         setIsLoading(false);
         return;
@@ -137,7 +156,7 @@ export default function Register() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-teal-600"
+      className="flex-1 bg-brand-600"
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -146,13 +165,13 @@ export default function Register() {
       >
         {/* ── Hero section ── */}
         <View className="px-7 pb-10" style={{ paddingTop: insets.top + 32 }}>
-          <Text className="text-teal-100 text-sm font-semibold tracking-widest uppercase mb-3">
+          <Text className="text-brand-100 text-sm font-semibold tracking-widest uppercase mb-3">
             Thera
 </Text>
           <Text className="text-white text-4xl font-bold leading-tight mb-2">
             {S.auth.register.title}
           </Text>
-          <Text className="text-teal-100 text-base">
+          <Text className="text-brand-100 text-base">
             {S.auth.register.subtitle}
           </Text>
         </View>
@@ -167,36 +186,53 @@ export default function Register() {
           <View className="flex-row gap-3 mb-6">
             <TouchableOpacity
               className={`flex-1 rounded-2xl border-2 px-4 py-4 ${
-                role === 'patient' ? 'border-teal-600 bg-teal-50' : 'border-gray-200 bg-gray-50'
+                role === 'patient' ? 'border-brand-600 bg-brand-50' : 'border-gray-200 bg-gray-50'
               }`}
               onPress={() => setRole('patient')}
               disabled={isLoading}
               activeOpacity={0.8}
             >
-              <Text className={`text-sm font-bold mb-0.5 ${role === 'patient' ? 'text-teal-700' : 'text-gray-600'}`}>
+              <Text className={`text-sm font-bold mb-0.5 ${role === 'patient' ? 'text-brand-700' : 'text-gray-600'}`}>
                 {S.auth.register.rolePatient}
               </Text>
-              <Text className={`text-xs ${role === 'patient' ? 'text-teal-500' : 'text-gray-400'}`}>
+              <Text className={`text-xs ${role === 'patient' ? 'text-brand-500' : 'text-gray-400'}`}>
                 {S.auth.register.rolePatientDesc}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className={`flex-1 rounded-2xl border-2 px-4 py-4 ${
-                role === 'physio' ? 'border-teal-600 bg-teal-50' : 'border-gray-200 bg-gray-50'
+                role === 'physio' ? 'border-brand-600 bg-brand-50' : 'border-gray-200 bg-gray-50'
               }`}
               onPress={() => setRole('physio')}
               disabled={isLoading}
               activeOpacity={0.8}
             >
-              <Text className={`text-sm font-bold mb-0.5 ${role === 'physio' ? 'text-teal-700' : 'text-gray-600'}`}>
+              <Text className={`text-sm font-bold mb-0.5 ${role === 'physio' ? 'text-brand-700' : 'text-gray-600'}`}>
                 {S.auth.register.rolePhysio}
               </Text>
-              <Text className={`text-xs ${role === 'physio' ? 'text-teal-500' : 'text-gray-400'}`}>
+              <Text className={`text-xs ${role === 'physio' ? 'text-brand-500' : 'text-gray-400'}`}>
                 {S.auth.register.rolePhysioDesc}
               </Text>
             </TouchableOpacity>
           </View>
+
+          {/* Service district (physio only) */}
+          {role === 'physio' && (
+            <View className="mb-4">
+              <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                {S.auth.register.districtLabel}
+              </Text>
+              <DistrictPicker
+                selectedIds={districtIds}
+                onChange={setDistrictIds}
+                singleSelect
+              />
+              {fieldErrors.district && (
+                <Text className="text-red-500 text-xs mt-1">{fieldErrors.district}</Text>
+              )}
+            </View>
+          )}
 
           {/* Full name */}
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
@@ -333,7 +369,7 @@ export default function Register() {
           {/* Submit */}
           <TouchableOpacity
             className={`rounded-2xl py-4 items-center mb-6 ${
-              isLoading ? 'bg-teal-400' : 'bg-teal-600'
+              isLoading ? 'bg-accent-400' : 'bg-accent-600'
             }`}
             onPress={handleRegister}
             disabled={isLoading}
@@ -355,7 +391,7 @@ export default function Register() {
             </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text className="text-teal-600 text-sm font-bold">
+                <Text className="text-brand-600 text-sm font-bold">
                   {S.auth.register.loginLink}
                 </Text>
               </TouchableOpacity>

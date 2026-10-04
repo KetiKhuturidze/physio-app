@@ -24,16 +24,16 @@ function Avatar({ fullName, avatarUrl }: { fullName: string; avatarUrl: string |
       <Image
         source={{ uri: avatarUrl }}
         className="w-16 h-16 rounded-full"
-        style={{ borderWidth: 2, borderColor: '#ccfbf1' }}
+        style={{ borderWidth: 2, borderColor: '#DCE6F0' }}
       />
     );
   }
   return (
     <View
-      className="w-16 h-16 rounded-full bg-teal-100 items-center justify-center"
-      style={{ borderWidth: 2, borderColor: '#ccfbf1' }}
+      className="w-16 h-16 rounded-full bg-brand-100 items-center justify-center"
+      style={{ borderWidth: 2, borderColor: '#DCE6F0' }}
     >
-      <Text className="text-teal-700 text-lg font-bold">
+      <Text className="text-brand-700 text-lg font-bold">
         {getInitials(fullName)}
       </Text>
     </View>
@@ -80,7 +80,7 @@ export default function PhysioCard({ physio, onPress }: Props) {
           <View className="flex-row items-center gap-1.5 flex-wrap mb-0.5">
             <Text className="text-base font-bold text-gray-900">{user.full_name}</Text>
             {is_verified && (
-              <View className="bg-teal-600 rounded-full w-4 h-4 items-center justify-center">
+              <View className="bg-accent-600 rounded-full w-4 h-4 items-center justify-center">
                 <Text className="text-white text-xs font-bold" style={{ fontSize: 9 }}>✓</Text>
               </View>
             )}
@@ -108,13 +108,13 @@ export default function PhysioCard({ physio, onPress }: Props) {
           {visibleSpecialties.length > 0 && (
             <View className="flex-row flex-wrap gap-1">
               {visibleSpecialties.map((s) => (
-                <View key={s} className="bg-slate-100 rounded-full px-2.5 py-0.5">
-                  <Text className="text-xs text-slate-600 font-medium">{s}</Text>
+                <View key={s} className="bg-brand-100 rounded-full px-2.5 py-0.5">
+                  <Text className="text-xs text-brand-700 font-medium">{s}</Text>
                 </View>
               ))}
               {extraCount > 0 && (
-                <View className="bg-slate-100 rounded-full px-2.5 py-0.5">
-                  <Text className="text-xs text-slate-500">+{extraCount}</Text>
+                <View className="bg-gray-100 rounded-full px-2.5 py-0.5">
+                  <Text className="text-xs text-gray-500">+{extraCount}</Text>
                 </View>
               )}
             </View>
@@ -123,9 +123,9 @@ export default function PhysioCard({ physio, onPress }: Props) {
       </View>
 
       {/* ── Footer strip ── */}
-      <View className="flex-row items-center justify-between px-4 py-2.5 bg-teal-50 border-t border-teal-100">
-        <Text className="text-xs text-teal-700 font-medium">{KA.physioCard.verified}</Text>
-        <Text className="text-teal-600 text-sm font-bold">›</Text>
+      <View className="flex-row items-center justify-between px-4 py-2.5 bg-brand-50 border-t border-brand-100">
+        <Text className="text-xs text-brand-700 font-medium">{KA.physioCard.verified}</Text>
+        <Text className="text-brand-600 text-sm font-bold">›</Text>
       </View>
     </TouchableOpacity>
   );

@@ -50,9 +50,7 @@ export function useLocation(): LocationState {
           accuracy: Location.Accuracy.Balanced,
         });
         coords = position.coords;
-        console.log('[useLocation] GPS coords:', coords.latitude, coords.longitude);
-      } catch (e) {
-        console.error('[useLocation] GPS error:', e);
+      } catch {
         if (!cancelled) {
           setError(KA.location.fetchError);
           setLoading(false);
@@ -69,14 +67,12 @@ export function useLocation(): LocationState {
       if (cancelled) return;
 
       if (dbError || !data || (data as DistrictRow[]).length === 0) {
-        console.error('[useLocation] nearest_district RPC error:', dbError, 'data:', data);
         setError(KA.location.districtError);
         setLoading(false);
         return;
       }
 
       const row = (data as DistrictRow[])[0];
-      console.log('[useLocation] nearest district:', row.name_en, 'distance:', row.distance, 'm');
       setDistrict({
         id: row.id,
         name_en: row.name_en,

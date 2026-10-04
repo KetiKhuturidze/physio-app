@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -48,8 +47,8 @@ function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
     return <Image source={{ uri }} className="w-16 h-16 rounded-full bg-gray-200" />;
   }
   return (
-    <View className="w-16 h-16 rounded-full bg-teal-100 items-center justify-center">
-      <Text className="text-teal-700 text-xl font-semibold">{initials}</Text>
+    <View className="w-16 h-16 rounded-full bg-brand-100 items-center justify-center">
+      <Text className="text-brand-700 text-xl font-semibold">{initials}</Text>
     </View>
   );
 }
@@ -64,6 +63,11 @@ export default function Dashboard() {
 
   const { bookings, loading: bookingsLoading } = useBookings('physio');
   const pendingCount = bookings.filter((b) => b.status === 'pending').length;
+  const now = new Date();
+  const thisMonthCount = bookings.filter((b) => {
+    const d = new Date(b.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
 
   useFocusEffect(
     useCallback(() => {
@@ -113,28 +117,30 @@ export default function Dashboard() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#0891b2" />
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
 
   return (
     <ScrollView
-      className="flex-1 bg-slate-50"
+      className="flex-1 bg-brand-50"
       contentContainerStyle={{ paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
+      bounces={false}
+      overScrollMode="never"
     >
-      {/* ── Teal hero header ── */}
-      <LinearGradient
-        colors={['#0c4a6e', '#0891b2']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="px-6 pb-6"
-        style={{ paddingTop: insets.top + 20 }}
+      <View
+        className="bg-brand-900 px-6 rounded-b-[28px] justify-center"
+        style={{ paddingTop: insets.top, height: insets.top + 84 }}
       >
-        <Text className="text-teal-100 text-sm mb-0.5">{KA.general.welcome}</Text>
-        <Text className="text-white text-2xl font-bold">{firstName}</Text>
-      </LinearGradient>
+        <Text className="text-brand-200 text-xs font-bold tracking-widest uppercase mb-1">
+          {KA.patientHome.appName}
+        </Text>
+        <Text className="text-white text-2xl font-bold">
+          {KA.general.welcome} <Text className="text-brand-200">{user?.full_name ?? firstName}</Text>
+        </Text>
+      </View>
 
       <View className="px-4 mt-4 gap-4">
         {/* ── Incomplete warning ── */}
@@ -161,24 +167,24 @@ export default function Dashboard() {
         {/* ── Profile summary card ── */}
         {profile && complete && (
           <View className="bg-white rounded-2xl p-4 gap-4">
-            {/* Avatar + info row */}
-            <View className="flex-row items-center gap-4">
+            {/* Avatar + info, centered */}
+            <View className="items-center gap-1">
               <Avatar uri={user?.avatar_url ?? null} fullName={user?.full_name ?? ''} />
-              <View className="flex-1 gap-0.5">
-                <View className="flex-row items-center gap-2 flex-wrap">
-                  <Text className="text-base font-semibold text-gray-900">
+              <View className="items-center gap-0.5 mt-2">
+                <View className="flex-row items-center justify-center gap-2 flex-wrap">
+                  <Text className="text-base font-semibold text-gray-900 text-center">
                     {user?.full_name}
                   </Text>
                   {profile.is_verified && (
-                    <View className="bg-teal-100 rounded-full px-2 py-0.5">
-                      <Text className="text-teal-700 text-xs font-medium">
+                    <View className="bg-brand-100 rounded-full px-2 py-0.5">
+                      <Text className="text-brand-700 text-xs font-medium">
                         {S.verifiedBadge}
                       </Text>
                     </View>
                   )}
                 </View>
                 {profile.base_district && (
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-sm text-gray-500 text-center">
                     {profile.base_district.name_ka}
                   </Text>
                 )}
@@ -198,36 +204,36 @@ export default function Dashboard() {
           </View>
         )}
 
-        {/* ── My bookings summary ── */}
-        <View className="bg-white rounded-2xl p-4 gap-3">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-gray-900">{S.myBookings}</Text>
-            <TouchableOpacity onPress={() => router.navigate('/(physio)/bookings')} activeOpacity={0.7}>
-              <Text className="text-teal-600 text-sm font-medium">{S.seeAll}</Text>
-            </TouchableOpacity>
+        {/* ── Stats row ── */}
+        <View className="flex-row gap-3">
+          <View className="flex-1 bg-amber-50 border border-amber-100 rounded-2xl p-4 items-center">
+            {bookingsLoading ? (
+              <ActivityIndicator color="#d97706" size="small" />
+            ) : (
+              <Text className="text-3xl font-bold text-amber-600">{pendingCount}</Text>
+            )}
+            <Text className="text-xs text-amber-700 mt-1 font-medium">{S.pendingLabel}</Text>
           </View>
-
-          {bookingsLoading ? (
-            <View className="py-4 items-center">
-              <ActivityIndicator color="#0891b2" size="small" />
-            </View>
-          ) : bookings.length === 0 ? (
-            <View className="py-4 items-center">
-              <Text className="text-gray-400 text-sm">{KA.physioBookings.empty}</Text>
-            </View>
-          ) : (
-            <View className="flex-row gap-4">
-              <View className="flex-1 bg-amber-50 rounded-xl p-3 items-center">
-                <Text className="text-2xl font-bold text-amber-600">{pendingCount}</Text>
-                <Text className="text-xs text-amber-700 mt-0.5">{S.pendingLabel}</Text>
-              </View>
-              <View className="flex-1 bg-teal-50 rounded-xl p-3 items-center">
-                <Text className="text-2xl font-bold text-teal-600">{bookings.length}</Text>
-                <Text className="text-xs text-teal-700 mt-0.5">{S.totalLabel}</Text>
-              </View>
-            </View>
-          )}
+          <View className="flex-1 bg-brand-50 border border-brand-100 rounded-2xl p-4 items-center">
+            {bookingsLoading ? (
+              <ActivityIndicator color="#3F6690" size="small" />
+            ) : (
+              <Text className="text-3xl font-bold text-brand-600">{thisMonthCount}</Text>
+            )}
+            <Text className="text-xs text-brand-700 mt-1 font-medium">{S.thisMonthLabel}</Text>
+          </View>
         </View>
+
+        {/* ── See all bookings ── */}
+        <TouchableOpacity
+          onPress={() => router.navigate('/(physio)/bookings')}
+          activeOpacity={0.8}
+          className="flex-row items-center justify-between bg-white rounded-2xl px-4 py-3.5"
+          style={{ shadowColor: '#0f172a', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 }}
+        >
+          <Text className="text-sm font-semibold text-gray-900">{S.myBookings}</Text>
+          <Text className="text-brand-600 text-sm font-medium">{S.seeAll}</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

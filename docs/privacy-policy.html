@@ -1,0 +1,582 @@
+<title>Thera Privacy Policy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@500;600&family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Sans:wght@400;500;600&family=Noto+Serif:wght@500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper: #f6faf9;
+    --paper-raised: #ffffff;
+    --ink: #10262a;
+    --muted: #56706d;
+    --teal-deep: #0c4a6e;
+    --teal: #0891b2;
+    --mist: #e3f0ef;
+    --line: #d7e4e2;
+    --serif: 'Noto Serif Georgian', 'Noto Serif', Georgia, serif;
+    --sans: 'Noto Sans Georgian', 'Noto Sans', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0c1817;
+      --paper-raised: #10201f;
+      --ink: #eaf3f1;
+      --muted: #9db5b1;
+      --teal-deep: #7dd3e8;
+      --teal: #5fd4e8;
+      --mist: rgba(95, 212, 232, 0.1);
+      --line: #1e3230;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0c1817;
+    --paper-raised: #10201f;
+    --ink: #eaf3f1;
+    --muted: #9db5b1;
+    --teal-deep: #7dd3e8;
+    --teal: #5fd4e8;
+    --mist: rgba(95, 212, 232, 0.1);
+    --line: #1e3230;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal-deep); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .band {
+    background: linear-gradient(120deg, var(--teal-deep), var(--teal));
+    color: #f2fbfb;
+    padding: 2.75rem 1.5rem 3.5rem;
+  }
+  .band-inner { max-width: 760px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    margin: 0.6rem 0 0.4rem;
+    text-wrap: balance;
+  }
+  .band p.sub { margin: 0; font-size: 1.02rem; opacity: 0.92; max-width: 46ch; }
+
+  .langtoggle {
+    position: absolute;
+    top: 1.75rem;
+    right: 1.5rem;
+    display: flex;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 999px;
+    padding: 3px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+  .langtoggle button {
+    border: none;
+    background: transparent;
+    color: #f2fbfb;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    opacity: 0.75;
+  }
+  .langtoggle button[aria-pressed="true"] {
+    background: rgba(255,255,255,0.92);
+    color: var(--teal-deep);
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 2.5rem;
+    position: relative;
+  }
+  @media (max-width: 720px) {
+    .wrap { grid-template-columns: 1fr; }
+    .toc { display: none; }
+  }
+
+  .toc {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    margin-top: 2.75rem;
+    font-size: 0.86rem;
+  }
+  .toc-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
+  .toc li { margin: 0; }
+  .toc a {
+    display: block;
+    padding: 0.36rem 0 0.36rem 0.9rem;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .toc a:hover { color: var(--ink); }
+  .toc a.active { color: var(--teal-deep); border-left-color: var(--teal); font-weight: 600; }
+
+  main { min-width: 0; padding-top: 2.75rem; }
+
+  .meta-row {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.25rem;
+    margin-bottom: 2.25rem;
+  }
+  .meta-row strong { color: var(--ink); font-weight: 600; }
+
+  section { margin-bottom: 2.75rem; scroll-margin-top: 1.5rem; }
+  section > h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin: 0 0 0.9rem;
+    text-wrap: balance;
+  }
+  section > p { margin: 0 0 0.9rem; max-width: 62ch; color: var(--ink); }
+  section > p.lead { color: var(--muted); font-size: 0.98rem; }
+  section ul, section ol.steps { margin: 0 0 0.9rem; padding-left: 1.3rem; max-width: 62ch; }
+  section li { margin-bottom: 0.4rem; }
+  section strong { font-weight: 600; }
+
+  .callout {
+    background: var(--mist);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+    font-size: 0.94rem;
+    margin: 1rem 0;
+  }
+  .callout p { margin: 0; }
+  .callout p + p { margin-top: 0.5rem; }
+
+  .data-table {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 520px; }
+  thead th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--mist);
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td {
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.cat { font-weight: 600; white-space: nowrap; }
+
+  .steps { counter-reset: step; }
+  .steps li {
+    list-style: none;
+    position: relative;
+    padding-left: 2.1rem;
+  }
+  .steps li::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--mist);
+    color: var(--teal-deep);
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  footer {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+  }
+  footer a { color: var(--teal-deep); }
+
+  [hidden] { display: none !important; }
+</style>
+
+<div class="band">
+  <div class="langtoggle" role="group" aria-label="Language / ენა">
+    <button type="button" data-lang="ka" aria-pressed="true">ქართული</button>
+    <button type="button" data-lang="en" aria-pressed="false">English</button>
+  </div>
+  <div class="band-inner">
+    <div class="eyebrow">
+      <span data-t="eyebrow.app">Thera</span>
+      <span class="dot"></span>
+      <span data-t="eyebrow.tag">თბილისი, საქართველო</span>
+    </div>
+    <h1 data-t="hero.title">კონფიდენციალურობის პოლიტიკა</h1>
+    <p class="sub" data-t="hero.sub">როგორ ვაგროვებთ, ვიყენებთ და ვიცავთ თქვენს მონაცემებს — მარტივი, გულწრფელი ენით.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-label" data-t="toc.label">გვერდზე</div>
+    <ol id="tocList"></ol>
+  </nav>
+
+  <main>
+    <div class="meta-row">
+      <span><span data-t="meta.updated">განახლდა</span>: <strong>2026-09-30</strong></span>
+      <span><span data-t="meta.controller">მონაცემთა ადმინისტრატორი</span>: <strong>Thera</strong></span>
+      <span><span data-t="meta.contact">კონტაქტი</span>: <strong><a href="mailto:gkphysiotherapis@gmail.com">gkphysiotherapis@gmail.com</a></strong></span>
+    </div>
+
+    <section id="s-intro">
+      <h2 data-t="intro.h">შესავალი</h2>
+      <p data-t="intro.p1">Thera აკავშირებს პაციენტებს ფიზიოთერაპევტებთან სახლში ვიზიტებისთვის თბილისში. ეს დოკუმენტი განმარტავს, თუ რა მონაცემებს ვაგროვებთ აპლიკაციის გამოყენებისას, რატომ, ვის ვუზიარებთ და როგორ შეგიძლიათ მართოთ ან წაშალოთ ისინი.</p>
+      <p data-t="intro.p2">Thera ამჟამად არ იღებს გადახდებს აპში — ვიზიტების ანაზღაურება ხდება ნაღდი ფულით ადგილზე, ამიტომ არ ვამუშავებთ ბარათის ან საბანკო მონაცემებს.</p>
+    </section>
+
+    <section id="s-data">
+      <h2 data-t="data.h">რა მონაცემებს ვაგროვებთ</h2>
+      <p class="lead" data-t="data.lead">მონაცემები დამოკიდებულია იმაზე, ხართ თუ არა პაციენტი თუ ფიზიოთერაპევტი — ორივე შემთხვევაში მხოლოდ ის, რაც სერვისის მუშაობისთვისაა საჭირო.</p>
+      <div class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th data-t="data.col1">კატეგორია</th>
+              <th data-t="data.col2">კონკრეტულად</th>
+              <th data-t="data.col3">მიზანი</th>
+            </tr>
+          </thead>
+          <tbody id="dataRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="s-location">
+      <h2 data-t="loc.h">მდებარეობა</h2>
+      <p data-t="loc.p1">როცა პაციენტი ეძებს ფიზიოთერაპევტს, აპი ერთჯერადად ითხოვს GPS მდებარეობას, რომ დაადგინოს უახლოესი უბანი (მაგ. საბურთალო, ვაკე). კოორდინატები იგზავნება სერვერზე მხოლოდ უბნის დასადგენად და <strong>არასდროს ინახება</strong> ჩვენს მონაცემთა ბაზაში — ინახება მხოლოდ დადგენილი უბნის სახელი.</p>
+      <p data-t="loc.p2">ფიზიოთერაპევტის ზუსტი მისამართი პაციენტს არასდროს ეჩვენება — მხოლოდ მისი მომსახურების უბანი.</p>
+    </section>
+
+    <section id="s-share">
+      <h2 data-t="share.h">ვის ვუზიარებთ მონაცემებს</h2>
+      <p data-t="share.p1">არ ვყიდით მონაცემებს. ვუზიარებთ მხოლოდ იმ სერვისებს, რომლებიც აპს პირდაპირ ემსახურება:</p>
+      <ul id="shareList"></ul>
+      <div class="callout">
+        <p data-t="share.physio1"><strong data-t="share.physioLabel">ფიზიოთერაპევტსა და პაციენტს შორის:</strong> <span data-t="share.physio2">როცა ჯავშანი დადასტურებულია, ფიზიოთერაპევტი ხედავს პაციენტის მისამართს, ტელეფონსა და შენიშვნებს — მხოლოდ იმ ჯავშნებზე, სადაც ის დანიშნულია. ეს კონტროლდება მონაცემთა ბაზის დონეზე (Row Level Security), არა მხოლოდ აპის ინტერფეისით.</span></p>
+      </div>
+    </section>
+
+    <section id="s-retention">
+      <h2 data-t="ret.h">შენახვის ვადა</h2>
+      <p data-t="ret.p1">თქვენს მონაცემებს ვინახავთ, სანამ ანგარიში აქტიურია. ანგარიშის წაშლისას ყველა პირადი მონაცემი — პროფილი, ჯავშნების ისტორია, შეფასებები და ატვირთული ფაილები — სამუდამოდ იშლება 30 დღეში.</p>
+    </section>
+
+    <section id="s-delete">
+      <h2 data-t="del.h">ანგარიშის წაშლა</h2>
+      <p data-t="del.p1">ანგარიშის წაშლა შესაძლებელია პირდაპირ აპიდან, გარეშე მხარისადმი მიმართვისა:</p>
+      <ol class="steps" id="deleteSteps"></ol>
+      <div class="callout">
+        <p data-t="del.note">წაშლა შეუქცევადია. თუ ხართ ფიზიოთერაპევტი, წაიშლება ასევე თქვენი სერვისები, სერტიფიკატები და მიღებული შეფასებები.</p>
+      </div>
+    </section>
+
+    <section id="s-security">
+      <h2 data-t="sec.h">უსაფრთხოება</h2>
+      <ul id="secList"></ul>
+    </section>
+
+    <section id="s-rights">
+      <h2 data-t="rights.h">თქვენი უფლებები</h2>
+      <p data-t="rights.p1">საქართველოს კანონმდებლობის შესაბამისად, თქვენ გაქვთ უფლება მოითხოვოთ თქვენი მონაცემების ასლი, გასწოროთ არასწორი მონაცემები ან წაშალოთ ანგარიში (იხ. ზემოთ). ამისთვის დაგვიკავშირდით ქვემოთ მითითებულ ელფოსტაზე.</p>
+    </section>
+
+    <section id="s-children">
+      <h2 data-t="child.h">არასრულწლოვნები</h2>
+      <p data-t="child.p1">Thera არ არის განკუთვნილი 18 წლამდე პირებისთვის და შეგნებულად არ აგროვებს არასრულწლოვნების მონაცემებს.</p>
+    </section>
+
+    <section id="s-changes">
+      <h2 data-t="chg.h">ცვლილებები</h2>
+      <p data-t="chg.p1">ამ პოლიტიკის განახლებისას შესაბამისად შეიცვლება თარიღი გვერდის თავში. მნიშვნელოვანი ცვლილებების შემთხვევაში გაცნობებთ აპში.</p>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <span data-t="footer.text">კითხვების შემთხვევაში მოგვწერეთ:</span>
+  <a href="mailto:gkphysiotherapis@gmail.com">gkphysiotherapis@gmail.com</a>
+</footer>
+
+<script>
+(function () {
+  var T = {
+    ka: {
+      "eyebrow.app": "Thera",
+      "eyebrow.tag": "თბილისი, საქართველო",
+      "hero.title": "კონფიდენციალურობის პოლიტიკა",
+      "hero.sub": "როგორ ვაგროვებთ, ვიყენებთ და ვიცავთ თქვენს მონაცემებს — მარტივი, გულწრფელი ენით.",
+      "toc.label": "გვერდზე",
+      "meta.updated": "განახლდა",
+      "meta.controller": "მონაცემთა ადმინისტრატორი",
+      "meta.contact": "კონტაქტი",
+      "intro.h": "შესავალი",
+      "intro.p1": "Thera აკავშირებს პაციენტებს ფიზიოთერაპევტებთან სახლში ვიზიტებისთვის თბილისში. ეს დოკუმენტი განმარტავს, თუ რა მონაცემებს ვაგროვებთ აპლიკაციის გამოყენებისას, რატომ, ვის ვუზიარებთ და როგორ შეგიძლიათ მართოთ ან წაშალოთ ისინი.",
+      "intro.p2": "Thera ამჟამად არ იღებს გადახდებს აპში — ვიზიტების ანაზღაურება ხდება ნაღდი ფულით ადგილზე, ამიტომ არ ვამუშავებთ ბარათის ან საბანკო მონაცემებს.",
+      "data.h": "რა მონაცემებს ვაგროვებთ",
+      "data.lead": "მონაცემები დამოკიდებულია იმაზე, ხართ თუ არა პაციენტი თუ ფიზიოთერაპევტი — ორივე შემთხვევაში მხოლოდ ის, რაც სერვისის მუშაობისთვისაა საჭირო.",
+      "data.col1": "კატეგორია",
+      "data.col2": "კონკრეტულად",
+      "data.col3": "მიზანი",
+      "loc.h": "მდებარეობა",
+      "loc.p1": "როცა პაციენტი ეძებს ფიზიოთერაპევტს, აპი ერთჯერადად ითხოვს GPS მდებარეობას, რომ დაადგინოს უახლოესი უბანი (მაგ. საბურთალო, ვაკე). კოორდინატები იგზავნება სერვერზე მხოლოდ უბნის დასადგენად და არასდროს ინახება ჩვენს მონაცემთა ბაზაში — ინახება მხოლოდ დადგენილი უბნის სახელი.",
+      "loc.p2": "ფიზიოთერაპევტის ზუსტი მისამართი პაციენტს არასდროს ეჩვენება — მხოლოდ მისი მომსახურების უბანი.",
+      "share.h": "ვის ვუზიარებთ მონაცემებს",
+      "share.p1": "არ ვყიდით მონაცემებს. ვუზიარებთ მხოლოდ იმ სერვისებს, რომლებიც აპს პირდაპირ ემსახურება:",
+      "share.physioLabel": "ფიზიოთერაპევტსა და პაციენტს შორის:",
+      "share.physio2": "როცა ჯავშანი დადასტურებულია, ფიზიოთერაპევტი ხედავს პაციენტის მისამართს, ტელეფონსა და შენიშვნებს — მხოლოდ იმ ჯავშნებზე, სადაც ის დანიშნულია. ეს კონტროლდება მონაცემთა ბაზის დონეზე (Row Level Security), არა მხოლოდ აპის ინტერფეისით.",
+      "ret.h": "შენახვის ვადა",
+      "ret.p1": "თქვენს მონაცემებს ვინახავთ, სანამ ანგარიში აქტიურია. ანგარიშის წაშლისას ყველა პირადი მონაცემი — პროფილი, ჯავშნების ისტორია, შეფასებები და ატვირთული ფაილები — სამუდამოდ იშლება 30 დღეში.",
+      "del.h": "ანგარიშის წაშლა",
+      "del.p1": "ანგარიშის წაშლა შესაძლებელია პირდაპირ აპიდან, გარეშე მხარისადმი მიმართვისა:",
+      "del.note": "წაშლა შეუქცევადია. თუ ხართ ფიზიოთერაპევტი, წაიშლება ასევე თქვენი სერვისები, სერტიფიკატები და მიღებული შეფასებები.",
+      "sec.h": "უსაფრთხოება",
+      "rights.h": "თქვენი უფლებები",
+      "rights.p1": "საქართველოს კანონმდებლობის შესაბამისად, თქვენ გაქვთ უფლება მოითხოვოთ თქვენი მონაცემების ასლი, გასწოროთ არასწორი მონაცემები ან წაშალოთ ანგარიში (იხ. ზემოთ). ამისთვის დაგვიკავშირდით ქვემოთ მითითებულ ელფოსტაზე.",
+      "child.h": "არასრულწლოვნები",
+      "child.p1": "Thera არ არის განკუთვნილი 18 წლამდე პირებისთვის და შეგნებულად არ აგროვებს არასრულწლოვნების მონაცემებს.",
+      "chg.h": "ცვლილებები",
+      "chg.p1": "ამ პოლიტიკის განახლებისას შესაბამისად შეიცვლება თარიღი გვერდის თავში. მნიშვნელოვანი ცვლილებების შემთხვევაში გაცნობებთ აპში.",
+      "footer.text": "კითხვების შემთხვევაში მოგვწერეთ:"
+    },
+    en: {
+      "eyebrow.app": "Thera",
+      "eyebrow.tag": "Tbilisi, Georgia",
+      "hero.title": "Privacy Policy",
+      "hero.sub": "How we collect, use, and protect your data — in plain language.",
+      "toc.label": "On this page",
+      "meta.updated": "Last updated",
+      "meta.controller": "Data controller",
+      "meta.contact": "Contact",
+      "intro.h": "Introduction",
+      "intro.p1": "Thera connects patients with physiotherapists for at-home visits in Tbilisi. This policy explains what data we collect when you use the app, why, who we share it with, and how you can manage or delete it.",
+      "intro.p2": "Thera does not currently process in-app payments — visits are paid in cash at the door, so we never handle card or bank details.",
+      "data.h": "What we collect",
+      "data.lead": "What we collect depends on whether you're a patient or a physiotherapist — in both cases, only what the service needs to function.",
+      "data.col1": "Category",
+      "data.col2": "Specifically",
+      "data.col3": "Purpose",
+      "loc.h": "Location",
+      "loc.p1": "When a patient searches for a physiotherapist, the app requests GPS location once, to resolve the nearest district (e.g. Saburtalo, Vake). Coordinates are sent to the server only to resolve the district and are never stored in our database — only the resolved district name is kept.",
+      "loc.p2": "A physiotherapist's exact address is never shown to patients — only their service district.",
+      "share.h": "Who we share data with",
+      "share.p1": "We don't sell data. We share it only with services that directly power the app:",
+      "share.physioLabel": "Between physiotherapist and patient:",
+      "share.physio2": "Once a booking is confirmed, the assigned physiotherapist can see the patient's address, phone number, and notes — only for bookings they're assigned to. This is enforced at the database level (Row Level Security), not just in the app's interface.",
+      "ret.h": "Retention",
+      "ret.p1": "We keep your data for as long as your account is active. When you delete your account, all personal data — profile, booking history, reviews, and uploaded files — is permanently erased within 30 days.",
+      "del.h": "Deleting your account",
+      "del.p1": "You can delete your account directly from the app, with no need to contact anyone:",
+      "del.note": "Deletion is irreversible. If you're a physiotherapist, your services, certificates, and received reviews are deleted as well.",
+      "sec.h": "Security",
+      "rights.h": "Your rights",
+      "rights.p1": "Under Georgian law, you have the right to request a copy of your data, correct inaccurate data, or delete your account (see above). Reach us at the email below to exercise these rights.",
+      "child.h": "Children",
+      "child.p1": "Thera is not directed at anyone under 18 and does not knowingly collect data from minors.",
+      "chg.h": "Changes",
+      "chg.p1": "When this policy changes, the date at the top of the page is updated accordingly. We'll notify you in-app of material changes.",
+      "footer.text": "Questions? Write to us:"
+    }
+  };
+
+  var DATA_ROWS = {
+    ka: [
+      ["ანგარიში", "სახელი, გვარი, ელფოსტა, ტელეფონი, როლი (პაციენტი/ფიზიოთერაპევტი)", "რეგისტრაცია, ავტორიზაცია, კომუნიკაცია"],
+      ["პროფილი (ფიზიო)", "ბიოგრაფია, სპეციალობები, ენები, სერვისები და ფასები, სერტიფიკატები, ავატარი", "პროფილის საჯარო ჩვენება პაციენტებისთვის"],
+      ["ჯავშანი", "მისამართი, უბანი, სასურველი დრო, შენიშვნები", "ვიზიტის ორგანიზება ფიზიოთერაპევტთან"],
+      ["შეფასება", "რეიტინგი, კომენტარი", "ფიზიოთერაპევტის საჯარო რეიტინგი"],
+      ["შეტყობინებები", "Push-ტოკენი (მოწყობილობის იდენტიფიკატორი)", "ჯავშნის სტატუსის შესახებ შეტყობინებები — არასდროს ჩანს ან იწერება ლოგებში"],
+    ],
+    en: [
+      ["Account", "Full name, email, phone, role (patient/physiotherapist)", "Registration, sign-in, communication"],
+      ["Profile (physio)", "Bio, specialties, languages, services & prices, certificates, avatar", "Public profile shown to patients"],
+      ["Booking", "Address, district, requested time, notes", "Coordinating a visit with a physiotherapist"],
+      ["Review", "Rating, comment", "Public rating for a physiotherapist"],
+      ["Notifications", "Push token (device identifier)", "Booking status alerts — never displayed or logged"],
+    ]
+  };
+
+  var SHARE_LIST = {
+    ka: [
+      "<strong>Supabase</strong> — მონაცემთა ბაზა, ავტორიზაცია და ფაილების შენახვა (ავატარები, სერტიფიკატები). მონაცემები დაშიფრულია გადაცემისას.",
+      "<strong>Resend</strong> — ჯავშნის შესახებ ელფოსტის შეტყობინებების გაგზავნა.",
+      "<strong>Expo Push Service</strong> — push შეტყობინებების მიწოდება მოწყობილობაზე."
+    ],
+    en: [
+      "<strong>Supabase</strong> — database, authentication, and file storage (avatars, certificates). Data is encrypted in transit.",
+      "<strong>Resend</strong> — sends booking-related email notifications.",
+      "<strong>Expo Push Service</strong> — delivers push notifications to your device."
+    ]
+  };
+
+  var DELETE_STEPS = {
+    ka: [
+      "გახსენით <strong>პროფილი</strong> აპის ქვედა მენიუდან.",
+      "ჩამოსქროლეთ ღილაკამდე <strong>„ანგარიშის წაშლა“</strong>.",
+      "დაადასტურეთ — თქვენი ანგარიში და მასთან დაკავშირებული ყველა მონაცემი დაუყოვნებლივ წაიშლება."
+    ],
+    en: [
+      "Open <strong>Profile</strong> from the app's bottom navigation.",
+      "Scroll to the <strong>\"Delete account\"</strong> button.",
+      "Confirm — your account and all associated data are erased immediately."
+    ]
+  };
+
+  var SEC_LIST = {
+    ka: [
+      "მონაცემთა ბაზის ყველა ცხრილი დაცულია Row Level Security-ით — მომხმარებელს მხოლოდ საკუთარი მონაცემების წვდომა აქვს.",
+      "სერვისის key (service role), რომელსაც ადმინისტრაციული წვდომა აქვს, არასდროს ინახება აპში — მხოლოდ სერვერის მხარეს.",
+      "პაროლები არასდროს ინახება ჩვენს მხარეს — ავტორიზაციას მართავს Supabase Auth."
+    ],
+    en: [
+      "Every database table is protected by Row Level Security — a user can only access their own data.",
+      "The service role key, which has administrative access, is never stored in the app — only server-side.",
+      "Passwords are never stored by us — authentication is handled by Supabase Auth."
+    ]
+  };
+
+  function renderLists(lang) {
+    document.getElementById('dataRows').innerHTML = DATA_ROWS[lang].map(function (row) {
+      return '<tr><td class="cat">' + row[0] + '</td><td>' + row[1] + '</td><td>' + row[2] + '</td></tr>';
+    }).join('');
+
+    document.getElementById('shareList').innerHTML = SHARE_LIST[lang].map(function (item) {
+      return '<li>' + item + '</li>';
+    }).join('');
+
+    document.getElementById('deleteSteps').innerHTML = DELETE_STEPS[lang].map(function (item) {
+      return '<li>' + item + '</li>';
+    }).join('');
+
+    document.getElementById('secList').innerHTML = SEC_LIST[lang].map(function (item) {
+      return '<li>' + item + '</li>';
+    }).join('');
+  }
+
+  function applyLang(lang) {
+    document.documentElement.setAttribute('lang', lang);
+    var dict = T[lang];
+    document.querySelectorAll('[data-t]').forEach(function (el) {
+      var key = el.getAttribute('data-t');
+      if (dict[key]) el.innerHTML = dict[key];
+    });
+    renderLists(lang);
+    document.querySelectorAll('.langtoggle button').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+    buildTOC();
+    try { localStorage.setItem('thera-privacy-lang', lang); } catch (e) {}
+  }
+
+  function buildTOC() {
+    var list = document.getElementById('tocList');
+    var sections = document.querySelectorAll('main section');
+    list.innerHTML = '';
+    sections.forEach(function (sec) {
+      var h2 = sec.querySelector('h2');
+      if (!h2) return;
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#' + sec.id;
+      a.textContent = h2.textContent;
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+    observeSections();
+  }
+
+  var observer;
+  function observeSections() {
+    if (observer) observer.disconnect();
+    var links = document.querySelectorAll('.toc a');
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = document.querySelector('.toc a[href="#' + entry.target.id + '"]');
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    document.querySelectorAll('main section').forEach(function (sec) { observer.observe(sec); });
+  }
+
+  document.querySelectorAll('.langtoggle button').forEach(function (btn) {
+    btn.addEventListener('click', function () { applyLang(btn.getAttribute('data-lang')); });
+  });
+
+  var initial = 'ka';
+  try {
+    var saved = localStorage.getItem('thera-privacy-lang');
+    if (saved === 'ka' || saved === 'en') initial = saved;
+  } catch (e) {}
+  applyLang(initial);
+})();
+</script>

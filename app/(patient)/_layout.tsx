@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { ColorValue, View } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +7,25 @@ import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
 
 const S = KA;
+
+function TabIcon({ name, color, size, focused }: { name: keyof typeof Ionicons.glyphMap; color: ColorValue; size: number; focused: boolean }) {
+  return (
+    <View style={{ width: 56, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+      {focused && (
+        <View
+          style={{
+            position: 'absolute',
+            width: 56,
+            height: 32,
+            backgroundColor: '#EEF3F9',
+            borderRadius: 16,
+          }}
+        />
+      )}
+      <Ionicons name={name} size={size} color={color} />
+    </View>
+  );
+}
 
 export default function PatientLayout() {
   const { user, isLoading } = useAuthStore();
@@ -22,19 +42,28 @@ export default function PatientLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#0891b2',
+        tabBarActiveTintColor: '#3F6690',
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopColor: '#f3f4f6',
-          borderTopWidth: 1,
-          paddingTop: 8,
+          borderTopWidth: 0,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          paddingTop: 10,
           paddingBottom: insets.bottom,
-          height: 60 + insets.bottom,
+          height: 64 + insets.bottom,
+          shadowColor: '#0f172a',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 12,
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '500',
+          fontWeight: '600',
+        },
+        tabBarItemStyle: {
+          paddingTop: 2,
         },
       }}
     >
@@ -43,7 +72,7 @@ export default function PatientLayout() {
         options={{
           title: S.nav.home,
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+            <TabIcon name={focused ? 'home' : 'home-outline'} size={size} color={color} focused={focused} />
           ),
         }}
       />
@@ -52,7 +81,7 @@ export default function PatientLayout() {
         options={{
           title: S.nav.bookings,
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={size} color={color} />
+            <TabIcon name={focused ? 'calendar' : 'calendar-outline'} size={size} color={color} focused={focused} />
           ),
         }}
       />
@@ -61,7 +90,7 @@ export default function PatientLayout() {
         options={{
           title: S.nav.profile,
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+            <TabIcon name={focused ? 'person' : 'person-outline'} size={size} color={color} focused={focused} />
           ),
         }}
       />

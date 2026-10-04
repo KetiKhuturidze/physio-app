@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,17 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 import { KA } from 'src/constants/strings.ka';
 
 const S = KA;
+
+const REMEMBERED_EMAIL_KEY = 'auth.rememberedEmail';
 
 export default function Login() {
   const { setUser } = useAuthStore();
@@ -23,8 +27,18 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem(REMEMBERED_EMAIL_KEY).then((savedEmail) => {
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+    });
+  }, []);
 
   const handleLogin = async () => {
     setError(null);
@@ -72,13 +86,19 @@ export default function Login() {
       return;
     }
 
+    if (rememberMe) {
+      await AsyncStorage.setItem(REMEMBERED_EMAIL_KEY, email.trim().toLowerCase());
+    } else {
+      await AsyncStorage.removeItem(REMEMBERED_EMAIL_KEY);
+    }
+
     setUser(userData);
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-teal-600"
+      className="flex-1 bg-brand-600"
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -87,13 +107,13 @@ export default function Login() {
       >
         {/* ── Hero section ── */}
         <View className="px-7 pb-10" style={{ paddingTop: insets.top + 32 }}>
-          <Text className="text-teal-100 text-sm font-semibold tracking-widest uppercase mb-3">
+          <Text className="text-brand-100 text-sm font-semibold tracking-widest uppercase mb-3">
             Thera
           </Text>
           <Text className="text-white text-4xl font-bold leading-tight mb-2">
             {S.auth.login.title}
           </Text>
-          <Text className="text-teal-100 text-base">
+          <Text className="text-brand-100 text-base">
             {S.auth.login.subtitle}
           </Text>
         </View>
@@ -135,6 +155,23 @@ export default function Login() {
             editable={!isLoading}
           />
 
+          {/* Remember me */}
+          <TouchableOpacity
+            className="flex-row items-center mb-5"
+            onPress={() => setRememberMe((prev) => !prev)}
+            activeOpacity={0.7}
+            disabled={isLoading}
+          >
+            <View
+              className={`w-5 h-5 rounded-md border items-center justify-center mr-2 ${
+                rememberMe ? 'bg-accent-600 border-accent-600' : 'border-gray-300 bg-gray-50'
+              }`}
+            >
+              {rememberMe && <Ionicons name="checkmark" size={14} color="#ffffff" />}
+            </View>
+            <Text className="text-gray-600 text-sm">{S.auth.login.rememberMe}</Text>
+          </TouchableOpacity>
+
           {/* Error */}
           {error && (
             <View className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4">
@@ -145,7 +182,7 @@ export default function Login() {
           {/* Submit */}
           <TouchableOpacity
             className={`rounded-2xl py-4 items-center mb-6 ${
-              isLoading ? 'bg-teal-400' : 'bg-teal-600'
+              isLoading ? 'bg-accent-400' : 'bg-accent-600'
             }`}
             onPress={handleLogin}
             disabled={isLoading}
@@ -167,7 +204,7 @@ export default function Login() {
             </Text>
             <Link href="/(auth)/register" asChild>
               <TouchableOpacity>
-                <Text className="text-teal-600 text-sm font-bold">
+                <Text className="text-brand-600 text-sm font-bold">
                   {S.auth.login.registerLink}
                 </Text>
               </TouchableOpacity>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   Text,
@@ -10,11 +11,14 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import ReportReviewModal from 'src/components/ReportReviewModal';
 import { KA } from 'src/constants/strings.ka';
+import { useReviewReport } from 'src/hooks/useReviewReport';
 import supabase from 'src/lib/supabase';
-import { District } from 'src/types';
+import { District, ReviewReportReason } from 'src/types';
 
 const S = KA.physioProfileView;
+const RS = KA.reviewReport;
 
 // ─── Raw query types ──────────────────────────────────────────────────────────
 
@@ -36,6 +40,12 @@ type ServiceRow = {
   duration_minutes: number;
   price: number;
   description: string | null;
+};
+
+type CertRow = {
+  id: string;
+  name: string;
+  file_url: string;
 };
 
 type PhysioDetailRow = {
@@ -102,8 +112,8 @@ function Avatar({
     );
   }
   return (
-    <View className={`${dim} rounded-full bg-teal-100 items-center justify-center`}>
-      <Text className={`${textSize} font-semibold text-teal-700`}>{initials}</Text>
+    <View className={`${dim} rounded-full bg-brand-100 items-center justify-center`}>
+      <Text className={`${textSize} font-semibold text-brand-700`}>{initials}</Text>
     </View>
   );
 }
@@ -123,8 +133,24 @@ export default function PhysioProfile() {
   const insets = useSafeAreaInsets();
 
   const [physio, setPhysio] = useState<PhysioDetailRow | null>(null);
+  const [certs, setCerts] = useState<CertRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reportingReviewId, setReportingReviewId] = useState<string | null>(null);
+  const { submitting: reportSubmitting, reportReview } = useReviewReport();
+
+  async function handleSelectReason(reason: ReviewReportReason) {
+    if (!reportingReviewId) return;
+    const outcome = await reportReview(reportingReviewId, reason);
+    setReportingReviewId(null);
+    if (outcome === 'duplicate') {
+      Alert.alert(RS.alreadyReported);
+    } else if (outcome === 'error') {
+      Alert.alert(KA.errors.generic);
+    } else {
+      Alert.alert(RS.success);
+    }
+  }
 
   useEffect(() => {
     async function fetchPhysio() {
@@ -165,6 +191,13 @@ export default function PhysioProfile() {
       }
 
       setPhysio(data as unknown as PhysioDetailRow);
+
+      const { data: certData } = await supabase
+        .from('physio_certificates')
+        .select('id, name, file_url')
+        .eq('physio_id', id);
+      setCerts(certData ?? []);
+
       setLoading(false);
     }
 
@@ -174,7 +207,7 @@ export default function PhysioProfile() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#0891b2" />
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
@@ -184,7 +217,7 @@ export default function PhysioProfile() {
       <View className="flex-1 bg-white items-center justify-center px-8">
         <Text className="text-gray-500 text-base text-center">{error ?? S.notFound}</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-brand-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -215,16 +248,16 @@ export default function PhysioProfile() {
     .slice(0, 3);
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-brand-50">
       {/* ── Back button header ── */}
-      <View className="bg-teal-600 px-4 pb-3 flex-row items-center" style={{ paddingTop: insets.top + 12 }}>
+      <View className="bg-brand-600 px-4 pb-3 flex-row items-center" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
           className="flex-row items-center gap-1.5"
         >
           <Text className="text-white text-xl">‹</Text>
-          <Text className="text-teal-100 font-medium">{KA.nav.back}</Text>
+          <Text className="text-brand-100 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
 
@@ -241,8 +274,8 @@ export default function PhysioProfile() {
             <View className="flex-row items-center gap-2 flex-wrap justify-center">
               <Text className="text-xl font-bold text-gray-900">{user.full_name}</Text>
               {is_verified && (
-                <View className="bg-teal-100 rounded-full px-2.5 py-0.5">
-                  <Text className="text-teal-700 text-xs font-medium">
+                <View className="bg-brand-100 rounded-full px-2.5 py-0.5">
+                  <Text className="text-brand-700 text-xs font-medium">
                     {KA.physioCard.verified}
                   </Text>
                 </View>
@@ -288,7 +321,7 @@ export default function PhysioProfile() {
                   <View key={svc.id} className="border border-gray-100 rounded-xl px-3 py-3 bg-gray-50">
                     <View className="flex-row items-center justify-between">
                       <Text className="text-sm font-semibold text-gray-900 flex-1">{svc.name}</Text>
-                      <Text className="text-sm font-bold text-teal-700">₾{svc.price}</Text>
+                      <Text className="text-sm font-bold text-brand-700">₾{svc.price}</Text>
                     </View>
                     <Text className="text-xs text-gray-500 mt-0.5">
                       {svc.duration_minutes} {S.serviceMinutes}
@@ -348,7 +381,7 @@ export default function PhysioProfile() {
                     key={district.id}
                     className="flex-row items-center gap-2"
                   >
-                    <View className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-brand-500" />
                     <Text className="text-gray-700 text-sm">{district.name_ka}</Text>
                   </View>
                 ))}
@@ -361,6 +394,30 @@ export default function PhysioProfile() {
             <View className="bg-white rounded-2xl p-4">
               <SectionTitle title={S.availableHoursTitle} />
               <Text className="text-gray-700 text-sm leading-6">{available_hours}</Text>
+            </View>
+          )}
+
+          {/* ── Certificates ── */}
+          {certs.length > 0 && (
+            <View className="bg-white rounded-2xl p-4">
+              <SectionTitle title={S.certificatesTitle} />
+              <View className="gap-2">
+                {certs.map((cert) => (
+                  <View
+                    key={cert.id}
+                    className="flex-row items-center gap-3 border border-gray-100 rounded-xl p-3 bg-gray-50"
+                  >
+                    <Image
+                      source={{ uri: cert.file_url }}
+                      className="w-14 h-14 rounded-lg bg-gray-200"
+                      resizeMode="cover"
+                    />
+                    <Text className="text-sm font-medium text-gray-800 flex-1" numberOfLines={2}>
+                      {cert.name}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
           )}
 
@@ -394,6 +451,13 @@ export default function PhysioProfile() {
                         {review.comment}
                       </Text>
                     )}
+                    <TouchableOpacity
+                      onPress={() => setReportingReviewId(review.id)}
+                      hitSlop={8}
+                      className="mt-1.5 self-start"
+                    >
+                      <Text className="text-xs text-gray-400">{S.reportAction}</Text>
+                    </TouchableOpacity>
                   </View>
                 ))}
               </View>
@@ -402,12 +466,19 @@ export default function PhysioProfile() {
         </View>
       </ScrollView>
 
+      <ReportReviewModal
+        visible={reportingReviewId !== null}
+        submitting={reportSubmitting}
+        onClose={() => setReportingReviewId(null)}
+        onSelect={handleSelectReason}
+      />
+
       {/* ── Fixed book button ── */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pt-3" style={{ paddingBottom: insets.bottom + 12 }}>
         <TouchableOpacity
           onPress={() => router.push(`/(patient)/book/${physio.id}`)}
           activeOpacity={0.85}
-          className="bg-teal-600 rounded-2xl py-4 items-center shadow-sm"
+          className="bg-accent-600 rounded-2xl py-4 items-center shadow-sm"
         >
           <Text className="text-white font-semibold text-base">{S.bookButton}</Text>
         </TouchableOpacity>

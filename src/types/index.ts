@@ -90,7 +90,7 @@ export type BookingWithJoins = Booking & {
   physio_profile: {
     id: string;
     available_hours: string | null;
-    user: Pick<User, 'full_name' | 'avatar_url'>;
+    user: Pick<User, 'full_name' | 'avatar_url' | 'phone'>;
     base_district: Pick<District, 'name_ka'> | null;
   };
   patient: Pick<User, 'full_name' | 'phone'>;
@@ -106,6 +106,14 @@ export type CreateBookingInput = {
   notes: string | null;
 };
 
+export type PhysioCertificate = {
+  id: string;
+  physio_id: string;
+  name: string;
+  file_url: string;
+  uploaded_at: string;
+};
+
 export type Review = {
   id: string;
   booking_id: string;
@@ -113,5 +121,15 @@ export type Review = {
   physio_id: string;
   rating: number;
   comment: string | null;
+  created_at: string;
+};
+
+export type ReviewReportReason = 'spam' | 'offensive' | 'fake' | 'other';
+
+export type ReviewReport = {
+  id: string;
+  review_id: string;
+  reporter_id: string;
+  reason: ReviewReportReason;
   created_at: string;
 };

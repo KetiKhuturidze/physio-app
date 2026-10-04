@@ -1,24 +1,35 @@
 import { Platform } from 'react-native';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 
 import supabase from 'src/lib/supabase';
 import { BookingStatus } from 'src/types';
 
+// Remote push (getExpoPushTokenAsync) was removed from Expo Go in SDK 53, and
+// merely importing expo-notifications there throws — so it's loaded lazily
+// via dynamic import, only outside Expo Go, instead of a static import above.
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
 const EAS_PROJECT_ID = 'b20d7b10-51a4-4a71-b2e6-5a52f75be3e7';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+if (!isExpoGo) {
+  import('expo-notifications').then((Notifications) => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+  });
+}
 
 export async function registerForPushNotifications(userId: string): Promise<void> {
-  if (!Device.isDevice) return;
+  if (!Device.isDevice || isExpoGo) return;
+
+  const Notifications = await import('expo-notifications');
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {

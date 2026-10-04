@@ -52,6 +52,9 @@ type ProfileRow = {
   }[];
 };
 
+type ExistingCert = { id: string; name: string; file_url: string };
+type CertDraft = { name: string; localUri: string };
+
 type ServiceDraft = {
   name: string;
   duration_minutes: string;
@@ -99,11 +102,11 @@ function TagInput({
           {tags.map((tag) => (
             <View
               key={tag}
-              className="flex-row items-center bg-teal-100 rounded-full px-3 py-1.5 gap-1"
+              className="flex-row items-center bg-brand-100 rounded-full px-3 py-1.5 gap-1"
             >
-              <Text className="text-teal-800 text-sm">{tag}</Text>
+              <Text className="text-brand-800 text-sm">{tag}</Text>
               <TouchableOpacity onPress={() => onRemove(tag)} hitSlop={8}>
-                <Text className="text-teal-600 text-sm font-bold">×</Text>
+                <Text className="text-brand-600 text-sm font-bold">×</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -123,7 +126,7 @@ function TagInput({
           onPress={() => onAdd()}
           disabled={!input.trim()}
           className={`w-12 rounded-xl items-center justify-center ${
-            input.trim() ? 'bg-teal-600' : 'bg-gray-100'
+            input.trim() ? 'bg-brand-600' : 'bg-gray-100'
           }`}
         >
           <Text
@@ -178,6 +181,12 @@ export default function ProfileEdit() {
   const [addingService, setAddingService] = useState(false);
   const [serviceForm, setServiceForm] = useState<ServiceDraft>(EMPTY_SERVICE);
 
+  const [existingCerts, setExistingCerts] = useState<ExistingCert[]>([]);
+  const [pendingCerts, setPendingCerts] = useState<CertDraft[]>([]);
+  const [deletedCertIds, setDeletedCertIds] = useState<string[]>([]);
+  const [addingCert, setAddingCert] = useState(false);
+  const [certForm, setCertForm] = useState<CertDraft>({ name: '', localUri: '' });
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -200,6 +209,7 @@ export default function ProfileEdit() {
         .maybeSingle();
 
       if (dbError) {
+        setError(dbError.message);
         setLoading(false);
         return;
       }
@@ -226,6 +236,11 @@ export default function ProfileEdit() {
           description: svc.description ?? '',
         })),
       );
+      const { data: certs } = await supabase
+        .from('physio_certificates')
+        .select('id, name, file_url')
+        .eq('physio_id', row.id);
+      setExistingCerts(certs ?? []);
       setAvatarDisplayUri(user.avatar_url);
       setLoading(false);
     }
@@ -319,6 +334,43 @@ export default function ProfileEdit() {
   function removeService(index: number) {
     setServices((prev) => prev.filter((_, i) => i !== index));
     setSuccessVisible(false);
+  }
+
+  async function pickCertImage() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets[0]) {
+      setCertForm((f) => ({ ...f, localUri: result.assets[0].uri }));
+    }
+  }
+
+  function confirmAddCert() {
+    if (!certForm.name.trim() || !certForm.localUri) return;
+    setPendingCerts((prev) => [...prev, { ...certForm }]);
+    setCertForm({ name: '', localUri: '' });
+    setAddingCert(false);
+    setSuccessVisible(false);
+  }
+
+  async function uploadCert(uri: string, physioId: string): Promise<string | null> {
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    const arrayBuffer = decode(base64);
+    const path = `${physioId}/${Date.now()}.jpg`;
+    const { error: uploadError } = await supabase.storage
+      .from('certificates')
+      .upload(path, arrayBuffer, { contentType: 'image/jpeg', upsert: false });
+    if (uploadError) {
+      setError(uploadError.message);
+      return null;
+    }
+    const { data } = supabase.storage.from('certificates').getPublicUrl(path);
+    return data.publicUrl;
   }
 
   function validate(): string | null {
@@ -470,7 +522,40 @@ export default function ProfileEdit() {
       }
     }
 
+    // 6. Delete removed certificates
+    for (const certId of deletedCertIds) {
+      const { error: deleteCertError } = await supabase
+        .from('physio_certificates')
+        .delete()
+        .eq('id', certId);
+      if (deleteCertError) {
+        setError(S.saveError);
+        setSaving(false);
+        return;
+      }
+    }
+
+    // 7. Upload and insert pending certificates
+    for (const cert of pendingCerts) {
+      const url = await uploadCert(cert.localUri, physioId);
+      if (!url) {
+        setError(S.saveError);
+        setSaving(false);
+        return;
+      }
+      const { error: insertCertError } = await supabase
+        .from('physio_certificates')
+        .insert({ physio_id: physioId, name: cert.name.trim(), file_url: url });
+      if (insertCertError) {
+        setError(S.saveError);
+        setSaving(false);
+        return;
+      }
+    }
+
     setNewAvatarLocalUri(null);
+    setDeletedCertIds([]);
+    setPendingCerts([]);
     setSuccessVisible(true);
     setSaving(false);
 
@@ -493,7 +578,7 @@ export default function ProfileEdit() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#0891b2" />
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
@@ -502,7 +587,7 @@ export default function ProfileEdit() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-brand-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -552,7 +637,7 @@ export default function ProfileEdit() {
                   <ActivityIndicator color="#ffffff" />
                 </View>
               )}
-              <View className="absolute bottom-0 right-0 bg-teal-600 rounded-full w-7 h-7 items-center justify-center border-2 border-white">
+              <View className="absolute bottom-0 right-0 bg-brand-600 rounded-full w-7 h-7 items-center justify-center border-2 border-white">
                 <Text className="text-white text-xs">✎</Text>
               </View>
             </TouchableOpacity>
@@ -636,7 +721,7 @@ export default function ProfileEdit() {
               {!addingService && (
                 <TouchableOpacity
                   onPress={() => setAddingService(true)}
-                  className="bg-teal-600 rounded-full px-3 py-1"
+                  className="bg-brand-600 rounded-full px-3 py-1"
                 >
                   <Text className="text-white text-sm font-medium">{S.addServiceButton}</Text>
                 </TouchableOpacity>
@@ -746,7 +831,7 @@ export default function ProfileEdit() {
                     }
                     className={`flex-1 rounded-xl py-2.5 items-center ${
                       serviceForm.name.trim() && serviceForm.duration_minutes && serviceForm.price
-                        ? 'bg-teal-600'
+                        ? 'bg-brand-600'
                         : 'bg-gray-200'
                     }`}
                   >
@@ -758,6 +843,132 @@ export default function ProfileEdit() {
                       }`}
                     >
                       {S.serviceAddConfirm}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {/* ── Certificates ── */}
+          <View className="bg-white rounded-2xl p-4">
+            <View className="flex-row items-center justify-between mb-3">
+              <FieldLabel label={S.certificatesLabel} />
+              {!addingCert && (
+                <TouchableOpacity
+                  onPress={() => setAddingCert(true)}
+                  className="bg-brand-600 rounded-full px-3 py-1"
+                >
+                  <Text className="text-white text-sm font-medium">{S.addCertButton}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {existingCerts
+              .filter((c) => !deletedCertIds.includes(c.id))
+              .map((cert) => (
+                <View
+                  key={cert.id}
+                  className="border border-gray-100 rounded-xl px-3 py-3 bg-gray-50 flex-row items-center justify-between mb-2"
+                >
+                  <View className="flex-row items-center gap-3 flex-1">
+                    <Image
+                      source={{ uri: cert.file_url }}
+                      className="w-10 h-10 rounded-lg bg-gray-200"
+                    />
+                    <Text className="text-sm font-medium text-gray-900 flex-1" numberOfLines={1}>
+                      {cert.name}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setDeletedCertIds((prev) => [...prev, cert.id]);
+                      setSuccessVisible(false);
+                    }}
+                    hitSlop={8}
+                    className="ml-3"
+                  >
+                    <Text className="text-gray-400 text-lg font-bold">×</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+
+            {pendingCerts.map((cert, i) => (
+              <View
+                key={i}
+                className="border border-gray-100 rounded-xl px-3 py-3 bg-gray-50 flex-row items-center justify-between mb-2"
+              >
+                <View className="flex-row items-center gap-3 flex-1">
+                  <Image
+                    source={{ uri: cert.localUri }}
+                    className="w-10 h-10 rounded-lg bg-gray-200"
+                  />
+                  <Text className="text-sm font-medium text-gray-900 flex-1" numberOfLines={1}>
+                    {cert.name}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    setPendingCerts((prev) => prev.filter((_, idx) => idx !== i));
+                    setSuccessVisible(false);
+                  }}
+                  hitSlop={8}
+                  className="ml-3"
+                >
+                  <Text className="text-gray-400 text-lg font-bold">×</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            {addingCert && (
+              <View className="border border-brand-200 rounded-xl p-3 bg-brand-50 gap-3">
+                <View>
+                  <FieldLabel label={S.certNameLabel} />
+                  <TextInput
+                    className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 bg-white"
+                    value={certForm.name}
+                    onChangeText={(v) => setCertForm((f) => ({ ...f, name: v }))}
+                    placeholder={S.certNamePlaceholder}
+                    placeholderTextColor="#9ca3af"
+                    returnKeyType="done"
+                  />
+                </View>
+                <TouchableOpacity
+                  onPress={pickCertImage}
+                  className="border border-gray-200 rounded-xl px-3 py-3 bg-white flex-row items-center gap-3"
+                >
+                  {certForm.localUri ? (
+                    <>
+                      <Image source={{ uri: certForm.localUri }} className="w-12 h-12 rounded-lg" />
+                      <Text className="text-brand-700 text-sm font-medium">{S.certImageSelected}</Text>
+                    </>
+                  ) : (
+                    <Text className="text-gray-500 text-sm">{S.certPickImage}</Text>
+                  )}
+                </TouchableOpacity>
+                <View className="flex-row gap-2 mt-1">
+                  <TouchableOpacity
+                    onPress={() => {
+                      setAddingCert(false);
+                      setCertForm({ name: '', localUri: '' });
+                    }}
+                    className="flex-1 border border-gray-300 rounded-xl py-2.5 items-center"
+                  >
+                    <Text className="text-gray-600 text-sm font-medium">{S.certCancel}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={confirmAddCert}
+                    disabled={!certForm.name.trim() || !certForm.localUri}
+                    className={`flex-1 rounded-xl py-2.5 items-center ${
+                      certForm.name.trim() && certForm.localUri ? 'bg-brand-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm font-medium ${
+                        certForm.name.trim() && certForm.localUri ? 'text-white' : 'text-gray-400'
+                      }`}
+                    >
+                      {S.certAddConfirm}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -795,7 +1006,7 @@ export default function ProfileEdit() {
             onPress={handleSave}
             disabled={isBusy}
             activeOpacity={0.8}
-            className={`rounded-2xl py-4 items-center ${isBusy ? 'bg-teal-300' : 'bg-teal-600'}`}
+            className={`rounded-2xl py-4 items-center ${isBusy ? 'bg-accent-300' : 'bg-accent-600'}`}
           >
             {saving ? (
               <ActivityIndicator color="#ffffff" />

@@ -87,6 +87,16 @@ export default function BookPhysio() {
     loadPhysio();
   }, [physioId]);
 
+  useEffect(() => {
+    setSelectedServiceId(null);
+    setAddress(user?.default_address ?? '');
+    setDistrictIds(user?.default_district_id ? [user.default_district_id] : []);
+    setRequestedTime('');
+    setNotes('');
+    setError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [physioId]);
+
   function validate(): string | null {
     if (!selectedServiceId) return S.serviceRequired;
     if (!address.trim()) return `${S.addressLabel}: ${KA.errors.requiredField}`;
@@ -132,7 +142,7 @@ export default function BookPhysio() {
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#0891b2" />
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
@@ -142,7 +152,7 @@ export default function BookPhysio() {
       <View className="flex-1 bg-white items-center justify-center px-8">
         <Text className="text-gray-500 text-base text-center">{loadError ?? S.loadError}</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-teal-600 font-medium">{KA.nav.back}</Text>
+          <Text className="text-brand-600 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -150,18 +160,18 @@ export default function BookPhysio() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-brand-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* ── Header ── */}
-      <View className="bg-teal-600 px-4 pb-4 flex-row items-center gap-3" style={{ paddingTop: insets.top + 12 }}>
+      <View className="bg-brand-600 px-4 pb-4 flex-row items-center gap-3" style={{ paddingTop: insets.top + 12 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={12}
           className="flex-row items-center gap-1"
         >
           <Text className="text-white text-xl">‹</Text>
-          <Text className="text-teal-100 font-medium">{KA.nav.back}</Text>
+          <Text className="text-brand-100 font-medium">{KA.nav.back}</Text>
         </TouchableOpacity>
         <Text className="text-white text-base font-bold flex-1" numberOfLines={1}>
           {physio.user.full_name}
@@ -201,14 +211,14 @@ export default function BookPhysio() {
                       activeOpacity={0.75}
                       className={`flex-row items-center justify-between px-4 py-3.5 rounded-xl border ${
                         selected
-                          ? 'border-teal-500 bg-teal-50'
+                          ? 'border-brand-500 bg-brand-50'
                           : 'border-gray-200 bg-gray-50'
                       }`}
                     >
                       <View className="flex-1 gap-0.5">
                         <Text
                           className={`text-sm font-semibold ${
-                            selected ? 'text-teal-800' : 'text-gray-900'
+                            selected ? 'text-brand-800' : 'text-gray-900'
                           }`}
                         >
                           {svc.name}
@@ -218,7 +228,7 @@ export default function BookPhysio() {
                         </Text>
                       </View>
                       {selected && (
-                        <Text className="text-teal-600 text-base font-bold ml-3">✓</Text>
+                        <Text className="text-brand-600 text-base font-bold ml-3">✓</Text>
                       )}
                     </TouchableOpacity>
                   );
@@ -293,7 +303,7 @@ export default function BookPhysio() {
             disabled={submitting}
             activeOpacity={0.8}
             className={`rounded-2xl py-4 items-center ${
-              submitting ? 'bg-teal-300' : 'bg-teal-600'
+              submitting ? 'bg-accent-300' : 'bg-accent-600'
             }`}
           >
             {submitting ? (

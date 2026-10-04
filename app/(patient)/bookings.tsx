@@ -1,5 +1,4 @@
 import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,31 +15,27 @@ export default function PatientBookings() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator color="#0891b2" />
+      <View className="flex-1 bg-brand-50 items-center justify-center">
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-slate-50">
-      {/* ── Teal header ── */}
-      <LinearGradient
-        colors={['#0c4a6e', '#0891b2']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="px-6 pb-5"
-        style={{ paddingTop: insets.top + 20 }}
+    <View className="flex-1 bg-brand-50">
+      <View
+        className="bg-brand-900 px-6 rounded-b-[28px] justify-center"
+        style={{ paddingTop: insets.top, height: insets.top + 84 }}
       >
         <Text className="text-white text-2xl font-bold">{S.title}</Text>
-      </LinearGradient>
+      </View>
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#0891b2" />
+          <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#3F6690" />
         }
       >
         {/* ── Error ── */}
@@ -58,7 +53,7 @@ export default function PatientBookings() {
             <TouchableOpacity
               onPress={() => router.replace('/(patient)/home')}
               activeOpacity={0.8}
-              className="bg-teal-600 rounded-2xl px-6 py-3"
+              className="bg-accent-600 rounded-2xl px-6 py-3"
             >
               <Text className="text-white font-semibold text-sm">{KA.patientHome.findPhysio}</Text>
             </TouchableOpacity>

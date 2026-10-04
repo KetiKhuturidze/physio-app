@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Thera",
-    "slug": "physio-app",
+    "slug": "thera-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,17 +14,19 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "ge.physio.app"
+      "bundleIdentifier": "ge.thera.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "ge.physio.app",
+      "package": "ge.thera.app",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ]
@@ -45,21 +47,19 @@
       "expo-font",
       "expo-status-bar"
     ],
-    "scheme": "physio",
+    "scheme": "thera",
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b20d7b10-51a4-4a71-b2e6-5a52f75be3e7"
+        "projectId": "dff9e930-9f1b-4543-83a4-7dd19dda2248"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "updates": {
-      "url": "https://u.expo.dev/b20d7b10-51a4-4a71-b2e6-5a52f75be3e7"
-    }
+    "owner": "ketevankhuturidze"
   }
 }

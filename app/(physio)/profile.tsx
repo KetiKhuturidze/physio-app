@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KA } from 'src/constants/strings.ka';
+import { deleteAccount } from 'src/hooks/useAccount';
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
 import { District } from 'src/types';
@@ -37,6 +37,12 @@ type ReviewRow = {
   comment: string | null;
   created_at: string;
   patient: { full_name: string } | null;
+};
+
+type CertRow = {
+  id: string;
+  name: string;
+  file_url: string;
 };
 
 type ProfileViewRow = {
@@ -66,16 +72,16 @@ function Avatar({ uri, fullName }: { uri: string | null; fullName: string }) {
       <Image
         source={{ uri }}
         className="w-24 h-24 rounded-full"
-        style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
+        style={{ borderWidth: 3, borderColor: '#DCE6F0' }}
       />
     );
   }
   return (
     <View
-      className="w-24 h-24 rounded-full bg-white/20 items-center justify-center"
-      style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
+      className="w-24 h-24 rounded-full bg-brand-100 items-center justify-center"
+      style={{ borderWidth: 3, borderColor: '#DCE6F0' }}
     >
-      <Text className="text-white text-3xl font-bold">{initials}</Text>
+      <Text className="text-brand-700 text-3xl font-bold">{initials}</Text>
     </View>
   );
 }
@@ -105,8 +111,12 @@ export default function PhysioProfileView() {
   const insets = useSafeAreaInsets();
 
   const [profile, setProfile] = useState<ProfileViewRow | null>(null);
+  const [certs, setCerts] = useState<CertRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [deleteConfirming, setDeleteConfirming] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -138,7 +148,14 @@ export default function PhysioProfileView() {
           .maybeSingle();
 
         if (cancelled) return;
-        if (data) setProfile(data as unknown as ProfileViewRow);
+        if (data) {
+          setProfile(data as unknown as ProfileViewRow);
+          const { data: certData } = await supabase
+            .from('physio_certificates')
+            .select('id, name, file_url')
+            .eq('physio_id', data.id);
+          if (!cancelled) setCerts(certData ?? []);
+        }
 
         const { data: userData } = await supabase
           .from('users')
@@ -171,44 +188,68 @@ export default function PhysioProfileView() {
     }
   }
 
+  async function handleDeleteAccount() {
+    setDeletingAccount(true);
+    setDeleteError(false);
+    const ok = await deleteAccount();
+    if (!ok) {
+      setDeleteError(true);
+      setDeletingAccount(false);
+      return;
+    }
+    await supabase.auth.signOut();
+    logout();
+    router.replace('/(auth)/login');
+  }
+
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator color="#0891b2" />
+        <ActivityIndicator color="#3F6690" />
       </View>
     );
   }
 
   return (
     <ScrollView
-      className="flex-1 bg-slate-50"
+      className="flex-1 bg-brand-50"
       contentContainerStyle={{ paddingBottom: 48 }}
       showsVerticalScrollIndicator={false}
+      bounces={false}
+      overScrollMode="never"
     >
-      {/* ── Teal hero ── */}
-      <LinearGradient
-        colors={['#0c4a6e', '#0891b2']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="px-6 pb-8 items-center"
-        style={{ paddingTop: insets.top + 20 }}
+      <View
+        className="bg-brand-900 px-6 rounded-b-[28px] justify-center"
+        style={{ paddingTop: insets.top, height: insets.top + 84 }}
       >
-        <Text className="text-teal-100 text-sm font-semibold uppercase tracking-widest mb-4 self-start">
-          {S.title}
+        <Text className="text-brand-200 text-sm font-bold tracking-widest uppercase">
+          {KA.patientHome.appName}
         </Text>
+      </View>
+
+      <View
+        className="mx-4 mt-4 bg-white rounded-2xl p-5 items-center"
+        style={{
+          shadowColor: '#0f172a',
+          shadowOffset: { width: 0, height: 3 },
+          shadowOpacity: 0.08,
+          shadowRadius: 10,
+          elevation: 3,
+        }}
+      >
         <Avatar uri={user?.avatar_url ?? null} fullName={user?.full_name ?? ''} />
         <View className="items-center mt-3 gap-1.5">
-          <Text className="text-white text-xl font-bold">{user?.full_name}</Text>
+          <Text className="text-gray-900 text-xl font-bold">{user?.full_name}</Text>
           {profile?.base_district && (
-            <Text className="text-teal-100 text-sm">{profile.base_district.name_ka}</Text>
+            <Text className="text-gray-500 text-sm">{profile.base_district.name_ka}</Text>
           )}
           {profile?.is_verified && (
-            <View className="bg-white/20 rounded-full px-3 py-1 mt-1">
-              <Text className="text-teal-50 text-xs font-semibold">{KA.physioCard.verified}</Text>
+            <View className="bg-accent-100 rounded-full px-3 py-1 mt-1">
+              <Text className="text-accent-700 text-xs font-semibold">{KA.physioCard.verified}</Text>
             </View>
           )}
         </View>
-      </LinearGradient>
+      </View>
 
       {!profile && (
         <View className="mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
@@ -289,8 +330,32 @@ export default function PhysioProfileView() {
               <View className="gap-2">
                 {profile.physio_service_areas.map(({ district }) => (
                   <View key={district.id} className="flex-row items-center gap-2">
-                    <View className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-brand-500" />
                     <Text className="text-gray-700 text-sm">{district.name_ka}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* ── Certificates ── */}
+          {certs.length > 0 && (
+            <View className="bg-white rounded-2xl p-4">
+              <SectionTitle title={PV.certificatesTitle} />
+              <View className="gap-2">
+                {certs.map((cert) => (
+                  <View
+                    key={cert.id}
+                    className="flex-row items-center gap-3 border border-gray-100 rounded-xl p-3 bg-gray-50"
+                  >
+                    <Image
+                      source={{ uri: cert.file_url }}
+                      className="w-14 h-14 rounded-lg bg-gray-200"
+                      resizeMode="cover"
+                    />
+                    <Text className="text-sm font-medium text-gray-700 flex-1" numberOfLines={2}>
+                      {cert.name}
+                    </Text>
                   </View>
                 ))}
               </View>
@@ -336,7 +401,7 @@ export default function PhysioProfileView() {
         <TouchableOpacity
           onPress={() => router.navigate('/(physio)/profile-edit')}
           activeOpacity={0.8}
-          className="bg-teal-600 rounded-2xl py-4 items-center"
+          className="bg-brand-600 rounded-2xl py-4 items-center"
         >
           <Text className="text-white font-semibold text-base">{S.editButton}</Text>
         </TouchableOpacity>
@@ -355,6 +420,48 @@ export default function PhysioProfileView() {
             <Text className="text-red-600 font-semibold text-base">{S.logoutButton}</Text>
           )}
         </TouchableOpacity>
+
+        {/* ── Delete account ── */}
+        {deleteError && (
+          <View className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+            <Text className="text-red-700 text-sm">{S.deleteAccountError}</Text>
+          </View>
+        )}
+        {deleteConfirming ? (
+          <View className="bg-red-50 border border-red-200 rounded-2xl p-4 gap-3">
+            <Text className="text-red-800 text-sm leading-5">{S.deleteAccountWarning}</Text>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                onPress={() => setDeleteConfirming(false)}
+                disabled={deletingAccount}
+                activeOpacity={0.8}
+                className="flex-1 rounded-xl py-3 items-center border border-gray-300 bg-white"
+              >
+                <Text className="text-gray-700 font-semibold text-sm">{S.deleteAccountCancel}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteAccount}
+                disabled={deletingAccount}
+                activeOpacity={0.8}
+                className="flex-1 rounded-xl py-3 items-center bg-red-600"
+              >
+                {deletingAccount ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text className="text-white font-semibold text-sm">{S.deleteAccountConfirm}</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => setDeleteConfirming(true)}
+            activeOpacity={0.8}
+            className="items-center py-2"
+          >
+            <Text className="text-red-400 text-sm">{S.deleteAccountButton}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
   );
