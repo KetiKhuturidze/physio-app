@@ -9,6 +9,9 @@ function toTelHref(phone: string): string {
 
 function toWhatsAppHref(phone: string): string {
   let digits = phone.replace(/\D/g, '');
+  if (digits.length === 10 && digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
   if (!digits.startsWith('995') && digits.length === 9) {
     digits = `995${digits}`;
   }

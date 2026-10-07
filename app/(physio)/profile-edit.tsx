@@ -209,7 +209,7 @@ export default function ProfileEdit() {
         .maybeSingle();
 
       if (dbError) {
-        setError(dbError.message);
+        setError(KA.errors.generic);
         setLoading(false);
         return;
       }
@@ -236,11 +236,12 @@ export default function ProfileEdit() {
           description: svc.description ?? '',
         })),
       );
-      const { data: certs } = await supabase
+      const { data: certs, error: certsError } = await supabase
         .from('physio_certificates')
         .select('id, name, file_url')
         .eq('physio_id', row.id);
-      setExistingCerts(certs ?? []);
+      // Non-fatal — certificate list is supplementary, profile still loads without it
+      setExistingCerts(certsError ? [] : (certs ?? []));
       setAvatarDisplayUri(user.avatar_url);
       setLoading(false);
     }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import supabase from 'src/lib/supabase';
 import useAuthStore from 'src/stores/useAuthStore';
-import { ReviewReportReason } from 'src/types';
+import { ReportOutcome, ReviewReportReason } from 'src/types';
 
 // Add in Supabase SQL editor:
 //   create table if not exists review_reports (
@@ -18,8 +18,6 @@ import { ReviewReportReason } from 'src/types';
 //     for insert with check (reporter_id = auth.uid());
 //   create policy "Users can see their own reports" on review_reports
 //     for select using (reporter_id = auth.uid());
-
-export type ReportOutcome = 'ok' | 'duplicate' | 'error';
 
 type UseReviewReportResult = {
   submitting: boolean;

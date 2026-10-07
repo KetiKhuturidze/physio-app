@@ -32,12 +32,14 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    AsyncStorage.getItem(REMEMBERED_EMAIL_KEY).then((savedEmail) => {
+    async function loadRememberedEmail() {
+      const savedEmail = await AsyncStorage.getItem(REMEMBERED_EMAIL_KEY);
       if (savedEmail) {
         setEmail(savedEmail);
         setRememberMe(true);
       }
-    });
+    }
+    loadRememberedEmail();
   }, []);
 
   const handleLogin = async () => {

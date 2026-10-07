@@ -150,11 +150,12 @@ export default function PhysioProfileView() {
         if (cancelled) return;
         if (data) {
           setProfile(data as unknown as ProfileViewRow);
-          const { data: certData } = await supabase
+          const { data: certData, error: certError } = await supabase
             .from('physio_certificates')
             .select('id, name, file_url')
             .eq('physio_id', data.id);
-          if (!cancelled) setCerts(certData ?? []);
+          // Non-fatal — certificate list is supplementary, profile still renders without it
+          if (!cancelled) setCerts(certError ? [] : (certData ?? []));
         }
 
         const { data: userData } = await supabase

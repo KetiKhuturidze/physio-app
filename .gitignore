@@ -40,3 +40,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Play Store release (service account key, generated assets)
+/secrets/
+*-service-account*.json
+scripts/play-release/node_modules/
+scripts/play-release/assets/

@@ -192,11 +192,12 @@ export default function PhysioProfile() {
 
       setPhysio(data as unknown as PhysioDetailRow);
 
-      const { data: certData } = await supabase
+      const { data: certData, error: certError } = await supabase
         .from('physio_certificates')
         .select('id, name, file_url')
         .eq('physio_id', id);
-      setCerts(certData ?? []);
+      // Non-fatal — certificate list is supplementary, profile still renders without it
+      setCerts(certError ? [] : (certData ?? []));
 
       setLoading(false);
     }

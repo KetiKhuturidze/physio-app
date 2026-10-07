@@ -10,20 +10,23 @@ import { BookingStatus } from 'src/types';
 // via dynamic import, only outside Expo Go, instead of a static import above.
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-const EAS_PROJECT_ID = 'b20d7b10-51a4-4a71-b2e6-5a52f75be3e7';
+const EAS_PROJECT_ID = 'dff9e930-9f1b-4543-83a4-7dd19dda2248';
+
+async function setupNotificationHandler() {
+  const Notifications = await import('expo-notifications');
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+}
 
 if (!isExpoGo) {
-  import('expo-notifications').then((Notifications) => {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-      }),
-    });
-  });
+  setupNotificationHandler();
 }
 
 export async function registerForPushNotifications(userId: string): Promise<void> {

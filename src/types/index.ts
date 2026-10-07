@@ -133,3 +133,5 @@ export type ReviewReport = {
   reason: ReviewReportReason;
   created_at: string;
 };
+
+export type ReportOutcome = 'ok' | 'duplicate' | 'error';
