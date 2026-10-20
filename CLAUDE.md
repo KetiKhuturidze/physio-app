@@ -220,6 +220,25 @@ RESEND_API_KEY=   ← Edge Functions only
 
 ---
 
+## Deployment & Publishing
+
+**Accounts (as of 2026-10-20):**
+- EAS project: `@ketevankhuturidze/thera-app`, Android package `ge.thera.app`
+- Play Console app exists (category: Medical), Internal testing track is live
+- Google Cloud project for the Play Developer API: `thera-161ca` — free API, no billing needed. (A separate, unrelated Google Cloud project/org was used for an earlier Google Maps API attempt and hit a billing wall — don't confuse the two.)
+- Service account `thera-play-publisher@thera-161ca.iam.gserviceaccount.com` is invited to Play Console with **testing-track-only** permission (not production — deliberate, least privilege)
+- Privacy policy: `https://privacy.thera.ge` (Cloudflare Pages project `thera-privacy`, deployed from `docs/privacy-site/`). Delete-account URL: `https://privacy.thera.ge/#s-delete`
+- `eas.json` has a `submit.production` profile pointing at `secrets/play-service-account.json`, track `internal`
+
+**Files that exist only on the original dev machine, never in git** (a fresh clone/cloud session needs these recreated before `eas build`/`eas submit` will work):
+- `.env` — Supabase URL/anon key (also must be pushed to EAS as build-time env vars via `eas env:create`, see below)
+- `secrets/play-service-account.json` — Play Developer API service account key
+- A logged-in `eas-cli` session (`eas login`)
+
+**Known footgun (fixed once, can recur):** `src/lib/supabase.ts` creates the Supabase client at module load. If `EXPO_PUBLIC_SUPABASE_URL`/`ANON_KEY` aren't set as **EAS environment variables** (`eas env:list --environment production`) — not just in local `.env` — a standalone EAS build will crash before rendering anything, with no error shown (blank white screen), because `.env` is gitignored and never reaches EAS's build servers. Check `eas env:list` for all three environments (production/preview/development) before trusting a build that isn't tethered to a local Metro server.
+
+---
+
 ## Phase Boundaries
 MVP now: registration, profiles, district search,
   booking flow, push + email, reviews shell
